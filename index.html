@@ -390,6 +390,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .card .c-slots{display:flex;gap:2px;justify-content:center;padding:2px}
 .card .slot-dot{width:8px;height:8px;border-radius:50%;border:1px solid var(--gold-dim);background:transparent}
 .card .slot-dot.filled{background:var(--gold)}
+.card .slot-dot.overload{border-color:#ff3e7a;box-shadow:0 0 4px rgba(255,62,122,0.5)}
+.card .slot-dot.overload.filled{background:#ff3e7a}
 .card .c-effect{font-size:9px;padding:3px 5px;color:var(--text-dim);line-height:1.4;max-height:80px;overflow:hidden}
 .card .c-type{display:none}
 .card .c-dice{display:flex;gap:2px;justify-content:center;padding:2px;flex-wrap:wrap}
@@ -911,9 +913,9 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
 .adv-card-pick .card:hover{transform:translateY(-10px) scale(1.03);box-shadow:0 8px 25px rgba(255,107,157,0.35)}
 .adv-shop-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;margin:6px 0;background:linear-gradient(90deg,rgba(255,107,157,0.04),rgba(255,107,157,0.01));border:1px solid rgba(255,107,157,0.12);border-radius:10px;transition:all .2s}
 .adv-shop-item:hover{border-color:rgba(255,107,157,0.3);background:linear-gradient(90deg,rgba(255,107,157,0.08),rgba(255,107,157,0.02))}
-.adv-shop-item .item-info{text-align:left}
+.adv-shop-item .item-info{text-align:left;flex:1;min-width:0}
 .adv-shop-item .item-name{color:var(--text);font-size:14px}
-.adv-shop-item .item-desc{color:var(--text-dim);font-size:11px}
+.adv-shop-item .item-desc{color:var(--text-dim);font-size:11px;display:block;line-height:1.4;word-wrap:break-word;margin-top:2px}
 .adv-shop-item .item-price{color:var(--gold);font-size:14px;font-weight:bold}
 /* Deck viewer overlay */
 .deck-viewer-overlay{position:fixed;inset:0;background:rgba(5,5,15,0.88);display:flex;align-items:center;justify-content:center;z-index:120;backdrop-filter:blur(8px)}
@@ -2695,7 +2697,7 @@ const Adventure={
       }else{
         const canBuy=this.gold>=c.price;
         html+=`<div class="adv-shop-item" ${canBuy?`onclick="Adventure.buyShopCard(${i})" style="cursor:pointer"`:'style="opacity:0.5"'}>
-          <div class="item-info"><span class="item-name">${c.emoji} ${c.name}</span><span class="item-desc"> ${c.type==='creature'?`基础:${c.base}`:c.type} 槽:${c.slots}</span></div>
+          <div class="item-info"><span class="item-name">${c.emoji} ${c.name}</span><span class="item-desc">${c.type==='creature'?`基础:${c.base}`:c.type} 槽:${c.slots}${c.effectDesc?` | ${c.effectDesc}`:''}</span></div>
           <span class="item-price">${c.price}💰</span></div>`;
       }
     });
@@ -3238,9 +3240,10 @@ const G={
     if(target==='creature'){card=this.p.deployedCreature}
     else{const i=+target.split('-')[1];card=this.p.deployedSpells[i]}
     if(!card)return;
-    const maxSlots=(card.slots+(card.overloadSlot||0))-(card.assignedDice||[]).length;
-    if(maxSlots<=0&&(card.slots+(card.overloadSlot||0))>0){log('槽位已满');return}
-    if(card.slots===0&&!card.overloadSlot){log('此卡无骰子槽位');return}
+    const totalSlots=card.slots+(this.adventureMode&&Adventure.hasRelic('overload_slot')&&card.type==='creature'?1:(card.overloadSlot||0));
+    const maxSlots=totalSlots-(card.assignedDice||[]).length;
+    if(maxSlots<=0&&totalSlots>0){log('槽位已满');return}
+    if(card.slots===0&&!card.overloadSlot&&!(this.adventureMode&&Adventure.hasRelic('overload_slot')&&card.type==='creature')){log('此卡无骰子槽位');return}
     // Calibrated dice can only go to spells
     if(target==='creature'&&this._calibratedDiceIdx>=0){
       const filtered=this.selectedDice.filter(di=>di!==this._calibratedDiceIdx);
@@ -3788,16 +3791,17 @@ function renderCard(c,onclick,faceDown,extraClass=''){
   const isSpell=c.type==='spell';
   const val=c.type==='creature'?getCreatureValue(c):'';
   const growth=c.growth?`+${c.growth}`:'';
+  const _ts=c.slots+(c.type==='creature'&&typeof G!=='undefined'&&G.adventureMode&&Adventure.hasRelic('overload_slot')?1:(c.overloadSlot||0));
   const detailData=encodeURIComponent(JSON.stringify({name:c.name,type:c.type,emoji:c.emoji,base:c.base,
-    slots:c.slots,growth:c.growth,val,effectDesc:c.effectDesc,assignedDice:c.assignedDice||[],ad:(c.assignedDice||[]).length}));
+    slots:_ts,growth:c.growth,val,effectDesc:c.effectDesc,assignedDice:c.assignedDice||[],ad:(c.assignedDice||[]).length}));
   return `<div class="card ${isSpell?'spell-card':''} ${extraClass}" data-card-type="${c.type}" onclick="${onclick||''}"
     oncontextmenu="event.preventDefault();showCardDetail('${detailData}')"
     ondblclick="event.stopPropagation();showCardDetail('${detailData}')">
     <div class="c-name"><span class="c-tag">${isSpell?'法术':'生物'}</span>${c.name}</div>
     <div class="c-art">${c.emoji}</div>
-    <div class="c-stats">${c.type==='creature'?`<span>基础:${c.base}${growth}</span><span>总:${val}</span>`:`<span>槽:${c.slots}</span>`}</div>
-    <div class="c-slots">${Array(Math.max(0,c.slots)).fill(0).map((_,si)=>
-      `<span class="slot-dot ${si<(c.assignedDice||[]).length?'filled':''}"></span>`).join('')}</div>
+    <div class="c-stats">${c.type==='creature'?`<span>基础:${c.base}${growth}</span><span>总:${val}</span>`:`<span>槽:${_ts}</span>`}</div>
+    <div class="c-slots">${Array(Math.max(0,_ts)).fill(0).map((_,si)=>
+      `<span class="slot-dot ${si<(c.assignedDice||[]).length?'filled':''} ${si>=c.slots?'overload':''}"></span>`).join('')}</div>
     <div class="c-dice">${(c.assignedDice||[]).map(d=>`<span class="a-die">${d}</span>`).join('')}</div>
     <div class="c-effect">${c.effectDesc}</div>
   </div>`;
