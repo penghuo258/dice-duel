@@ -19,6 +19,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 #zzz-transition{position:fixed;inset:0;z-index:9999;pointer-events:none;overflow:hidden}
 #zzz-transition .zzz-slide{position:absolute;top:-10%;left:-10%;width:140%;height:140%;
   background:linear-gradient(135deg,#1a1a2e 0%,#16162a 40%,#0d0d1a 100%);
+  background-size:cover;background-position:center;background-repeat:no-repeat;
   transform:translateX(-110%) skewX(-8deg);transition:none;pointer-events:none;
   box-shadow:8px 0 40px rgba(0,0,0,0.7)}
 #zzz-transition .zzz-slide::after{content:'';position:absolute;right:0;top:0;width:4px;height:100%;
@@ -1830,6 +1831,15 @@ function showScreen(id,isBack){
   const slide=document.querySelector('#zzz-transition .zzz-slide');
   const isV=(_zzzDir%2===1);
   _zzzDir++;
+  /* Set transition background image based on target screen */
+  const _transBgs={
+    'screen-menu':'assets/bg-menu.png','screen-levels':'assets/bg-levels.png',
+    'screen-adventure':'assets/bg-adventure.png','screen-game':'assets/bg-game.png',
+    'screen-deck':'assets/bg-deck.png','screen-shop':'assets/bg-shop.png'
+  };
+  const _allBgs=Object.values(_transBgs);
+  const bgUrl=_transBgs[id]||_allBgs[Math.floor(Math.random()*_allBgs.length)];
+  slide.style.backgroundImage='url('+bgUrl+')';
   /* reset all classes */
   slide.className='zzz-slide';
   void slide.offsetWidth;
