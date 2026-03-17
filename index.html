@@ -2067,6 +2067,30 @@ const ALL_CARDS=[
 {id:'silent_dragon',type:'creature',name:'缄默之龙',emoji:'🤫',base:4,slots:1,
   effectDesc:'胜出:对手下回合生物效果全部无效',timing:'win',
   effect(ctx){ctx.enemy.effectsSilenced=true;log('缄默之龙:对手下回合生物效果被封印!','effect')}},
+{id:'time_traveler',type:'creature',name:'时空旅者',emoji:'⏰',base:2,slots:2,
+  effectDesc:'部署阶段:可将1个已分配骰子改为任意值(1-6),每回合1次',timing:'deploy',
+  effect(ctx){if(!ctx.owner.isPlayer){const dice=ctx.myCreature.assignedDice;if(dice.length>0){const i=Math.floor(Math.random()*dice.length);dice[i]=Math.ceil(Math.random()*6);log(`时空旅者:AI改变骰子为${dice[i]}`,'effect')};return}
+    if(ctx.myCreature.assignedDice.length===0){log('时空旅者:无骰子可修改','effect');return}
+    const opts=ctx.myCreature.assignedDice.map((d,i)=>({label:`骰子${i+1}: ${d}`}));
+    showOverlay('时空旅者:选择要修改的骰子',opts,i=>{
+      const valOpts=[1,2,3,4,5,6].map(v=>({label:`改为 ${v}`}));
+      showOverlay('时空旅者:选择新点数',valOpts,vi=>{ctx.myCreature.assignedDice[i]=vi+1;log(`时空旅者:将骰子改为${vi+1}!`,'effect');render()})})}},
+{id:'greedy_mimic',type:'creature',name:'贪婪宝箱怪',emoji:'📦',base:0,slots:4,
+  effectDesc:'每有1个分配的骰子,基础值+1',timing:'passive',
+  effect(ctx){/* handled in getCreatureValue or duel resolve */}},
+{id:'crystal_guard',type:'creature',name:'水晶守卫',emoji:'🔷',base:3,slots:2,
+  effectDesc:'受到>3伤害时:免疫该伤害并失去此牌(每回合限1次)',timing:'passive',
+  effect(ctx){/* handled in damage resolution */}},
+{id:'phantom_sprite',type:'creature',name:'幻象精灵',emoji:'👻',base:2,slots:2,
+  effectDesc:'胜出:此卡回到手牌(每局游戏限1次)',timing:'win',
+  effect(ctx){if(ctx.myCreature._phantomUsed){log('幻象精灵:已使用过回手效果','effect');return}
+    ctx.myCreature._phantomUsed=true;ctx.returnToHand=true;log('幻象精灵:胜出后回到手牌!','effect')}},
+{id:'element_harmonizer',type:'creature',name:'元素调和者',emoji:'🌈',base:1,slots:2,
+  effectDesc:'对拼开始:复制自身1个骰子到额外槽位(回合结束消失)',timing:'duel_start',
+  effect(ctx){const dice=ctx.myCreature.assignedDice;if(dice.length===0){log('元素调和者:无骰子可复制','effect');return}
+    if(!ctx.owner.isPlayer){const v=dice[Math.floor(Math.random()*dice.length)];dice.push(v);ctx.myCreature._harmonizerExtra=true;log(`元素调和者:AI复制骰子${v}`,'effect');return}
+    const opts=dice.map((d,i)=>({label:`复制骰子${i+1}: ${d}`}));
+    showOverlay('元素调和者:选择复制的骰子',opts,i=>{dice.push(dice[i]);ctx.myCreature._harmonizerExtra=true;log(`元素调和者:复制骰子${dice[i]}到额外槽位!`,'effect');render()})}},
 // --- SPELLS (13) ---
 {id:'even_absorb',type:'spell',name:'偶数吸收',emoji:'💚',base:0,slots:4,
   effectDesc:'槽内骰子每有1个偶数,回复2HP',timing:'duel_start',
@@ -2148,7 +2172,7 @@ const ALL_CARDS=[
     else{log('镜像空间:对手无骰子','effect')}}},
 ];
 
-const COMMON_CARDS=['shadow_rat','swift_bird','steam_sentinel','gear_hound','chimney_golem','magnet_puppet','boiler_spider','slime','even_absorb','overload_pulse','steam_burst','emergency_repair','metal_shield'];
+const COMMON_CARDS=['shadow_rat','swift_bird','steam_sentinel','gear_hound','chimney_golem','magnet_puppet','boiler_spider','slime','time_traveler','greedy_mimic','crystal_guard','even_absorb','overload_pulse','steam_burst','emergency_repair','metal_shield'];
 
 const ALL_RELICS=[
   {id:'lucky_dice',name:'幸运骰子',emoji:'🎲',rarity:'common',desc:'第一回合多获得1个骰子，但该回合必须使用该骰子，否则失去遗物'},
@@ -2166,7 +2190,7 @@ function getCommonCards(){return ALL_CARDS.filter(c=>COMMON_CARDS.includes(c.id)
 function getRareCards(){return ALL_CARDS.filter(c=>!COMMON_CARDS.includes(c.id))}
 function getCardDef(id){return ALL_CARDS.find(c=>c.id===id)}
 function makeCardInstance(def){return{...def,assignedDice:[],growth:0,tempBonus:0}}
-function getCreatureValue(c){if(!c)return 0;const frozen=new Set(c.frozenDice||[]);return c.base+(c.growth||0)+(c.tempBonus||0)+(c.assignedDice||[]).reduce((a,b,i)=>a+(frozen.has(i)?0:b),0)}
+function getCreatureValue(c){if(!c)return 0;const frozen=new Set(c.frozenDice||[]);let val=c.base+(c.growth||0)+(c.tempBonus||0)+(c.assignedDice||[]).reduce((a,b,i)=>a+(frozen.has(i)?0:b),0);if(c.id==='greedy_mimic')val+=(c.assignedDice||[]).length;return val}
 function discardCard(p,card){if(card&&card.id)p.discard.push(card.id)}
 function reshuffleDeck(p){if(!p.discard.length)return;const d=p.discard.map(id=>{const def=getCardDef(id);return makeCardInstance(def)});shuffle(d);p.deck=d;p.discard=[];log((p.isPlayer?'铸炉师':'机械领主')+'的弃牌堆已洗入牌库! ('+d.length+'张)','phase')}
 function drawCards(p,n){for(let i=0;i<n;i++){if(p.hand.length>=9)break;if(!p.deck.length){reshuffleDeck(p);if(!p.deck.length)break}const card=p.deck.pop();p.hand.push(card);if(card.id==='magnet_puppet'){card._magnetPending=true}}}
@@ -3364,9 +3388,17 @@ const G={
   newTurn(){
     this.turn++;
     // Discard deployed cards from last turn
-    if(this.p.deployedCreature)discardCard(this.p,this.p.deployedCreature);
+    // Phantom Sprite: return to hand instead of discarding
+    if(this.p.deployedCreature){
+      if(this.p.deployedCreature._phantomReturning){this.p.deployedCreature._phantomReturning=false;this.p.deployedCreature.assignedDice=[];this.p.deployedCreature.tempBonus=0;this.p.hand.push(this.p.deployedCreature);log('👻 幻象精灵回到手牌!','effect')}
+      else discardCard(this.p,this.p.deployedCreature)}
+    // Element Harmonizer: remove extra dice before discard
+    if(this.p.deployedCreature&&this.p.deployedCreature._harmonizerExtra){this.p.deployedCreature.assignedDice.pop();delete this.p.deployedCreature._harmonizerExtra}
     this.p.deployedSpells.forEach(s=>discardCard(this.p,s));
-    if(this.ai.deployedCreature)discardCard(this.ai,this.ai.deployedCreature);
+    if(this.ai.deployedCreature){
+      if(this.ai.deployedCreature._phantomReturning){this.ai.deployedCreature._phantomReturning=false;this.ai.deployedCreature.assignedDice=[];this.ai.deployedCreature.tempBonus=0;this.ai.hand.push(this.ai.deployedCreature);log('👻 幻象精灵回到对手手牌!','effect')}
+      else discardCard(this.ai,this.ai.deployedCreature)}
+    if(this.ai.deployedCreature&&this.ai.deployedCreature._harmonizerExtra){this.ai.deployedCreature.assignedDice.pop();delete this.ai.deployedCreature._harmonizerExtra}
     this.ai.deployedSpells.forEach(s=>discardCard(this.ai,s));
     this.p.deployedCreature=null;this.p.deployedSpells=[];
     this.ai.deployedCreature=null;this.ai.deployedSpells=[];
@@ -3876,12 +3908,17 @@ const G={
       if(this.ai.shield>0){const red=Math.min(this.ai.shield,dmg);dmg-=red;this.ai.shield-=red;dmg=Math.max(1,dmg)}
       // Damage cap (金属护盾)
       if(typeof this.ai.dmgCap==='number'){dmg=Math.min(dmg,this.ai.dmgCap);delete this.ai.dmgCap}
+      // Crystal Guard: if AI has crystal_guard in hand and dmg>3, negate and discard it
+      if(dmg>3){const cgIdx=this.ai.hand.findIndex(c=>c.id==='crystal_guard'&&!c._crystalUsedThisTurn);
+        if(cgIdx>=0){this.ai.hand[cgIdx]._crystalUsedThisTurn=true;const cg=this.ai.hand.splice(cgIdx,1)[0];discardCard(this.ai,cg);log('🔷 水晶守卫:免疫伤害并消失!','effect');dmg=0}}
       this.ai.hp-=dmg;
       this.pDmgDealtThisTurn=(this.pDmgDealtThisTurn||0)+dmg;
       if(effectCtx.directHpMax){this.ai.maxHp=(this.ai.maxHp||30)-dmg;if(this.ai.maxHp<1)this.ai.maxHp=1;log(`刺客效果:上限降至${this.ai.maxHp}!`,'effect')}
       showDmgPopup('ai-hp-fill',dmg);triggerHpHit('ai-hp-fill');$('main-area').classList.add('screen-shake');setTimeout(()=>$('main-area').classList.remove('screen-shake'),400);
       markDuelResult('left');
       log(`${pc.name} 胜出! 造成 ${dmg} 伤害 (机械领主剩余${this.ai.hp}HP)`,'combat');
+      // Phantom Sprite: return winning creature to hand
+      if(effectCtx.returnToHand&&pc.id==='phantom_sprite'){pc._phantomReturning=true}
       // Track destroyed creature (AI's creature lost)
       if(this.destroyedThisTurn)this.destroyedThisTurn.push({id:ac.id,owner:this.ai});
     } else if(aVal>pVal){
@@ -3906,10 +3943,15 @@ const G={
       if(this.p.shield>0){const red=Math.min(this.p.shield,dmg);dmg-=red;this.p.shield-=red;dmg=Math.max(1,dmg)}
       // Damage cap (金属护盾)
       if(typeof this.p.dmgCap==='number'){dmg=Math.min(dmg,this.p.dmgCap);delete this.p.dmgCap}
+      // Crystal Guard: if player has crystal_guard in hand and dmg>3, negate and discard it
+      if(dmg>3){const cgIdx=this.p.hand.findIndex(c=>c.id==='crystal_guard'&&!c._crystalUsedThisTurn);
+        if(cgIdx>=0){this.p.hand[cgIdx]._crystalUsedThisTurn=true;const cg=this.p.hand.splice(cgIdx,1)[0];discardCard(this.p,cg);log('🔷 水晶守卫:免疫伤害并消失!','effect');dmg=0}}
       this.p.hp-=dmg;
       if(effectCtx.directHpMax){this.p.maxHp=(this.p.maxHp||30)-dmg;if(this.p.maxHp<1)this.p.maxHp=1;log(`刺客效果:上限降至${this.p.maxHp}!`,'effect')}
       showDmgPopup('player-hp-fill',dmg);triggerHpHit('player-hp-fill');showRedVignette();$('main-area').classList.add('screen-shake');setTimeout(()=>$('main-area').classList.remove('screen-shake'),400);
       markDuelResult('right');
+      // Phantom Sprite: return winning creature to hand
+      if(effectCtx.returnToHand&&ac.id==='phantom_sprite'){ac._phantomReturning=true}
       // Track destroyed creature (player's creature lost)
       if(this.destroyedThisTurn)this.destroyedThisTurn.push({id:pc.id,owner:this.p});
       // Immortal Seed relic: add copy with +1 base to player deck
@@ -3964,6 +4006,9 @@ const G={
     if(defender.shield>0){const r=Math.min(defender.shield,dmg);dmg-=r;defender.shield-=r;dmg=Math.max(1,dmg)}
     // Damage cap (金属护盾)
     if(typeof defender.dmgCap==='number'){dmg=Math.min(dmg,defender.dmgCap);delete defender.dmgCap}
+    // Crystal Guard
+    if(dmg>3){const cgIdx=defender.hand.findIndex(c=>c.id==='crystal_guard'&&!c._crystalUsedThisTurn);
+      if(cgIdx>=0){defender.hand[cgIdx]._crystalUsedThisTurn=true;const cg=defender.hand.splice(cgIdx,1)[0];discardCard(defender,cg);log('🔷 水晶守卫:免疫伤害并消失!','effect');dmg=0}}
     defender.hp-=dmg;
     const hpId=defender.isPlayer?'player-hp-fill':'ai-hp-fill';showDmgPopup(hpId,dmg);triggerHpHit(hpId);if(defender.isPlayer)showRedVignette();$('main-area').classList.add('screen-shake');setTimeout(()=>$('main-area').classList.remove('screen-shake'),400);
     const dName=defender.isPlayer?'铸炉师':'机械领主';
