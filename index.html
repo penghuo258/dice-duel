@@ -19,7 +19,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 #zzz-transition{position:fixed;inset:0;z-index:9999;pointer-events:none;overflow:hidden}
 #zzz-transition .zzz-slide{position:absolute;top:-10%;left:-10%;width:140%;height:140%;
   background:linear-gradient(135deg,#1a1a2e 0%,#16162a 40%,#0d0d1a 100%);
-  background-size:cover;background-position:center;background-repeat:no-repeat;
   transform:translateX(-110%) skewX(-8deg);transition:none;pointer-events:none;
   box-shadow:8px 0 40px rgba(0,0,0,0.7)}
 #zzz-transition .zzz-slide::after{content:'';position:absolute;right:0;top:0;width:4px;height:100%;
@@ -1062,26 +1061,29 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
 .relic-icon{font-size:18px;cursor:help;background:rgba(255,107,157,0.1);border:1px solid rgba(255,107,157,0.2);border-radius:6px;padding:2px 4px;transition:all .2s}
 .relic-icon:hover{background:rgba(255,107,157,0.25);transform:scale(1.15)}
 .relic-item .item-desc.relic-desc{font-size:11px;color:var(--text-dim);display:block;margin-top:2px;line-height:1.3}
-/* ========== SLIDING BACKGROUND IMAGES ========== */
+/* ========== SCREEN BACKGROUND IMAGES ========== */
+/* Outer: cover + breathing zoom */
 .screen-bg{position:absolute;inset:0;width:100%;height:100%;z-index:0;
-  background-size:contain;background-position:center;background-repeat:no-repeat;pointer-events:none;
-  animation:bgSlide 25s ease-in-out infinite alternate;will-change:transform;opacity:0.45}
-@keyframes bgSlide{
-  0%{transform:translate(0,0)}
-  33%{transform:translate(1.5%,-1%)}
-  66%{transform:translate(-1%,1.2%)}
-  100%{transform:translate(0.8%,-0.6%)}
-}
-.screen-bg::after{content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(10,10,24,0.15) 0%,rgba(10,10,24,0.05) 30%,rgba(10,10,24,0.05) 70%,rgba(10,10,24,0.25) 100%);pointer-events:none}
-#screen-game .screen-bg{opacity:0.35}
-#screen-game .screen-bg::after{background:linear-gradient(180deg,rgba(10,10,24,0.2) 0%,rgba(10,10,24,0.08) 40%,rgba(10,10,24,0.08) 60%,rgba(10,10,24,0.3) 100%)}
-#screen-menu .screen-bg{animation-duration:30s}
-#screen-levels .screen-bg{animation-duration:22s;animation-direction:alternate-reverse}
-#screen-adventure .screen-bg{animation-duration:28s}
-#screen-game .screen-bg{animation-duration:35s}
-#screen-deck .screen-bg{animation-duration:26s;animation-direction:alternate-reverse}
-#screen-shop .screen-bg{animation-duration:20s}
+  background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none;
+  animation:bgBreathe 20s ease-in-out infinite alternate;will-change:transform}
+@keyframes bgBreathe{0%{transform:scale(1)}100%{transform:scale(1.05)}}
+/* Inner: dark overlay + edge vignette gradients */
+.screen-bg::before{content:'';position:absolute;inset:0;z-index:1;
+  background:rgba(0,0,0,0.35);pointer-events:none}
+.screen-bg::after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:
+    linear-gradient(to bottom,rgba(26,26,46,0.7) 0%,transparent 15%),
+    linear-gradient(to top,rgba(26,26,46,0.7) 0%,transparent 15%),
+    linear-gradient(to right,rgba(26,26,46,0.6) 0%,transparent 12%),
+    linear-gradient(to left,rgba(26,26,46,0.6) 0%,transparent 12%);
+  box-shadow:inset 0 0 120px rgba(0,0,0,0.5)}
+/* Per-screen tuning */
+#screen-menu .screen-bg{animation-duration:24s}
+#screen-levels .screen-bg{animation-duration:20s;animation-direction:alternate-reverse}
+#screen-adventure .screen-bg{animation-duration:22s}
+#screen-game .screen-bg{animation-duration:30s}
+#screen-game .screen-bg::before{background:rgba(0,0,0,0.5)}
+#screen-adventure .screen-bg::before{background:rgba(0,0,0,0.45)}
 /* Screen particles overlay */
 .screen-particles{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
 .screen-particles .sp{position:absolute;border-radius:50%;pointer-events:none;opacity:0;
@@ -1825,9 +1827,6 @@ function showScreen(id,isBack){
   const slide=document.querySelector('#zzz-transition .zzz-slide');
   const isV=(_zzzDir%2===1);
   _zzzDir++;
-  /* Set transition background image: vertical=上下转场, horizontal=左右转场 */
-  const bgUrl=isV?'assets/transition-v.png':'assets/transition-h.png';
-  slide.style.backgroundImage='url('+bgUrl+')';
   /* reset all classes */
   slide.className='zzz-slide';
   void slide.offsetWidth;
