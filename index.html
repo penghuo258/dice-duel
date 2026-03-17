@@ -1309,9 +1309,63 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
   .news-body{font-size:9px}
   .news-card-inner{padding:10px 12px 8px}
 }
+/* ========== LOADING SCREEN ========== */
+#loading-screen{position:fixed;inset:0;z-index:99999;background:#0a0a0a;display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-end;padding-bottom:12vh;transition:opacity 0.6s}
+#loading-screen.fade-out{opacity:0;pointer-events:none}
+#loading-screen .load-img{position:absolute;top:50%;left:50%;transform:translate(-50%,-45%);
+  width:auto;height:60vh;max-width:80vw;object-fit:contain;opacity:0.9}
+.load-bar-wrap{width:280px;position:relative;z-index:2}
+.load-bar-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;color:rgba(255,255,255,0.5);
+  text-transform:uppercase;margin-bottom:8px;text-align:center}
+.load-bar-track{width:100%;height:3px;background:rgba(255,255,255,0.08);position:relative;overflow:hidden}
+.load-bar-fill{height:100%;width:0%;background:#fff;transition:width 0.3s}
+.load-pct{font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(255,255,255,0.4);
+  text-align:center;margin-top:6px;letter-spacing:2px}
+/* ========== CARD ARC LAYOUT ========== */
+#player-hand{display:flex;justify-content:center;align-items:flex-end;min-height:180px;position:relative;
+  perspective:800px}
+#player-hand .card{transition:all 0.35s cubic-bezier(.22,1,.36,1);transform-origin:bottom center}
+#player-hand .card:hover{transform:translateY(-18px) scale(1.08)!important;z-index:20!important;
+  box-shadow:0 8px 30px rgba(255,62,122,0.4),var(--glow)}
+#player-hand .card:active{transform:translateY(-8px) scale(0.98)!important;transition-duration:0.1s}
+/* Card fly-in animation */
+@keyframes cardFlyIn{0%{opacity:0;transform:translateY(60px) scale(0.7) rotate(8deg)}
+  60%{opacity:1;transform:translateY(-10px) scale(1.03) rotate(-1deg)}
+  100%{opacity:1;transform:translateY(0) scale(1) rotate(0deg)}}
+.card-fly-in{animation:cardFlyIn 0.45s cubic-bezier(.22,1,.36,1) forwards}
+/* ========== TURN INDICATOR ========== */
+@keyframes turnFlash{0%,100%{box-shadow:inset 0 0 30px rgba(255,62,122,0)}50%{box-shadow:inset 0 0 30px rgba(255,62,122,0.15)}}
+.your-turn-flash{animation:turnFlash 1.5s ease-in-out 2}
+.turn-toast{position:fixed;top:40%;left:50%;transform:translate(-50%,-50%) scale(0.8);
+  background:rgba(255,255,255,0.95);color:#0a0a0a;font-family:'Baloo 2','Fredoka',sans-serif;
+  font-size:18px;font-weight:800;letter-spacing:4px;padding:10px 36px;z-index:200;
+  opacity:0;transition:all 0.4s cubic-bezier(.22,1,.36,1);pointer-events:none}
+.turn-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+/* ========== TOAST MESSAGES ========== */
+.game-toast{position:fixed;bottom:20%;left:50%;transform:translateX(-50%) translateY(10px);
+  background:rgba(20,20,40,0.9);color:var(--text);font-size:13px;padding:8px 20px;border-radius:20px;
+  border:1px solid rgba(255,62,122,0.2);z-index:150;opacity:0;transition:all 0.3s;pointer-events:none;
+  font-family:'ZCOOL KuaiLe',sans-serif;backdrop-filter:blur(8px)}
+.game-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ========== BUTTON CLICK FEEDBACK ========== */
+.menu-btn:active,.adv-btn:active,.action-btn:active{transform:scale(0.95)!important;filter:brightness(0.85);
+  transition-duration:0.08s!important}
 </style>
 </head>
 <body>
+<!-- LOADING SCREEN -->
+<div id="loading-screen">
+  <img class="load-img" src="assets/transition-v.png" alt="">
+  <div class="load-bar-wrap">
+    <div class="load-bar-label">LOADING TERMINAL EARTH</div>
+    <div class="load-bar-track"><div class="load-bar-fill" id="load-fill"></div></div>
+    <div class="load-pct" id="load-pct">0%</div>
+  </div>
+</div>
+<!-- Turn toast -->
+<div class="turn-toast" id="turn-toast">YOUR TURN</div>
+<div class="game-toast" id="game-toast"></div>
 <!-- MENU SCREEN -->
 <div id="screen-menu" class="screen active">
   <div class="screen-bg" style="background-image:url('assets/bg-menu.png')"></div>
@@ -1594,6 +1648,8 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
         <button class="menu-btn sm" id="wiki-tab-relics" onclick="Wiki.showTab('relics')" style="flex:1">遗物图鉴</button>
         <button class="menu-btn sm" id="wiki-tab-events" onclick="Wiki.showTab('events')" style="flex:1">事件一览</button>
         <button class="menu-btn sm" id="wiki-tab-music" onclick="Wiki.showTab('music')" style="flex:1">音乐鉴赏</button>
+        <button class="menu-btn sm" id="wiki-tab-stats" onclick="Wiki.showTab('stats')" style="flex:1">对局统计</button>
+        <button class="menu-btn sm" id="wiki-tab-achieve" onclick="Wiki.showTab('achieve')" style="flex:1">成就</button>
       </div>
       <div id="wiki-content"></div>
       <div class="divider"></div>
@@ -3968,7 +4024,7 @@ const G={
       this.phase='deploy';
       // Clear any unused extra rerolls from this turn
       this.p.extraRerolls=0;
-      setPhase('部署阶段');
+      setPhase('部署阶段');showTurnToast();
       // Boss mechanic: reroll player's highest die
       if(this.adventureMode&&this.adventureBattleType==='boss'&&this.p.dice.length>0){
         let maxIdx=0;
@@ -3994,7 +4050,7 @@ const G={
       if(this.p.deployedCreature&&!this.p.extraCreatureNext){log('每回合只能出1个生物');return}
       if(this.p.deployedCreature&&this.p.extraCreatureNext){/* allow second */}
       card.assignedDice=[];card.tempBonus=0;
-      this.p.deployedCreature=card;
+      this.p.deployedCreature=card;StatsTracker.recordCard(card.name);SFX.play('click');
       this.p.hand.splice(idx,1);
       this.p.extraCreatureNext=false;
       log(`部署 ${card.name}`);
@@ -4039,7 +4095,7 @@ const G={
     if(!card)return;
     const totalSlots=card.slots+(this.adventureMode&&Adventure.hasRelic('overload_slot')&&card.type==='creature'?1:(card.overloadSlot||0))-(this.adventureMode&&Adventure.hasRelic('double_blade')&&card.type==='creature'?1:0);
     const maxSlots=totalSlots-(card.assignedDice||[]).length;
-    if(maxSlots<=0&&totalSlots>0){log('槽位已满');return}
+    if(maxSlots<=0&&totalSlots>0){log('槽位已满');showGameToast('槽位已满');return}
     if(card.slots===0&&!card.overloadSlot&&!(this.adventureMode&&Adventure.hasRelic('overload_slot')&&card.type==='creature')){log('此卡无骰子槽位');return}
     // Calibrated dice can only go to spells
     if(target==='creature'&&this._calibratedDiceIdx>=0){
@@ -4306,7 +4362,7 @@ const G={
       // Crystal Guard: if AI has crystal_guard in hand and dmg>3, negate and discard it
       if(dmg>3){const cgIdx=this.ai.hand.findIndex(c=>c.id==='crystal_guard'&&!c._crystalUsedThisTurn);
         if(cgIdx>=0){this.ai.hand[cgIdx]._crystalUsedThisTurn=true;const cg=this.ai.hand.splice(cgIdx,1)[0];discardCard(this.ai,cg);log('🔷 水晶守卫:免疫伤害并消失!','effect');dmg=0}}
-      this.ai.hp-=dmg;
+      this.ai.hp-=dmg;StatsTracker.recordDmg(dmg);if(dmg>0)SFX.play('damage');
       this.pDmgDealtThisTurn=(this.pDmgDealtThisTurn||0)+dmg;
       if(effectCtx.directHpMax){this.ai.maxHp=(this.ai.maxHp||30)-dmg;if(this.ai.maxHp<1)this.ai.maxHp=1;log(`刺客效果:上限降至${this.ai.maxHp}!`,'effect')}
       showDmgPopup('ai-hp-fill',dmg);triggerHpHit('ai-hp-fill');$('main-area').classList.add('screen-shake');setTimeout(()=>$('main-area').classList.remove('screen-shake'),400);
@@ -4443,16 +4499,16 @@ const G={
       this.p.hp=1;Adventure.removeRelic('rebirth_rune');Adventure.hp=1;
       log('♻️ 重生符文: 免于死亡! 保留1点生命, 符文碎裂!','effect');render();return false}
     if(this.adventureMode){
-      if(this.p.hp<=0){setPhase('战斗失败!');showOverlay('败北!',[{label:'确定'}],()=>{Adventure.onBattleLose()});return true}
-      if(this.ai.hp<=0){setPhase('战斗胜利!');spawnVictoryParticles();showOverlay('胜利!',[{label:'确定'}],()=>{Adventure.onBattleWin(this.adventureBattleType)});return true}
+      if(this.p.hp<=0){setPhase('战斗失败!');SFX.play('clash_lose');StatsTracker.recordGame(false);showOverlay('败北!',[{label:'确定'}],()=>{Adventure.onBattleLose()});return true}
+      if(this.ai.hp<=0){setPhase('战斗胜利!');SFX.play('clash_win');StatsTracker.recordGame(true);if(this.p.hp===1)Achievements.unlock('survivor');spawnVictoryParticles();showOverlay('胜利!',[{label:'确定'}],()=>{Adventure.onBattleWin(this.adventureBattleType)});return true}
       return false;
     }
-    if(this.p.hp<=0){setPhase('机械领主胜利!');showOverlay('败北!',[{label:'重新开始'}],()=>{showScreen('screen-levels')});return true}
+    if(this.p.hp<=0){setPhase('机械领主胜利!');SFX.play('clash_lose');StatsTracker.recordGame(false);showOverlay('败北!',[{label:'重新开始'}],()=>{showScreen('screen-levels')});return true}
     if(this.ai.hp<=0){
       const lv=Settings.level;
       if(lv<6)LevelMgr.unlock(lv+1);
       PlayerData.addGold(500);
-      setPhase('铸炉师胜利!');
+      setPhase('铸炉师胜利!');SFX.play('clash_win');StatsTracker.recordGame(true);if(this.p.hp===1)Achievements.unlock('survivor');
       spawnVictoryParticles();setTimeout(spawnVictoryParticles,400);setTimeout(spawnVictoryParticles,800);
       const reason=`胜利! +500金币`;
       const nextLv=lv<6?lv+1:0;
@@ -5158,6 +5214,196 @@ function resume(){stop();setTimeout(show,2000+Math.random()*3000)}
 return{init,stop,resume};
 })();
 NewsMatrix.init();
+
+/* ===== LOADING SCREEN ===== */
+(function(){
+  const fill=$('load-fill'),pct=$('load-pct'),scr=$('loading-screen');
+  if(!fill||!scr)return;
+  const imgs=document.querySelectorAll('.screen-bg');
+  const totalSteps=imgs.length+4;let loaded=0;
+  function tick(){loaded++;const p=Math.min(100,Math.round(loaded/totalSteps*100));
+    fill.style.width=p+'%';pct.textContent=p+'%';
+    if(p>=100)setTimeout(()=>{scr.classList.add('fade-out');setTimeout(()=>scr.remove(),700)},400)}
+  imgs.forEach(el=>{const src=el.style.backgroundImage.match(/url\(['"]?(.+?)['"]?\)/);
+    if(src&&src[1]){const img=new Image();img.onload=img.onerror=tick;img.src=src[1]}else tick()});
+  setTimeout(tick,200);setTimeout(tick,500);setTimeout(tick,800);setTimeout(tick,1100);
+})();
+
+/* ===== SFX SYSTEM ===== */
+const SFX={
+  _ctx:null,
+  _getCtx(){if(!this._ctx)try{this._ctx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}return this._ctx},
+  _enabled:true,
+  _vol:0.3,
+  play(type){
+    if(!this._enabled)return;const ctx=this._getCtx();if(!ctx)return;
+    const now=ctx.currentTime,g=ctx.createGain(),o=ctx.createOscillator();
+    g.connect(ctx.destination);o.connect(g);g.gain.value=this._vol;
+    switch(type){
+      case'draw':o.type='sine';o.frequency.value=800;g.gain.setValueAtTime(this._vol,now);
+        g.gain.exponentialRampToValueAtTime(0.001,now+0.12);o.start(now);o.stop(now+0.12);break;
+      case'roll':o.type='square';o.frequency.value=200;o.frequency.linearRampToValueAtTime(600,now+0.2);
+        g.gain.setValueAtTime(this._vol*0.5,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.25);o.start(now);o.stop(now+0.25);break;
+      case'roll_stop':o.type='sine';o.frequency.value=1200;g.gain.setValueAtTime(this._vol*0.6,now);
+        g.gain.exponentialRampToValueAtTime(0.001,now+0.08);o.start(now);o.stop(now+0.08);break;
+      case'clash_win':o.type='sawtooth';o.frequency.value=400;o.frequency.linearRampToValueAtTime(800,now+0.15);
+        g.gain.setValueAtTime(this._vol*0.7,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.3);o.start(now);o.stop(now+0.3);break;
+      case'clash_lose':o.type='sawtooth';o.frequency.value=300;o.frequency.linearRampToValueAtTime(100,now+0.3);
+        g.gain.setValueAtTime(this._vol*0.6,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.35);o.start(now);o.stop(now+0.35);break;
+      case'damage':o.type='square';o.frequency.value=150;g.gain.setValueAtTime(this._vol*0.5,now);
+        g.gain.exponentialRampToValueAtTime(0.001,now+0.2);o.start(now);o.stop(now+0.2);break;
+      case'click':o.type='sine';o.frequency.value=1000;g.gain.setValueAtTime(this._vol*0.2,now);
+        g.gain.exponentialRampToValueAtTime(0.001,now+0.05);o.start(now);o.stop(now+0.05);break;
+      default:o.type='sine';o.frequency.value=600;g.gain.setValueAtTime(this._vol*0.3,now);
+        g.gain.exponentialRampToValueAtTime(0.001,now+0.1);o.start(now);o.stop(now+0.1);}
+  }
+};
+
+/* ===== GAME TOAST ===== */
+function showGameToast(msg,dur){
+  const el=$('game-toast');if(!el)return;el.textContent=msg;el.classList.add('show');
+  clearTimeout(el._tid);el._tid=setTimeout(()=>el.classList.remove('show'),dur||2000);
+}
+function showTurnToast(){
+  const el=$('turn-toast');if(!el)return;el.classList.add('show');
+  const gameEl=$('screen-game');if(gameEl)gameEl.classList.add('your-turn-flash');
+  setTimeout(()=>{el.classList.remove('show');if(gameEl)gameEl.classList.remove('your-turn-flash')},1500);
+}
+
+/* ===== STATS TRACKER ===== */
+const StatsTracker={
+  _key:'dd_stats',
+  data:{totalGames:0,wins:0,losses:0,maxDmg:0,totalDiceRolls:0,cardUsage:{},achievements:{}},
+  init(){try{const s=localStorage.getItem(this._key);if(s)this.data=JSON.parse(s)}catch(e){}},
+  save(){try{localStorage.setItem(this._key,JSON.stringify(this.data))}catch(e){}},
+  recordGame(won){this.data.totalGames++;if(won)this.data.wins++;else this.data.losses++;this.save();Achievements.check()},
+  recordDmg(d){if(d>this.data.maxDmg)this.data.maxDmg=d;this.save()},
+  recordDice(n){this.data.totalDiceRolls+=(n||1);this.save()},
+  recordCard(name){if(!this.data.cardUsage[name])this.data.cardUsage[name]=0;this.data.cardUsage[name]++;this.save()},
+  getFavCard(){let max=0,fav='—';for(const[k,v]of Object.entries(this.data.cardUsage))if(v>max){max=v;fav=k}return fav},
+  getWinRate(){return this.data.totalGames?Math.round(this.data.wins/this.data.totalGames*100):0}
+};
+StatsTracker.init();
+
+/* ===== ACHIEVEMENTS ===== */
+const Achievements={
+  defs:[
+    {id:'first_win',name:'初出茅庐',desc:'赢得第一场对局',icon:'🏆',check:()=>StatsTracker.data.wins>=1},
+    {id:'triple_six',name:'骰运亨通',desc:'单回合掷出3个6',icon:'🎲',check:()=>!!StatsTracker.data.achievements.triple_six},
+    {id:'survivor',name:'不死小强',desc:'生命1点时获胜',icon:'💪',check:()=>!!StatsTracker.data.achievements.survivor},
+    {id:'ten_wins',name:'常胜将军',desc:'累计赢得10场对局',icon:'⭐',check:()=>StatsTracker.data.wins>=10},
+    {id:'dice_master',name:'骰子大师',desc:'累计掷骰100次',icon:'🎯',check:()=>StatsTracker.data.totalDiceRolls>=100},
+    {id:'collector',name:'收藏家',desc:'使用过20种不同卡牌',icon:'📚',check:()=>Object.keys(StatsTracker.data.cardUsage).length>=20},
+    {id:'big_hit',name:'一击必杀',desc:'单次造成10点以上伤害',icon:'💥',check:()=>StatsTracker.data.maxDmg>=10}
+  ],
+  unlock(id){if(!StatsTracker.data.achievements[id]){StatsTracker.data.achievements[id]=Date.now();StatsTracker.save();
+    showGameToast('🏆 成就解锁: '+this.defs.find(d=>d.id===id)?.name,3000)}},
+  check(){this.defs.forEach(d=>{if(!StatsTracker.data.achievements[d.id]&&d.check())this.unlock(d.id)})},
+  markTripleSix(dice){if(dice&&dice.filter(d=>d===6).length>=3)this.unlock('triple_six')},
+  markSurvivor(hp){if(hp===1)StatsTracker.data.achievements.survivor=true}
+};
+
+/* ===== WIKI EXTENSIONS ===== */
+const _origWikiShowTab=Wiki.showTab.bind(Wiki);
+Wiki.showTab=function(tab){
+  _origWikiShowTab(tab);
+  const el=document.getElementById('wiki-tab-stats');if(el)el.classList.toggle('wiki-tab-active',tab==='stats');
+  const el2=document.getElementById('wiki-tab-achieve');if(el2)el2.classList.toggle('wiki-tab-active',tab==='achieve');
+  if(tab==='stats')Wiki.renderStats();
+  if(tab==='achieve')Wiki.renderAchieve();
+};
+Wiki.renderStats=function(){
+  const d=StatsTracker.data,wr=StatsTracker.getWinRate(),fav=StatsTracker.getFavCard();
+  $('wiki-content').innerHTML=`
+    <div style="text-align:center;padding:20px 0">
+      <h3 style="color:var(--gold);font-size:18px;margin-bottom:16px">📊 对局统计</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:360px;margin:0 auto">
+        <div class="wiki-card" style="cursor:default"><div class="wc-emoji" style="font-size:24px">⚔️</div><div class="wc-name">总对局数</div><div class="wc-stats" style="font-size:20px">${d.totalGames}</div></div>
+        <div class="wiki-card" style="cursor:default"><div class="wc-emoji" style="font-size:24px">📈</div><div class="wc-name">胜率</div><div class="wc-stats" style="font-size:20px">${wr}%</div><div class="wc-type">${d.wins}胜 / ${d.losses}负</div></div>
+        <div class="wiki-card" style="cursor:default"><div class="wc-emoji" style="font-size:24px">❤️</div><div class="wc-name">最喜欢的卡牌</div><div class="wc-stats">${fav}</div></div>
+        <div class="wiki-card" style="cursor:default"><div class="wc-emoji" style="font-size:24px">💥</div><div class="wc-name">最高单次伤害</div><div class="wc-stats" style="font-size:20px">${d.maxDmg}</div></div>
+        <div class="wiki-card" style="cursor:default"><div class="wc-emoji" style="font-size:24px">🎲</div><div class="wc-name">累计掷骰</div><div class="wc-stats" style="font-size:20px">${d.totalDiceRolls}</div></div>
+        <div class="wiki-card" style="cursor:default"><div class="wc-emoji" style="font-size:24px">🃏</div><div class="wc-name">使用卡牌种类</div><div class="wc-stats" style="font-size:20px">${Object.keys(d.cardUsage).length}</div></div>
+      </div>
+    </div>`;
+};
+Wiki.renderAchieve=function(){
+  const html=Achievements.defs.map(a=>{
+    const unlocked=!!StatsTracker.data.achievements[a.id];
+    const date=unlocked?new Date(StatsTracker.data.achievements[a.id]).toLocaleDateString():'';
+    return `<div class="wiki-card" style="cursor:default;opacity:${unlocked?1:0.4};${unlocked?'border-color:var(--gold)':''}">
+      <div class="wc-emoji" style="font-size:28px">${unlocked?a.icon:'🔒'}</div>
+      <div class="wc-name">${a.name}</div>
+      <div class="wc-type">${a.desc}</div>
+      ${unlocked?`<div class="wc-stats" style="font-size:10px;margin-top:4px">${date} 解锁</div>`:''}
+    </div>`;
+  }).join('');
+  $('wiki-content').innerHTML=`<div style="text-align:center;padding:20px 0">
+    <h3 style="color:var(--gold);font-size:18px;margin-bottom:16px">🏆 成就</h3>
+    <div class="wiki-grid">${html}</div></div>`;
+};
+
+/* ===== CARD ARC LAYOUT ===== */
+const _origRenderHand=typeof renderHand==='function'?renderHand:null;
+if(_origRenderHand){
+  window._renderHandOrig=renderHand;
+  renderHand=function(){
+    _renderHandOrig();
+    requestAnimationFrame(()=>{
+      const hand=document.getElementById('player-hand');if(!hand)return;
+      const cards=hand.querySelectorAll('.card');
+      const n=cards.length;if(n===0)return;
+      const maxAngle=Math.min(3*n,25);
+      const maxY=Math.min(2*n,15);
+      cards.forEach((c,i)=>{
+        const t=n===1?0:(i/(n-1))*2-1;
+        const angle=t*maxAngle/(n>1?1:1);
+        const yOff=Math.abs(t)*maxY;
+        const xShift=n>5?(t*-4):0;
+        c.style.transform=`translateY(${yOff}px) rotate(${angle}deg) translateX(${xShift}px)`;
+        c.style.zIndex=i+1;
+        c.style.marginLeft=n>5?'-12px':'0';
+        c.style.marginRight=n>5?'-12px':'0';
+        if(c.dataset.arcDone!=='1'){c.classList.add('card-fly-in');c.dataset.arcDone='1';
+          setTimeout(()=>c.classList.remove('card-fly-in'),500)}
+      });
+    });
+  };
+}
+
+/* ===== MUSIC CROSSFADE ===== */
+const _origAudioPlay=AudioMgr.play?AudioMgr.play.bind(AudioMgr):null;
+if(_origAudioPlay){
+  AudioMgr.play=function(slot,url){
+    const oldTrack=this.currentTrack;
+    if(oldTrack&&this.audioEls[oldTrack]){
+      const oldAudio=this.audioEls[oldTrack];
+      const fadeOut=setInterval(()=>{
+        if(oldAudio.volume>0.05){oldAudio.volume=Math.max(0,oldAudio.volume-0.05)}
+        else{clearInterval(fadeOut);oldAudio.pause();oldAudio.volume=this.volume}
+      },50);
+    }
+    setTimeout(()=>{_origAudioPlay(slot,url)},oldTrack?300:0);
+  };
+}
+
+/* ===== HOOK INTO GAME EVENTS ===== */
+/* Hook dice rolls for SFX + stats */
+const _origRollDice=typeof rollDice==='function'?rollDice:null;
+if(_origRollDice){
+  window.rollDice=function(n){
+    SFX.play('roll');setTimeout(()=>SFX.play('roll_stop'),200);
+    StatsTracker.recordDice(n);
+    const result=_origRollDice(n);
+    Achievements.markTripleSix(result);
+    return result;
+  };
+}
+/* Hook drawCards for SFX */
+const _origDrawCards=typeof drawCards==='function'?drawCards:null;
+if(_origDrawCards){
+  window.drawCards=function(p,n){SFX.play('draw');return _origDrawCards(p,n)};
+}
 
 </script>
 </body>
