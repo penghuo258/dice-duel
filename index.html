@@ -1334,6 +1334,7 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
       <button class="menu-btn sm" id="wiki-tab-cards" onclick="Wiki.showTab('cards')" style="flex:1">卡牌图鉴</button>
       <button class="menu-btn sm" id="wiki-tab-relics" onclick="Wiki.showTab('relics')" style="flex:1">遗物图鉴</button>
       <button class="menu-btn sm" id="wiki-tab-events" onclick="Wiki.showTab('events')" style="flex:1">事件一览</button>
+      <button class="menu-btn sm" id="wiki-tab-music" onclick="Wiki.showTab('music')" style="flex:1">音乐鉴赏</button>
     </div>
     <div id="wiki-content"></div>
     <div class="divider"></div>
@@ -2432,9 +2433,11 @@ const Wiki={
     document.getElementById('wiki-tab-cards').classList.toggle('wiki-tab-active',tab==='cards');
     document.getElementById('wiki-tab-relics').classList.toggle('wiki-tab-active',tab==='relics');
     document.getElementById('wiki-tab-events').classList.toggle('wiki-tab-active',tab==='events');
+    document.getElementById('wiki-tab-music').classList.toggle('wiki-tab-active',tab==='music');
     if(tab==='cards')this.renderCards();
     else if(tab==='relics')this.renderRelics();
-    else this.renderEvents();
+    else if(tab==='events')this.renderEvents();
+    else if(tab==='music')this.renderMusic();
   },
   renderCards(){
     const el=$('wiki-content');
@@ -2457,8 +2460,9 @@ const Wiki={
     const el=$('wiki-content');
     let html='';
     RANDOM_EVENTS.forEach(evt=>{
+      const skipTag=evt.skippable===false?'<span style="color:#ef4444;font-size:11px;margin-left:6px">⚠ 不可跳过</span>':'<span style="color:#a3e635;font-size:11px;margin-left:6px">可跳过</span>';
       html+=`<div class="wiki-event">
-        <div class="we-title">${evt.emoji} ${evt.name}</div>
+        <div class="we-title">${evt.emoji} ${evt.name}${skipTag}</div>
         <div class="we-desc">${evt.desc}</div>`;
       evt.options.forEach(opt=>{
         html+=`<div class="we-option">→ ${opt.label}</div>`;
@@ -2480,6 +2484,49 @@ const Wiki={
     });
     html+='</div>';
     el.innerHTML=html;
+  },
+  _wikiAudio:null,
+  _wikiPlaying:null,
+  renderMusic(){
+    const el=$('wiki-content');
+    const names={menu:'主界面',deck:'设置界面（组卡）',battle:'普通战斗（新手教程）',battle_elite:'精英战斗',battle_boss:'Boss战',shop:'商店（百科）',event:'事件（篝火）',story:'开始战斗（开始冒险）'};
+    const emojis={menu:'🏠',deck:'🃏',battle:'⚔️',battle_elite:'💀',battle_boss:'👑',shop:'🛒',event:'🔥',story:'🗺️'};
+    let html='<div style="display:flex;flex-direction:column;gap:8px">';
+    Object.keys(AudioMgr._builtinMusic).forEach(slot=>{
+      const name=names[slot]||slot;
+      const emoji=emojis[slot]||'🎵';
+      const isPlaying=this._wikiPlaying===slot;
+      html+=`<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:10px;${isPlaying?'box-shadow:0 0 12px rgba(163,230,53,0.3);border-color:#a3e635;':''}">
+        <span style="font-size:24px">${emoji}</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:bold;color:var(--text-main);font-size:14px">${name}</div>
+          <div style="font-size:11px;color:var(--text-dim)">${slot}</div>
+        </div>
+        <button class="menu-btn sm" onclick="Wiki.toggleMusic('${slot}')" style="min-width:60px;font-size:13px" id="wiki-music-btn-${slot}">${isPlaying?'⏹ 停止':'▶ 播放'}</button>
+      </div>`;
+    });
+    html+='</div>';
+    html+='<p style="color:var(--text-dim);font-size:11px;margin-top:12px;text-align:center">点击播放按钮试听游戏音乐</p>';
+    el.innerHTML=html;
+  },
+  toggleMusic(slot){
+    if(this._wikiPlaying===slot){
+      if(this._wikiAudio){this._wikiAudio.pause();this._wikiAudio=null}
+      this._wikiPlaying=null;
+      this.renderMusic();
+      return;
+    }
+    if(this._wikiAudio){this._wikiAudio.pause();this._wikiAudio=null}
+    const url=AudioMgr._builtinMusic[slot];
+    if(!url)return;
+    const audio=new Audio(url);
+    audio.volume=AudioMgr.volume||0.6;
+    audio.loop=true;
+    audio.play().catch(()=>{});
+    audio.addEventListener('ended',()=>{this._wikiPlaying=null;this._wikiAudio=null;this.renderMusic()});
+    this._wikiAudio=audio;
+    this._wikiPlaying=slot;
+    this.renderMusic();
   }
 };
 
@@ -2563,25 +2610,54 @@ const Story={
 // ============================================================
 // ADVENTURE MODE (Slay the Spire-style)
 // ============================================================
-const ADVENTURE_STARTER_DECK=['swift_bird','swift_bird','gear_hound','gear_hound','chimney_golem','chimney_golem','magnet_puppet','magnet_puppet','steam_burst','steam_burst','overload_pulse','overload_pulse','wisdom_tree','wisdom_tree'];
+const ADVENTURE_STARTER_DECK=['swift_bird','gear_hound','chimney_golem','magnet_puppet','steam_burst','overload_pulse','wisdom_tree'];
 
 const RANDOM_EVENTS=[
-  {id:'mystic_merchant',name:'神秘商人',emoji:'🎭',desc:'一个戴面具的商人拦住了你...',
+  {id:'mystic_merchant',name:'神秘商人',emoji:'🎭',desc:'一个戴面具的商人拦住了你...',skippable:true,
     options:[{label:'用10HP换80金币',action(a){if(a.hp<=10){advMsg('你的HP不足!');return false}a.hp-=10;a.gold+=80;return'失去10HP, 获得80💰'}}]},
-  {id:'dice_gamble',name:'赌博骰子',emoji:'🎲',desc:'路边有个赌摊，试试手气？',
+  {id:'dice_gamble',name:'赌博骰子',emoji:'🎲',desc:'路边有个赌摊，试试手气？',skippable:true,
     options:[{label:'掷骰子赌一把',action(a){const r=Math.ceil(Math.random()*6);if(r>=4){a.gold+=60;return`掷出${r}! 赢得60💰`}else{a.gold=Math.max(0,a.gold-30);return`掷出${r}... 失去30💰`}}}]},
-  {id:'ruin_explore',name:'废墟探索',emoji:'🏚️',desc:'你发现了一片废墟，似乎藏有宝物...',
+  {id:'ruin_explore',name:'废墟探索',emoji:'🏚️',desc:'你发现了一片废墟，似乎藏有宝物...',skippable:true,
     options:[{label:'深入探索 (失去5HP, 获得1张稀有卡)',action(a){a.hp-=5;const rare=getRareCards();const pick=rare[Math.floor(Math.random()*rare.length)];a.deck.push(pick.id);return`失去5HP, 获得稀有卡「${pick.name}」!`}}]},
-  {id:'gear_altar',name:'齿轮祭坛',emoji:'⚙️',desc:'一座古老的齿轮祭坛散发微光...',
+  {id:'gear_altar',name:'齿轮祭坛',emoji:'⚙️',desc:'一座古老的齿轮祭坛散发微光...',skippable:true,
     options:[{label:'献祭1张牌, 获得30金币',action(a){return'PICK_REMOVE_FOR_GOLD'}}]},
-  {id:'steam_spring',name:'蒸汽泉',emoji:'♨️',desc:'地面涌出温暖的蒸汽...',
+  {id:'steam_spring',name:'蒸汽泉',emoji:'♨️',desc:'地面涌出温暖的蒸汽...',skippable:true,
     options:[{label:'浸泡恢复 (回复15%HP, 下场战斗+1骰子)',action(a){const heal=Math.ceil(a.maxHp*0.15);a.hp=Math.min(a.maxHp,a.hp+heal);a.bonusDiceNextBattle=1;return`恢复${heal}HP, 下场战斗额外1个骰子!`}}]},
-  {id:'wandering_smith',name:'流浪铁匠',emoji:'🔨',desc:'一位铁匠在路边锻造...',
+  {id:'wandering_smith',name:'流浪铁匠',emoji:'🔨',desc:'一位铁匠在路边锻造...',skippable:true,
     options:[{label:'免费升级1张生物卡',action(a){return'PICK_UPGRADE_FREE'}}]},
-  {id:'black_market',name:'黑市商人',emoji:'🕶️',desc:'一个神秘人从斗篷下掏出几张闪着微光的法术牌...',
+  {id:'black_market',name:'黑市商人',emoji:'🕶️',desc:'一个神秘人从斗篷下掏出几张闪着微光的法术牌...',skippable:true,
     options:[{label:'用生命值购买法术牌',action(a){return'BLACK_MARKET'}}]},
-  {id:'ancient_altar',name:'远古祭坛',emoji:'🗿',desc:'一座散发古老气息的祭坛，似乎可以献祭生物来强化另一个...',
-    options:[{label:'献祭1个生物来升级另一个',action(a){return'ANCIENT_ALTAR'}}]}
+  {id:'ancient_altar',name:'远古祭坛',emoji:'🗿',desc:'一座散发古老气息的祭坛，似乎可以献祭生物来强化另一个...',skippable:true,
+    options:[{label:'献祭1个生物来升级另一个',action(a){return'ANCIENT_ALTAR'}}]},
+  {id:'crystal_cave',name:'水晶洞穴',emoji:'💎',desc:'你发现了一个闪烁着奇异光芒的水晶洞穴，里面传来低沉的嗡鸣声...',skippable:true,
+    options:[
+      {label:'采集水晶 (获得50💰, 但可能塌方)',action(a){if(Math.random()>0.4){a.gold+=50;return'小心翼翼地采集了水晶, 获得50💰!'}else{const dmg=8;a.hp-=dmg;a.gold+=20;return`洞穴塌方! 失去${dmg}HP, 但抢救出20💰`}}},
+      {label:'深入探索 (可能发现稀有遗物)',action(a){if(Math.random()>0.5){const avail=ALL_RELICS.filter(r=>!a.hasRelic(r.id));if(avail.length){const pick=avail[Math.floor(Math.random()*avail.length)];a.addRelic(pick.id);return`在洞穴深处发现了遗物「${pick.emoji} ${pick.name}」!`}return'洞穴深处空无一物...'}else{a.hp-=5;return'触发了陷阱! 失去5HP, 什么都没找到'}}},
+      {label:'用火把照明查看壁画',action(a){a.bonusDiceNextBattle=2;return'壁画上刻着古老的战术! 下场战斗额外2个骰子!'}}
+    ]},
+  {id:'time_rift',name:'时空裂缝',emoji:'🌀',desc:'空间中出现了一道裂缝，扭曲的能量在其中流动...',skippable:false,
+    options:[
+      {label:'跳入裂缝 (随机获得2张牌, 但失去1张)',action(a){const pool=[...ALL_CARDS];const gain=shuffle([...pool]).slice(0,2);gain.forEach(c=>a.deck.push(c.id));const names=gain.map(c=>c.name).join('、');if(a.deck.length>2){const removeIdx=Math.floor(Math.random()*a.deck.length);const removed=getCardDef(a.deck[removeIdx]);a.deck.splice(removeIdx,1);return`从裂缝中获得「${names}」! 但失去了「${removed.name}」`}return`从裂缝中获得「${names}」!`}},
+      {label:'汲取能量 (永久+3最大HP)',action(a){a.maxHp+=3;a.hp+=3;return'时空能量涌入体内! 最大HP+3, 当前HP+3'}},
+      {label:'尝试封印裂缝 (获得大量金币)',action(a){if(Math.random()>0.3){a.gold+=100;return'成功封印裂缝! 获得100💰作为奖励!'}else{a.hp-=10;return'封印失败, 能量反噬! 失去10HP'}}}
+    ]},
+  {id:'mechanical_puzzle',name:'机械谜题',emoji:'🔧',desc:'路边有一台古老的机械装置，上面有三个按钮闪烁着不同颜色的光...',skippable:true,
+    options:[
+      {label:'按红色按钮 (风险与收益)',action(a){const roll=Math.random();if(roll>0.6){const rare=getRareCards();const pick=rare[Math.floor(Math.random()*rare.length)];a.deck.push(pick.id);return`机械启动! 弹出了稀有卡「${pick.name}」!`}else if(roll>0.3){a.gold+=40;return'机械发出响声, 掉出40💰'}else{a.hp-=7;return'机械爆炸! 失去7HP'}}},
+      {label:'按蓝色按钮 (稳定回复)',action(a){const heal=Math.ceil(a.maxHp*0.2);a.hp=Math.min(a.maxHp,a.hp+heal);return`机械释放出修复能量, 恢复${heal}HP!`}},
+      {label:'按绿色按钮 (升级随机卡)',action(a){const creatures=a.deck.filter(id=>{const d=getCardDef(id);return d&&d.type==='creature'&&!a.upgradedCards.has(id)});if(creatures.length){const pick=creatures[Math.floor(Math.random()*creatures.length)];a.upgradedCards.add(pick);return`机械为「${getCardDef(pick).name}」注入能量! 基础值+2`}return'没有可升级的生物卡...'}}
+    ]},
+  {id:'ghost_library',name:'幽灵图书馆',emoji:'📚',desc:'你走进了一座被迷雾笼罩的图书馆，书架上的书籍自己翻动着...',skippable:false,
+    options:[
+      {label:'阅读战术手册 (永久增强)',action(a){a.bonusDiceNextBattle=1;a.maxHp+=2;a.hp=Math.min(a.maxHp,a.hp+2);return'从手册中领悟了战术! 最大HP+2, 下场战斗+1骰子'}},
+      {label:'翻阅禁忌魔典 (高风险高回报)',action(a){if(Math.random()>0.5){const rares=getRareCards();const picks=shuffle([...rares]).slice(0,2);picks.forEach(c=>a.deck.push(c.id));return`魔典释放能量! 获得稀有卡「${picks.map(c=>c.name).join('」和「')}」!`}else{a.hp=Math.ceil(a.hp*0.5);return`魔典的诅咒! HP减半至${a.hp}!`}}}
+    ]},
+  {id:'wandering_caravan',name:'流浪商队',emoji:'🐫',desc:'一支商队在路边扎营休息，商人们热情地招呼你...',skippable:true,
+    options:[
+      {label:'交易 (50💰换2张随机卡)',action(a){if(a.gold<50){return'金币不足!'}a.gold-=50;const cards=shuffle([...ALL_CARDS]).slice(0,2);cards.forEach(c=>a.deck.push(c.id));return`用50💰换得「${cards.map(c=>c.name).join('」和「')}」!`}},
+      {label:'帮助修理马车 (获得金币和回复)',action(a){const gold=20+Math.floor(Math.random()*21);a.gold+=gold;const heal=5;a.hp=Math.min(a.maxHp,a.hp+heal);return`商队感谢你的帮助! 获得${gold}💰, 恢复${heal}HP`}},
+      {label:'打听情报 (查看后续3层节点)',action(a){a.bonusDiceNextBattle=1;return'商队分享了前方的情报! 下场战斗额外1个骰子'}}
+    ]}
 ];
 
 function advMsg(msg){const p=$('adv-panel');p.innerHTML=`<h3>${msg}</h3><button class="adv-btn" onclick="Adventure.closeOverlay()">确定</button>`;$('adv-overlay').style.display='flex'}
@@ -2607,6 +2683,33 @@ const Adventure={
     this.currentFloor=-1;this.visitedNode=null;
     this.map=this.generateMap();
     showScreen('screen-map');
+    // Starter event: pick 1 of 3 random rare cards
+    this.showStarterCardPick();
+  },
+
+  showStarterCardPick(){
+    const rares=shuffle([...getRareCards()]);
+    const picks=rares.slice(0,3);
+    const p=$('adv-panel');
+    let html=`<h3>🌟 初始天赋</h3><p>冒险开始前，选择一张稀有卡加入你的牌组:</p><div class="adv-card-pick">`;
+    picks.forEach((c,i)=>{
+      html+=`<div class="card ${c.type==='spell'?'spell-card':''}" onclick="Adventure.pickStarterCard('${c.id}')" style="width:130px;cursor:pointer">
+        <div class="c-name"><span class="c-tag">${c.type==='creature'?'生物':'法术'}</span>${c.name}</div>
+        <div class="c-art">${c.emoji}</div>
+        <div class="c-stats">${c.type==='creature'?`<span>基础:${c.base}</span>`:'<span>法术</span>'}<span>槽:${c.slots}</span></div>
+        ${c.effectDesc?`<div class="c-effect">${c.effectDesc}</div>`:''}
+      </div>`;
+    });
+    html+=`</div>`;
+    p.innerHTML=html;
+    $('adv-overlay').style.display='flex';
+  },
+
+  pickStarterCard(cardId){
+    this.deck.push(cardId);
+    const def=getCardDef(cardId);
+    advMsg(`获得稀有卡「${def.name}」! 冒险开始!`);
+    setTimeout(()=>{this.closeOverlay();this.renderMap()},800);
   },
 
   generateMap(){
@@ -3020,7 +3123,9 @@ const Adventure={
     evt.options.forEach((opt,i)=>{
       html+=`<button class="adv-btn" onclick="Adventure.doEvent('${evt.id}',${i})">${opt.label}</button>`;
     });
-    html+=`<button class="adv-btn" onclick="Adventure.closeOverlay();Adventure.renderMap()">离开</button>`;
+    if(evt.skippable!==false){
+      html+=`<button class="adv-btn" onclick="Adventure.closeOverlay();Adventure.renderMap()">离开</button>`;
+    }
     p.innerHTML=html;
     $('adv-overlay').style.display='flex';
   },
