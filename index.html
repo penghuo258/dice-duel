@@ -921,12 +921,9 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
   .deck-body{flex-direction:column}
   .deck-list-wrap{width:100%;max-height:200px}
   .card-grid{max-height:50vh}
-  #game-layout{grid-template-columns:1fr;grid-template-rows:1fr auto;margin-left:0;width:100%}
+  #game-layout{grid-template-columns:1fr;grid-template-rows:1fr auto}
   #game-log{display:none}
-  #log-toggle{display:block;position:fixed;top:6px;left:6px;z-index:151;width:auto;padding:4px 10px;font-size:10px}
-  #screen-game .game-strip{display:none}
-  #screen-game .game-label{display:none}
-  #screen-game .game-bottom-bar{display:none}
+  #log-toggle{display:block;position:fixed;top:6px;left:38px;z-index:151;width:auto;padding:4px 10px;font-size:10px}
   #right-panel{position:fixed;bottom:0;left:0;right:0;height:auto;max-height:110px;flex-direction:row;flex-wrap:wrap;
     align-items:center;border-left:none;border-top:2px solid var(--gold-dim);z-index:100;padding:5px 6px;gap:3px;overflow-x:auto;
     background:rgba(20,16,12,0.98)}
@@ -1437,10 +1434,86 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
 .die.used{opacity:0.2;pointer-events:none;transform:none}
 /* ========== MOBILE: OVERRIDE BATTLE ZZZ OVERHAUL ========== */
 @media(max-width:768px){
-  #screen-game .game-strip{display:none!important}
-  #screen-game .game-label{display:none!important}
-  #screen-game .game-bottom-bar{display:none!important}
-  #game-layout{margin-left:0!important;width:100%!important;grid-template-columns:1fr!important;grid-template-rows:1fr auto!important}
+  /* --- Game strip: compact 32px --- */
+  #screen-game .game-strip{display:flex!important;width:32px!important;padding:8px 0!important;gap:6px!important}
+  #screen-game .game-strip .gs-icon{font-size:11px!important}
+  #screen-game .game-strip .gs-text{font-size:7px!important;letter-spacing:1px!important}
+  #screen-game .game-strip .gs-dots{gap:2px!important}
+  #screen-game .game-strip .gs-dots span{width:3px!important;height:3px!important}
+  #screen-game .game-strip .zzz-strip-settings{width:22px!important;height:22px!important;font-size:10px!important}
+  #screen-game .game-strip .zzz-strip-divider{width:16px!important;height:1px!important;margin:2px auto!important}
+  /* --- Game label: tiny overlay --- */
+  #screen-game .game-label{display:block!important;top:4px!important;right:4px!important}
+  #screen-game .game-label .gl-en{font-size:6px!important;letter-spacing:2px!important}
+  #screen-game .game-label .gl-num{font-size:22px!important}
+  /* --- Game bottom bar: compact 22px --- */
+  #screen-game .game-bottom-bar{display:flex!important;height:22px!important;left:32px!important;padding:0 6px!important;gap:8px!important}
+  #screen-game .game-bottom-bar .gbb-label{font-size:6px!important;letter-spacing:1px!important}
+  #screen-game .game-bottom-bar .gbb-val{font-size:9px!important}
+  #screen-game .game-bottom-bar .gbb-sep{height:10px!important}
+  /* --- Game layout: shift for 32px strip --- */
+  #game-layout{margin-left:32px!important;width:calc(100% - 32px)!important;
+    grid-template-columns:1fr!important;grid-template-rows:1fr auto!important}
+  /* --- Right panel: above bottom bar, compact row --- */
+  #right-panel{position:fixed!important;bottom:22px!important;left:32px!important;right:0!important;
+    height:auto!important;max-height:96px!important;flex-direction:row!important;flex-wrap:wrap!important;
+    align-items:center!important;border-left:none!important;border-top:1px solid rgba(255,62,122,0.25)!important;
+    z-index:100!important;padding:3px 4px!important;gap:2px!important;overflow-x:auto!important;
+    background:rgba(10,10,26,0.95)!important;backdrop-filter:blur(12px)!important}
+  #right-panel .panel-title{display:none!important}
+  #right-panel .divider-sm{display:none!important}
+  #turn-info{display:none!important}
+  .battle-info-widget{display:none!important}
+  /* --- Dice: compact inline row --- */
+  #dice-container{grid-template-columns:repeat(4,1fr)!important;gap:2px!important;flex:0 0 auto!important;width:28%!important}
+  .die{font-size:15px!important;border-radius:2px!important}
+  /* --- Action buttons: compact row --- */
+  .action-btn{width:auto!important;flex:1!important;min-width:44px!important;padding:5px 2px!important;font-size:9px!important}
+  /* --- Main area: padding for panel + bottom bar --- */
+  #main-area{padding-bottom:122px!important;height:100vh!important}
+  /* --- Zones: compact --- */
+  #ai-zone,#player-zone{padding:1px 3px!important}
+  #ai-zone{flex:0.55!important}
+  .player-bar{gap:4px!important;padding:2px 3px!important}
+  .pname{font-size:9px!important;min-width:40px!important;letter-spacing:0px!important}
+  .hp-bar{width:80px!important;height:16px!important;border-radius:8px!important}
+  .hp-bar span{font-size:8px!important}
+  .deploy-zone{min-height:32px!important;padding:2px 3px!important;flex-wrap:wrap!important;gap:3px!important}
+  /* --- Cards: smaller --- */
+  .card{width:68px!important;height:115px!important}
+  .card .c-name{font-size:6px!important;padding:1px 2px!important;min-height:10px!important}
+  .card .c-art{height:28px!important;font-size:16px!important}
+  .card .c-stats{font-size:6px!important;padding:1px 2px!important}
+  .card .c-effect{display:-webkit-box!important;font-size:5px!important;max-height:30px!important;
+    -webkit-line-clamp:3!important;-webkit-box-orient:vertical!important;overflow:hidden!important}
+  .card .c-type{display:none!important}
+  .card .c-tag{font-size:4px!important}
+  .card .c-slots{padding:1px 0!important}
+  .card .slot-dot{width:4px!important;height:4px!important}
+  .deploy-zone .card{width:78px!important;height:130px!important}
+  .deploy-zone .card .c-art{height:34px!important;font-size:20px!important}
+  .deploy-zone .card .c-effect{max-height:34px!important}
+  /* --- Hand: horizontal scroll --- */
+  #player-hand{flex-wrap:nowrap!important;overflow-x:auto!important;justify-content:flex-start!important;
+    padding:2px 3px!important;gap:0!important;-webkit-overflow-scrolling:touch!important}
+  #player-hand .card{margin-right:-18px!important;flex-shrink:0!important}
+  #player-hand .card:last-child{margin-right:0!important}
+  #player-hand .card:hover{transform:translateY(-12px) scale(1.08)!important;margin-right:0!important;margin-left:4px!important}
+  #player-hand .card:hover+.card{margin-left:4px!important}
+  .deploy-zone .card{margin-right:-20px!important}
+  .deploy-zone .card:last-child{margin-right:0!important}
+  .deploy-zone .card:hover{transform:translateY(-8px) scale(1.06)!important;margin-right:0!important;margin-left:4px!important}
+  .deploy-zone .card:hover+.card{margin-left:4px!important}
+  .creature-slot{min-width:60px!important;min-height:34px!important}
+  #battle-zone{min-height:30px!important;padding:2px!important}
+  #phase-indicator{font-size:11px!important;padding:1px 6px!important;letter-spacing:1px!important}
+  .card-back{width:32px!important;height:42px!important;font-size:10px!important}
+  .hand-count{font-size:8px!important}
+  .deploy-zone::before,.deploy-zone::after{font-size:8px!important}
+  .dmg-popup{font-size:20px!important}
+  .duel-clash{font-size:14px!important;min-height:26px!important}
+  .duel-vs{font-size:10px!important}
+  #screen-game.active::before{opacity:0.02!important}
 }
 </style>
 </head>
@@ -5287,7 +5360,6 @@ _chromaObserver.observe(document.body,{childList:true,subtree:true,attributes:tr
 const NewsMatrix=(()=>{
 const data=[
 {tag:'TECH',hl:'量子通信"意识中继器"通过伦理审查',body:'"星轨社"CEO<strong>三条铃音</strong>宣布，"意识低延迟中继器"可将泰拉内意识延迟降至0.001秒——"虚拟与现实的感觉边界将进一步消融"。'},
-{tag:'TECH',hl:'"Project Eidolon"泄露引发伦理风暴',body:'天才程序员<strong>九条莲</strong>主导的AI项目曝光：可根据用户泰拉浏览记录，生成包含已故亲人数字形象的定制化内容。'},
 {tag:'SOCIETY',hl:'"现实感稀释"纠纷同比增300%',body:'警视厅数据显示，民事纠纷多涉及财产赠与虚拟伴侣或数据兽。社会学家<strong>五木悠</strong>警告："情感资本主义已进入虚拟边疆。"'},
 {tag:'POLITICS',hl:'《泰拉数据权益基本法》草案提交',body:'"数字公民党"新人议员<strong>黑泽凛</strong>主张：用户在泰拉内创造的数据兽及数字资产应享有部分人格权与财产权。'},
 {tag:'POLITICS',hl:'隅田川市与新曼哈顿"根服务器本地化"谈判僵局',body:'新曼哈顿方面要求全球数据流可被监管，隅田川市以"文化特性与隐私"为由拒绝，地球终端数据主权博弈升温。'},
@@ -5313,7 +5385,6 @@ const data=[
 {tag:'ANIME',hl:'xx社《地球终端编年史》革新制作流程',body:'原画师在虚拟空间直接绘制，部分中割由AI根据作监的"情绪笔触"自动生成。'},
 {tag:'ANIME',hl:'集英社推出泰拉特供版漫画',body:'《周刊少年Jump+》读者支付额外费用可进入"名场面沉浸体验"，化身角色短暂体验经典情节。'},
 {tag:'MEDICAL',hl:'泰拉映射技术治愈PTSD患者',body:'霞关区大学医学部成功进行"创伤记忆具象化与温和重构治疗"，患者症状显著缓解。'},
-{tag:'MEDICAL',hl:'"数字临终关怀"服务争议中需求旺盛',body:'为绝症患者在泰拉场景中构建数字分身，与亲友进行告别。'},
 {tag:'LITERATURE',hl:'直木奖作家新作成现象级话题',body:'<strong>平野启一郎</strong>《数据之河，血肉之岸》探讨人际关系在现实与泰拉之间的撕裂与重构。'},
 {tag:'LITERATURE',hl:'讲谈社推出"互动小说"平台',body:'读者在泰拉中的选择将真实影响故事走向，并生成专属的阅读记忆流。'},
 {tag:'COMEDY',hl:'"霜降明星"AI脱口秀效果爆炸',body:'虚拟形象根据观众实时笑声数据，即时调整段子节奏与内容。'},
