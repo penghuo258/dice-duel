@@ -244,7 +244,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .pack-box.pack-open .pack-box-inner{animation:packOpen 0.6s ease-in forwards}
 .pack-box.pack-open .pack-box-glow{animation:none;opacity:0}
 .pack-cards-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:600px;margin:10px auto;padding:10px}
-.pack-card{width:90px;height:120px;perspective:600px;cursor:default}
+.pack-card{width:110px;height:155px;perspective:600px;cursor:default}
 .pack-card-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.5s ease-out}
 .pack-card.flipped .pack-card-inner{transform:rotateY(180deg)}
 .pack-card-back{position:absolute;inset:0;backface-visibility:hidden;background:linear-gradient(135deg,#2a1838,#1a1028);
@@ -302,7 +302,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   background:rgba(0,0,0,0.15);border:1px solid rgba(255,107,157,0.15);border-radius:8px;margin:4px 0;
   box-shadow:inset 0 0 30px rgba(0,0,0,0.3)}
 .deploy-zone::before,.deploy-zone::after{content:'⚙';position:absolute;font-size:14px;color:rgba(255,107,157,0.12);
-  animation:gearSpin 20s linear infinite;pointer-events:none}
+  animation:gearSpin 10s linear infinite;pointer-events:none}
 .deploy-zone::before{top:2px;left:4px}.deploy-zone::after{bottom:2px;right:4px;animation-direction:reverse}
 .deploy-zone.deploy-active{border-color:rgba(255,107,157,0.35);box-shadow:inset 0 0 30px rgba(0,0,0,0.3),0 0 12px rgba(255,107,157,0.15);
   animation:deployGlow 2s ease-in-out infinite alternate}
@@ -544,6 +544,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .fade-in{animation:fadeIn 0.25s ease-out}
+@keyframes cardFlyIn{0%{opacity:0;transform:translate(200px,-150px) rotate(15deg) scale(0.5);filter:blur(2px)}
+  40%{opacity:1;filter:blur(0)}100%{transform:translate(0,0) rotate(0) scale(1)}}
+@keyframes cardAfterimage{0%{opacity:0.4;transform:translate(180px,-130px) rotate(12deg) scale(0.5)}100%{opacity:0;transform:translate(60px,-40px) rotate(4deg) scale(0.8)}}
+.card-fly-in{animation:cardFlyIn 0.4s cubic-bezier(.22,1,.36,1) forwards}
+.card-fly-in::after{content:'';position:absolute;inset:0;background:inherit;border-radius:inherit;opacity:0;animation:cardAfterimage 0.3s ease-out;pointer-events:none;z-index:-1}
+@keyframes effectIconFloat{0%{opacity:0;transform:translate(-50%,0) scale(0.5)}30%{opacity:1;transform:translate(-50%,-10px) scale(1.1)}70%{opacity:1;transform:translate(-50%,-25px) scale(1)}100%{opacity:0;transform:translate(-50%,-40px) scale(0.8)}}
+.effect-icon-float{position:absolute;top:-10px;left:50%;font-size:20px;pointer-events:none;z-index:100;animation:effectIconFloat 1s ease-out forwards;text-shadow:0 2px 8px rgba(0,0,0,0.6)}
 @keyframes reveal{from{transform:rotateY(90deg);opacity:0}to{transform:rotateY(0);opacity:1}}
 .reveal-anim{animation:reveal 0.4s ease-out}
 @keyframes dmgFlash{0%,100%{filter:brightness(1)}50%{filter:brightness(1.8) hue-rotate(-15deg)}}
@@ -1231,6 +1238,12 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
 .adv-card-pick{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:14px 0}
 .adv-card-pick .card{cursor:pointer;transition:all .25s}
 .adv-card-pick .card:hover{transform:translateY(-10px) scale(1.03);box-shadow:0 8px 25px rgba(255,107,157,0.35)}
+.zzz-reward-picks{display:flex;flex-direction:column;gap:0;margin:14px 0;width:100%}
+.zzz-reward-row{margin-bottom:6px}
+.adv-shop-item.rare-reward{border-color:rgba(192,132,252,0.3)}
+.adv-shop-item.rare-reward::before{background:rgba(192,132,252,0.6)}
+.adv-shop-item.rare-reward:hover{box-shadow:0 4px 16px rgba(192,132,252,0.3)}
+.adv-shop-item.rare-reward:hover::before{box-shadow:0 0 10px rgba(192,132,252,0.6)}
 .adv-shop-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 12px 22px;margin:6px 0;background:#1a1a2e;border:none;border-radius:4px;transition:all .2s;position:relative;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.25);transform:skewX(-5deg)}
 .adv-shop-item::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;background:rgba(255,62,122,0.5);border-radius:0 2px 2px 0;transition:all 0.2s}
 .adv-shop-item:hover{background:#22223a;box-shadow:0 4px 12px rgba(0,0,0,0.35)}
@@ -1295,13 +1308,21 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
 .adv-relics{display:flex;gap:4px;flex-wrap:wrap}
 .relic-icon{font-size:18px;cursor:help;background:rgba(255,107,157,0.1);border:1px solid rgba(255,107,157,0.2);border-radius:6px;padding:2px 4px;transition:all .2s}
 .relic-icon:hover{background:rgba(255,107,157,0.25);transform:scale(1.15)}
+.relic-sidebar{position:fixed;left:48px;top:50%;transform:translateY(-50%);z-index:8;display:flex;flex-direction:column;gap:6px;pointer-events:auto}
+.relic-sidebar .relic-pill{display:flex;align-items:center;gap:6px;background:rgba(20,18,40,0.85);border:1px solid rgba(255,107,157,0.2);
+  border-radius:4px;padding:4px 8px;transform:skewX(-5deg);transition:all 0.25s;cursor:help;backdrop-filter:blur(6px);max-width:36px;overflow:hidden}
+.relic-sidebar .relic-pill:hover{max-width:260px;background:rgba(30,28,50,0.95);border-color:rgba(255,107,157,0.4);box-shadow:0 2px 12px rgba(0,0,0,0.4)}
+.relic-sidebar .relic-pill .rp-emoji{font-size:18px;flex-shrink:0;transform:skewX(5deg)}
+.relic-sidebar .relic-pill .rp-info{transform:skewX(5deg);white-space:nowrap;opacity:0;transition:opacity 0.2s;font-size:10px;color:var(--text-dim);line-height:1.3}
+.relic-sidebar .relic-pill:hover .rp-info{opacity:1}
+.relic-sidebar .relic-pill .rp-name{color:var(--gold);font-size:11px;font-weight:700}
 .relic-item .item-desc.relic-desc{font-size:11px;color:var(--text-dim);display:block;margin-top:2px;line-height:1.3}
 /* ========== SCREEN BACKGROUND IMAGES ========== */
 /* Show full image content: contain shows entire image, background-color fills uncovered area */
 .screen-bg{position:absolute;inset:0;width:100%;height:100%;z-index:0;
   background-size:contain;background-position:center center;background-repeat:no-repeat;pointer-events:none;
   background-color:#1a1a2e;
-  animation:bgBreathe 20s ease-in-out infinite alternate;will-change:transform}
+  animation:bgBreathe 10s ease-in-out infinite alternate;will-change:transform}
 @keyframes bgBreathe{0%{transform:scale(1)}100%{transform:scale(1.05)}}
 /* Desktop: contain to show full image */
 @media (min-width:769px){.screen-bg{background-size:contain;background-position:center center}}
@@ -1316,10 +1337,10 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
     linear-gradient(to left,rgba(26,26,46,0.7) 0%,transparent 25%);
   box-shadow:inset 0 0 120px rgba(0,0,0,0.5)}
 /* Per-screen tuning */
-#screen-menu .screen-bg{animation-duration:24s}
-#screen-levels .screen-bg{animation-duration:20s;animation-direction:alternate-reverse}
-#screen-adventure .screen-bg{animation-duration:22s}
-#screen-game .screen-bg{animation-duration:30s}
+#screen-menu .screen-bg{animation-duration:12s}
+#screen-levels .screen-bg{animation-duration:10s;animation-direction:alternate-reverse}
+#screen-adventure .screen-bg{animation-duration:11s}
+#screen-game .screen-bg{animation-duration:15s}
 #screen-adventure .screen-bg{animation-duration:22s}
 /* Screen particles overlay */
 .screen-particles{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
@@ -1364,6 +1385,9 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
 .news-card::after{content:'';position:absolute;top:0;right:0;width:100%;height:3px;
   background:linear-gradient(90deg,#0a0a0a 0%,#0a0a0a 30%,transparent 30%)}
 @media(max-width:768px){
+  .relic-sidebar{left:8px;top:auto;bottom:90px;transform:none;flex-direction:row;flex-wrap:wrap;gap:4px}
+  .relic-sidebar .relic-pill{max-width:32px;padding:3px 6px}
+  .relic-sidebar .relic-pill:hover{max-width:200px}
   .news-matrix{top:48px;right:12px;width:200px}
   .news-headline{font-size:10px}
   .news-body{font-size:9px}
@@ -1854,6 +1878,8 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
     <div id="adv-relics" class="adv-relics"></div>
   </div>
   <div id="map-container" class="map-container"></div>
+  <!-- Relic sidebar -->
+  <div id="relic-sidebar" class="relic-sidebar"></div>
   <!-- Bottom info bar -->
   <div class="map-bottom-bar">
     <div class="mb-accent"><div class="mb-icon">🏚️</div><div class="mb-text">RUSTY<br>PLAINS</div></div>
@@ -2709,7 +2735,20 @@ const ZZZGreeting={
 function $(id){return document.getElementById(id)}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function rollDice(n){return Array.from({length:n},()=>Math.floor(Math.random()*6)+1)}
-function log(msg,cls=''){const el=$('log-content');if(!el)return;el.innerHTML=`<div class="log-entry ${cls}">${msg}</div>`+el.innerHTML}
+function log(msg,cls=''){const el=$('log-content');if(!el)return;el.innerHTML=`<div class="log-entry ${cls}">${msg}</div>`+el.innerHTML;
+  if(cls==='effect'){
+    let icon='✨';
+    if(msg.includes('抽')&&msg.includes('牌'))icon='🃏';
+    else if(msg.includes('回复')||msg.includes('HP'))icon='💚';
+    else if(msg.includes('伤害'))icon='💥';
+    else if(msg.includes('窃取')||msg.includes('偷'))icon='👻';
+    else if(msg.includes('翻倍'))icon='⚡';
+    else if(msg.includes('基础值'))icon='💪';
+    else if(msg.includes('护甲'))icon='🛡️';
+    const slot=document.getElementById('player-creature-slot');
+    if(slot&&slot.querySelector('.card')){const card=slot.querySelector('.card');const fi=document.createElement('span');
+      fi.className='effect-icon-float';fi.textContent=icon;card.style.position='relative';card.appendChild(fi);
+      setTimeout(()=>fi.remove(),1100)}}}
 function setPhase(t){const el=$('phase-indicator');if(el){el.textContent=t;el.classList.remove('phase-glow');void el.offsetWidth;el.classList.add('phase-glow')}}
 function enableBtn(id,on,label){const b=$(id);if(!b)return;b.disabled=!on;if(label)b.textContent=label}
 function delay(ms){return new Promise(r=>setTimeout(r,ms*Settings.speed))}
@@ -2862,10 +2901,11 @@ const ALL_CARDS=[
     ctx.myCreature.tempBonus=(ctx.myCreature.tempBonus||0)+bonus+(straight?3:0);
     log(`混沌骰魔:${unique.size}种不同点数×2=${bonus}${straight?' +顺子+3':''},总加成${bonus+(straight?3:0)}`,'effect')}},
 {id:'leopard_king',type:'creature',name:'豹子之王',emoji:'🐆',base:0,slots:4,
-  effectDesc:'若4个骰子点数全部相同(豹子),基础值变为15',timing:'duel_start',
-  effect(ctx){const dice=ctx.myCreature.assignedDice||[];if(dice.length===4&&dice.every(v=>v===dice[0])){
-    ctx.myCreature.tempBonus=(ctx.myCreature.tempBonus||0)+15;log(`豹子之王:4个${dice[0]}! 豹子! 基础值变为15!`,'effect')}
-    else{log('豹子之王:未构成豹子,基础值为0','effect')}}},
+  effectDesc:'3个骰子相同:基础值10;4个全同:基础值20',timing:'duel_start',
+  effect(ctx){const dice=ctx.myCreature.assignedDice||[];const freq={};dice.forEach(v=>freq[v]=(freq[v]||0)+1);const maxCount=Math.max(0,...Object.values(freq));
+    if(maxCount>=4){ctx.myCreature.tempBonus=(ctx.myCreature.tempBonus||0)+20;Achievements.unlock('leopard_trigger');log(`豹子之王:4个相同! 基础值+20!`,'effect')}
+    else if(maxCount>=3){ctx.myCreature.tempBonus=(ctx.myCreature.tempBonus||0)+10;Achievements.unlock('leopard_trigger');log(`豹子之王:3个相同! 基础值+10!`,'effect')}
+    else{log('豹子之王:未达成3个相同','effect')}}},
 {id:'doom_prophet',type:'creature',name:'末日预言者',emoji:'🔮',base:1,slots:1,
   effectDesc:'部署时预言下张牌类型,抽一张牌;预言正确则总值翻倍',timing:'deploy',
   effect(ctx){if(!ctx.owner.isPlayer){
@@ -2940,8 +2980,8 @@ const ALL_CARDS=[
   effectDesc:'下回合可重掷槽内骰子数值次',timing:'deploy',
   effect(ctx){const v=(ctx.mySpellDice&&ctx.mySpellDice[0])||1;ctx.owner.extraRerolls=(ctx.owner.extraRerolls||0)+v;log(`齿轮加速:下回合可重掷${v}次!`,'effect')}},
 {id:'emergency_repair',type:'spell',name:'紧急维修',emoji:'🔧',base:0,slots:1,
-  effectDesc:'回复槽内骰子值×2的HP,但弃1张手牌',timing:'response',
-  effect(ctx){const v=(ctx.mySpellDice&&ctx.mySpellDice[0])||1;const heal=v*2;ctx.owner.hp=Math.min(ctx.owner.maxHp||30,ctx.owner.hp+heal);
+  effectDesc:'回复槽内骰子值×1.5的HP,但弃1张手牌',timing:'response',
+  effect(ctx){const v=(ctx.mySpellDice&&ctx.mySpellDice[0])||1;const heal=Math.floor(v*1.5);ctx.owner.hp=Math.min(ctx.owner.maxHp||30,ctx.owner.hp+heal);
     if(ctx.owner.hand.length>0){const removed=ctx.owner.hand.splice(Math.floor(Math.random()*ctx.owner.hand.length),1)[0];discardCard(ctx.owner,removed)}
     log(`紧急维修:回复${heal}HP,弃1牌`,'effect')}},
 {id:'time_rift',type:'spell',name:'时间裂缝',emoji:'🕳️',base:0,slots:2,
@@ -3118,13 +3158,15 @@ const Shop={
       if(isNew)PlayerData.addCard(c.id);
       const div=document.createElement('div');
       div.className='pack-card'+(isNew?' pack-new':'');
+      const isRare=!COMMON_CARDS.includes(c.id);
       div.innerHTML=`<div class="pack-card-inner">
         <div class="pack-card-back">?</div>
-        <div class="pack-card-front ${c.type==='spell'?'spell':''}">
+        <div class="pack-card-front ${c.type==='spell'?'spell':''}" style="${isRare?'border-color:#c084fc;box-shadow:0 0 12px rgba(192,132,252,0.4)':''}">
           <div class="pcf-tag">${isNew?'新':'已有'}</div>
           <div class="pcf-emoji">${c.emoji}</div>
           <div class="pcf-name">${c.name}</div>
           <div class="pcf-type">${c.type==='creature'?'生物 基础:'+c.base:'法术 槽:'+c.slots}</div>
+          <div class="pcf-effect" style="font-size:8px;color:var(--text-dim);margin-top:3px;line-height:1.3;max-height:32px;overflow:hidden">${c.effectDesc||''}</div>
         </div></div>`;
       container.appendChild(div);
       setTimeout(()=>div.classList.add('flipped'),50);
@@ -3373,7 +3415,14 @@ const Wiki={
   },
   toggleMusic(slot){
     if(this._wikiPlaying===slot){
-      if(this._wikiAudio){this._wikiAudio.pause();this._wikiAudio=null}
+      if(this._wikiAudio){
+        const audio=this._wikiAudio;
+        const fadeOut=setInterval(()=>{
+          if(audio.volume>0.05){audio.volume=Math.max(0,audio.volume-0.05)}
+          else{clearInterval(fadeOut);audio.pause();audio.volume=AudioMgr.volume||0.6}
+        },40);
+        this._wikiAudio=null;
+      }
       this._wikiPlaying=null;
       this.renderMusic();
       return;
@@ -3382,9 +3431,14 @@ const Wiki={
     const url=AudioMgr._builtinMusic[slot];
     if(!url)return;
     const audio=new Audio(url);
-    audio.volume=AudioMgr.volume||0.6;
+    audio.volume=0;
     audio.loop=true;
     audio.play().catch(()=>{});
+    const targetVol=AudioMgr.volume||0.6;
+    const fadeIn=setInterval(()=>{
+      if(audio.volume<targetVol-0.05){audio.volume=Math.min(targetVol,audio.volume+0.05)}
+      else{audio.volume=targetVol;clearInterval(fadeIn)}
+    },40);
     audio.addEventListener('ended',()=>{this._wikiPlaying=null;this._wikiAudio=null;this.renderMusic()});
     this._wikiAudio=audio;
     this._wikiPlaying=slot;
@@ -3530,7 +3584,7 @@ const Adventure={
   bonusDiceNextBattle:0, mapId:null, relics:[],
 
   hasRelic(id){return this.relics.includes(id)},
-  addRelic(id){if(!this.hasRelic(id))this.relics.push(id)},
+  addRelic(id){if(!this.hasRelic(id)){this.relics.push(id);if(this.relics.length>=3)Achievements.unlock('relic_collector')}},
   removeRelic(id){const i=this.relics.indexOf(id);if(i>=0)this.relics.splice(i,1)},
 
   // --- MAP GENERATION ---
@@ -3666,6 +3720,13 @@ const Adventure={
       relicEl.innerHTML=relicHtml;
       const mbRelics=$('mb-relics');if(mbRelics)mbRelics.innerHTML=relicHtml;
     }
+    // Relic sidebar
+    const relicSidebar=$('relic-sidebar');
+    if(relicSidebar){
+      relicSidebar.innerHTML=this.relics.map(id=>{const r=getRelicDef(id);if(!r)return'';
+        return`<div class="relic-pill"><span class="rp-emoji">${r.emoji}</span><div class="rp-info"><div class="rp-name">${r.name}</div><div>${r.desc}</div></div></div>`;
+      }).join('');
+    }
     // Defer rendering to ensure layout is computed
     requestAnimationFrame(()=>this._doRenderMap());
   },
@@ -3789,6 +3850,12 @@ const Adventure={
 
   onBattleWin(type){
     G.adventureMode=false;
+    if(type==='boss'){
+      this.hp=G.p.hp;
+      showScreen('screen-map');
+      this.showBossVictory();
+      return;
+    }
     const goldMin=type==='elite'?50:10;
     const goldMax=type==='elite'?100:20;
     let gold=Math.floor(Math.random()*(goldMax-goldMin+1))+goldMin;
@@ -3798,10 +3865,6 @@ const Adventure={
     this.hp=G.p.hp;
     // Show reward screen
     showScreen('screen-map');
-    if(type==='boss'){
-      this.showBossVictory(gold);
-      return;
-    }
     this.showBattleReward(type,gold);
   },
 
@@ -3814,9 +3877,9 @@ const Adventure={
     showScreen('screen-map');
   },
 
-  showBossVictory(gold){
+  showBossVictory(){
     const p=$('adv-panel');
-    p.innerHTML=`<h3>👑 冒险胜利!</h3><p>你击败了锈蚀领主!</p><p>获得 ${gold} 💰</p><button class="adv-btn" onclick="Adventure.closeOverlay();Adventure.active=false;showScreen('screen-menu')">返回主菜单</button>`;
+    p.innerHTML=`<h3>👑 冒险胜利!</h3><p>你击败了锈蚀领主!</p><button class="adv-btn" onclick="Adventure.closeOverlay();Adventure.active=false;showScreen('screen-menu')">返回主菜单</button>`;
     $('adv-overlay').style.display='flex';
   },
 
@@ -3826,14 +3889,14 @@ const Adventure={
     const shuffled=shuffle([...pool]);
     const picks=shuffled.slice(0,Math.min(3,shuffled.length));
     const p=$('adv-panel');
-    let html=`<h3>⚔️ 战斗胜利!</h3><p>获得 ${gold} 💰</p><p>选择一张卡牌加入牌组 (或跳过):</p><div class="adv-card-pick">`;
+    let html=`<h3>⚔️ 战斗胜利!</h3><p>获得 ${gold} 💰</p><p>选择一张卡牌加入牌组 (或跳过):</p><div class="zzz-reward-picks">`;
     picks.forEach((c,i)=>{
-      html+=`<div class="card ${c.type==='spell'?'spell-card':''}" onclick="Adventure.pickRewardCard('${c.id}',${i})" style="width:130px;cursor:pointer">
-        <div class="c-name"><span class="c-tag">${c.type==='creature'?'生物':'法术'}</span>${c.name}</div>
-        <div class="c-art">${c.emoji}</div>
-        <div class="c-stats">${c.type==='creature'?`<span>基础:${c.base}</span>`:'<span>法术</span>'}<span>槽:${c.slots}</span></div>
-        ${c.effectDesc?`<div class="c-effect">${c.effectDesc}</div>`:''}
-      </div>`;
+      const isRare=!COMMON_CARDS.includes(c.id);
+      html+=`<div class="zzz-reward-row" style="margin-left:${i*30}px">
+        <div class="adv-shop-item${isRare?' rare-reward':''}" onclick="Adventure.pickRewardCard('${c.id}',${i})" style="cursor:pointer">
+          <div class="item-info"><span class="item-name">${c.emoji} ${c.name}${isRare?' <span style="color:#c084fc;font-size:10px">★稀有</span>':''}</span>
+          <span class="item-desc">${c.type==='creature'?'生物 基础:'+c.base:'法术'} | 槽:${c.slots}${c.effectDesc?' | '+c.effectDesc:''}</span></div>
+        </div></div>`;
     });
     html+=`</div><button class="adv-btn" onclick="Adventure.closeOverlay();Adventure.renderMap()">跳过</button>`;
     p.innerHTML=html;
@@ -3929,11 +3992,12 @@ const Adventure={
     let html=`<h3>🛒 商店</h3><p>💰 ${this.gold} 金币</p>`;
     html+=`<p style="color:var(--text-dim);font-size:12px;margin:4px 0 8px">— 卡牌 —</p>`;
     this._shopCards.forEach((c,i)=>{
+      const ml=i*20;
       if(c.sold){
-        html+=`<div class="adv-shop-item" style="opacity:0.3"><div class="item-info"><span class="item-name">${c.emoji} ${c.name}</span><span class="item-desc"> (已售出)</span></div></div>`;
+        html+=`<div class="adv-shop-item" style="opacity:0.3;margin-left:${ml}px"><div class="item-info"><span class="item-name">${c.emoji} ${c.name}</span><span class="item-desc"> (已售出)</span></div></div>`;
       }else{
         const canBuy=this.gold>=c.price;
-        html+=`<div class="adv-shop-item" ${canBuy?`onclick="Adventure.buyShopCard(${i})" style="cursor:pointer"`:'style="opacity:0.5"'}>
+        html+=`<div class="adv-shop-item" style="margin-left:${ml}px;${canBuy?'cursor:pointer':'opacity:0.5'}" ${canBuy?`onclick="Adventure.buyShopCard(${i})"`:''}>
           <div class="item-info"><span class="item-name">${c.emoji} ${c.name}</span><span class="item-desc">${c.type==='creature'?`基础:${c.base}`:c.type} 槽:${c.slots}${c.effectDesc?` | ${c.effectDesc}`:''}</span></div>
           <span class="item-price">${c.price}💰</span></div>`;
       }
@@ -3942,11 +4006,12 @@ const Adventure={
     if(this._shopRelics.length>0){
       html+=`<p style="color:var(--text-dim);font-size:12px;margin:12px 0 8px">— 遗物 —</p>`;
       this._shopRelics.forEach((r,i)=>{
+        const ml=i*20;
         if(r.sold){
-          html+=`<div class="adv-shop-item" style="opacity:0.3"><div class="item-info"><span class="item-name">${r.emoji} ${r.name}</span><span class="item-desc"> (已售出)</span></div></div>`;
+          html+=`<div class="adv-shop-item" style="opacity:0.3;margin-left:${ml}px"><div class="item-info"><span class="item-name">${r.emoji} ${r.name}</span><span class="item-desc"> (已售出)</span></div></div>`;
         }else{
           const canBuy=this.gold>=r.price;
-          html+=`<div class="adv-shop-item relic-item" ${canBuy?`onclick="Adventure.buyShopRelic(${i})" style="cursor:pointer"`:'style="opacity:0.5"'}>
+          html+=`<div class="adv-shop-item relic-item" style="margin-left:${ml}px;${canBuy?'cursor:pointer':'opacity:0.5'}" ${canBuy?`onclick="Adventure.buyShopRelic(${i})"`:''}>
             <div class="item-info"><span class="item-name">${r.emoji} ${r.name}</span><span class="item-desc relic-desc"> ${r.desc}</span></div>
             <span class="item-price">${r.price}💰</span></div>`;
         }
@@ -4035,13 +4100,14 @@ const Adventure={
   handleEvent(){
     const evt=RANDOM_EVENTS[Math.floor(Math.random()*RANDOM_EVENTS.length)];
     const p=$('adv-panel');
-    let html=`<h3>${evt.emoji} ${evt.name}</h3><p>${evt.desc}</p>`;
+    let html=`<h3>${evt.emoji} ${evt.name}</h3><p>${evt.desc}</p><div style="display:flex;flex-direction:column;gap:0;margin:10px 0">`;
     evt.options.forEach((opt,i)=>{
-      html+=`<button class="adv-btn" onclick="Adventure.doEvent('${evt.id}',${i})">${opt.label}</button>`;
+      html+=`<div style="margin-left:${i*25}px;margin-bottom:6px"><button class="adv-btn" style="margin:0;width:auto;display:inline-block" onclick="Adventure.doEvent('${evt.id}',${i})">${opt.label}</button></div>`;
     });
     if(evt.skippable!==false){
-      html+=`<button class="adv-btn" onclick="Adventure.closeOverlay();Adventure.renderMap()">离开</button>`;
+      html+=`<div style="margin-left:${evt.options.length*25}px"><button class="adv-btn" style="margin:0;width:auto;display:inline-block" onclick="Adventure.closeOverlay();Adventure.renderMap()">离开</button></div>`;
     }
+    html+=`</div>`;
     p.innerHTML=html;
     $('adv-overlay').style.display='flex';
   },
@@ -4210,6 +4276,7 @@ const G={
       shield:0,bankedDice:[],bonusDiceNext:0,extraCreatureNext:false,stolenDice:0,effectsSilenced:false});
     Object.assign(this.p,mkP(),{isPlayer:true});
     Object.assign(this.ai,mkP(),{isPlayer:false});
+    this._spellsUsedThisGame=0;
     // Reset AI display name
     const aiNameEl=$('ai-pname');if(aiNameEl)aiNameEl.textContent='机械领主';
     // Level-based player HP penalty
@@ -4546,6 +4613,8 @@ const G={
       card.assignedDice=[];
       this.p.deployedSpells.push(card);
       this.p.hand.splice(idx,1);
+      this._spellsUsedThisGame=(this._spellsUsedThisGame||0)+1;
+      if(this._spellsUsedThisGame>=5)Achievements.unlock('spell_master');
       log(`部署法术 ${card.name}`);
       // Relic: 魔法书 — 30% chance to copy spell to hand (once per turn)
       if(this.adventureMode&&Adventure.hasRelic('spell_book')&&!this._spellBookUsed&&Math.random()<0.3){
@@ -4706,6 +4775,7 @@ const G={
 
     this.maxDuels=1+extraCtx.extraDuels;
     this.duelsLeft=this.maxDuels;
+    if(this.maxDuels>=3)Achievements.unlock('triple_duel');
 
     if(this.p.deployedCreature&&this.ai.deployedCreature){
       // Duel loop (base 1 + extra from time_warp etc.)
@@ -4993,7 +5063,7 @@ const G={
       log('♻️ 重生符文: 免于死亡! 保留1点生命, 符文碎裂!','effect');render();return false}
     if(this.adventureMode){
       if(this.p.hp<=0){setPhase('战斗失败!');SFX.play('clash_lose');StatsTracker.recordGame(false);showOverlay('败北!',[{label:'确定'}],()=>{Adventure.onBattleLose()});return true}
-      if(this.ai.hp<=0){setPhase('战斗胜利!');SFX.play('clash_win');StatsTracker.recordGame(true);if(this.p.hp===1)Achievements.unlock('survivor');spawnVictoryParticles();showOverlay('胜利!',[{label:'确定'}],()=>{Adventure.onBattleWin(this.adventureBattleType)});return true}
+      if(this.ai.hp<=0){setPhase('战斗胜利!');SFX.play('clash_win');StatsTracker.recordGame(true);if(this.p.hp===1)Achievements.unlock('survivor');if(this.p.hp<=5)Achievements.unlock('clutch_win');spawnVictoryParticles();showOverlay('胜利!',[{label:'确定'}],()=>{Adventure.onBattleWin(this.adventureBattleType)});return true}
       return false;
     }
     if(this.p.hp<=0){setPhase('机械领主胜利!');SFX.play('clash_lose');StatsTracker.recordGame(false);showOverlay('败北!',[{label:'重新开始'}],()=>{showScreen('screen-levels')});return true}
@@ -5001,7 +5071,7 @@ const G={
       const lv=Settings.level;
       if(lv<6)LevelMgr.unlock(lv+1);
       PlayerData.addGold(500);
-      setPhase('铸炉师胜利!');SFX.play('clash_win');StatsTracker.recordGame(true);if(this.p.hp===1)Achievements.unlock('survivor');
+      setPhase('铸炉师胜利!');SFX.play('clash_win');StatsTracker.recordGame(true);if(this.p.hp===1)Achievements.unlock('survivor');if(this.p.hp<=5)Achievements.unlock('clutch_win');
       spawnVictoryParticles();setTimeout(spawnVictoryParticles,400);setTimeout(spawnVictoryParticles,800);
       const reason=`胜利! +500金币`;
       const nextLv=lv<6?lv+1:0;
@@ -5924,18 +5994,27 @@ StatsTracker.init();
 /* ===== ACHIEVEMENTS ===== */
 const Achievements={
   defs:[
-    {id:'first_win',name:'初出茅庐',desc:'赢得第一场对局',icon:'🏆',check:()=>StatsTracker.data.wins>=1},
-    {id:'triple_six',name:'骰运亨通',desc:'单回合掷出3个6',icon:'🎲',check:()=>!!StatsTracker.data.achievements.triple_six},
-    {id:'survivor',name:'不死小强',desc:'生命1点时获胜',icon:'💪',check:()=>!!StatsTracker.data.achievements.survivor},
+    {id:'first_win',name:'初露锋芒',desc:'赢得第一场对局',icon:'🏆',check:()=>StatsTracker.data.wins>=1,reward:50},
+    {id:'triple_six',name:'骰运亨通',desc:'单回合掷出3个6',icon:'🎲',check:()=>!!StatsTracker.data.achievements.triple_six,reward:100},
+    {id:'survivor',name:'不死传说',desc:'生命1点时获胜',icon:'💪',check:()=>!!StatsTracker.data.achievements.survivor,reward:150},
+    {id:'spell_master',name:'法术大师',desc:'单局使用5张法术',icon:'📜',check:()=>!!StatsTracker.data.achievements.spell_master,reward:150},
+    {id:'relic_collector',name:'遗物收藏家',desc:'单局获得3个遗物',icon:'🏺',check:()=>!!StatsTracker.data.achievements.relic_collector,reward:200},
+    {id:'leopard_trigger',name:'豹子之王',desc:'触发豹子之王的效果',icon:'🐆',check:()=>!!StatsTracker.data.achievements.leopard_trigger,reward:300},
+    {id:'triple_duel',name:'时间主宰',desc:'在一回合内进行3次对拼',icon:'⏳',check:()=>!!StatsTracker.data.achievements.triple_duel,reward:200},
+    {id:'clutch_win',name:'绝境翻盘',desc:'在生命低于5点时逆转获胜',icon:'🔥',check:()=>!!StatsTracker.data.achievements.clutch_win,reward:250},
+    {id:'dice_god',name:'骰子之神',desc:'累计掷出100次6点',icon:'🎯',check:()=>(StatsTracker.data.totalSixes||0)>=100,reward:500},
     {id:'ten_wins',name:'常胜将军',desc:'累计赢得10场对局',icon:'⭐',check:()=>StatsTracker.data.wins>=10},
-    {id:'dice_master',name:'骰子大师',desc:'累计掷骰100次',icon:'🎯',check:()=>StatsTracker.data.totalDiceRolls>=100},
+    {id:'dice_master',name:'骰子大师',desc:'累计掷骰100次',icon:'🎲',check:()=>StatsTracker.data.totalDiceRolls>=100},
     {id:'collector',name:'收藏家',desc:'使用过20种不同卡牌',icon:'📚',check:()=>Object.keys(StatsTracker.data.cardUsage).length>=20},
     {id:'big_hit',name:'一击必杀',desc:'单次造成10点以上伤害',icon:'💥',check:()=>StatsTracker.data.maxDmg>=10}
   ],
   unlock(id){if(!StatsTracker.data.achievements[id]){StatsTracker.data.achievements[id]=Date.now();StatsTracker.save();
-    showGameToast('🏆 成就解锁: '+this.defs.find(d=>d.id===id)?.name,3000)}},
+    const def=this.defs.find(d=>d.id===id);
+    if(def&&def.reward){PlayerData.gold+=def.reward;PlayerData.save();showGameToast(`🏆 成就解锁: ${def.name} (+${def.reward}💰)`,3000)}
+    else{showGameToast('🏆 成就解锁: '+def?.name,3000)}}},
   check(){this.defs.forEach(d=>{if(!StatsTracker.data.achievements[d.id]&&d.check())this.unlock(d.id)})},
-  markTripleSix(dice){if(dice&&dice.filter(d=>d===6).length>=3)this.unlock('triple_six')},
+  markTripleSix(dice){if(dice&&dice.filter(d=>d===6).length>=3)this.unlock('triple_six');
+    if(dice)dice.forEach(d=>{if(d===6)StatsTracker.data.totalSixes=(StatsTracker.data.totalSixes||0)+1});StatsTracker.save()},
   markSurvivor(hp){if(hp===1)StatsTracker.data.achievements.survivor=true}
 };
 
@@ -5967,10 +6046,12 @@ Wiki.renderAchieve=function(){
   const html=Achievements.defs.map(a=>{
     const unlocked=!!StatsTracker.data.achievements[a.id];
     const date=unlocked?new Date(StatsTracker.data.achievements[a.id]).toLocaleDateString():'';
+    const rewardText=a.reward?`<div style="font-size:9px;color:var(--gold);margin-top:2px">奖励: ${a.reward}💰</div>`:'';
     return `<div class="wiki-card" style="cursor:default;opacity:${unlocked?1:0.4};${unlocked?'border-color:var(--gold)':''}">
       <div class="wc-emoji" style="font-size:28px">${unlocked?a.icon:'🔒'}</div>
       <div class="wc-name">${a.name}</div>
       <div class="wc-type">${a.desc}</div>
+      ${rewardText}
       ${unlocked?`<div class="wc-stats" style="font-size:10px;margin-top:4px">${date} 解锁</div>`:''}
     </div>`;
   }).join('');
@@ -6035,10 +6116,26 @@ if(_origRollDice){
     return result;
   };
 }
-/* Hook drawCards for SFX */
+/* Hook drawCards for SFX + fly animation */
 const _origDrawCards=typeof drawCards==='function'?drawCards:null;
 if(_origDrawCards){
-  window.drawCards=function(p,n){SFX.play('draw');return _origDrawCards(p,n)};
+  window.drawCards=function(p,n){
+    SFX.play('draw');
+    const prevLen=p.hand.length;
+    const result=_origDrawCards(p,n);
+    if(p.isPlayer){
+      requestAnimationFrame(()=>{
+        const handEl=document.getElementById('player-hand');
+        if(handEl){
+          const cards=handEl.querySelectorAll('.card');
+          for(let i=prevLen;i<cards.length;i++){
+            if(cards[i]){cards[i].classList.add('card-fly-in');cards[i].addEventListener('animationend',()=>cards[i].classList.remove('card-fly-in'),{once:true})}
+          }
+        }
+      });
+    }
+    return result;
+  };
 }
 
 </script>
