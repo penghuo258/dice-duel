@@ -277,7 +277,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 #log-content{font-size:10px;line-height:1.5}
 .log-entry{padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.02);color:var(--text-dim)}
 .log-entry.combat{color:var(--rust-light)}.log-entry.effect{color:#9f7aea}.log-entry.phase{color:var(--gold);font-weight:700}
-#main-area{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+#main-area{display:flex;flex-direction:column;height:100vh;overflow:hidden;position:relative;z-index:2;
+  background:linear-gradient(180deg,#06061a 0%,#0e0e24 25%,#12102a 50%,#0e0e24 75%,#06061a 100%)}
 #particle-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.6}
 #ai-zone{flex:0.7;display:flex;flex-direction:column;padding:4px 10px;min-height:0;overflow:hidden}
 #player-zone{flex:1;display:flex;flex-direction:column;padding:4px 10px;justify-content:flex-end;min-height:0}
@@ -1295,7 +1296,7 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
 #screen-menu .screen-bg{animation-duration:24s}
 #screen-levels .screen-bg{animation-duration:20s;animation-direction:alternate-reverse}
 #screen-adventure .screen-bg{animation-duration:22s}
-#screen-game .screen-bg{animation-duration:30s}
+#screen-game .screen-bg{animation-duration:30s;opacity:0.25}
 #screen-adventure .screen-bg{animation-duration:22s}
 /* Screen particles overlay */
 .screen-particles{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
