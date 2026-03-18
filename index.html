@@ -2830,6 +2830,44 @@ const ALL_CARDS=[
     if(!ctx.owner.isPlayer){const v=dice[Math.floor(Math.random()*dice.length)];dice.push(v);ctx.myCreature._harmonizerExtra=true;log(`元素调和者:AI复制骰子${v}`,'effect');return}
     const opts=dice.map((d,i)=>({label:`复制骰子${i+1}: ${d}`}));
     showOverlay('元素调和者:选择复制的骰子',opts,i=>{dice.push(dice[i]);ctx.myCreature._harmonizerExtra=true;log(`元素调和者:复制骰子${dice[i]}到额外槽位!`,'effect');render()})}},
+// --- NEW CREATURES ---
+{id:'chaos_dice_demon',type:'creature',name:'混沌骰魔',emoji:'🎭',base:0,slots:3,
+  effectDesc:'基础值=不同点数数×2;若骰子构成顺子,额外+3',timing:'duel_start',
+  effect(ctx){const dice=ctx.myCreature.assignedDice||[];const unique=new Set(dice);const bonus=unique.size*2;
+    let straight=false;if(dice.length>=2){const sorted=[...dice].sort((a,b)=>a-b);straight=sorted.every((v,i)=>i===0||v===sorted[i-1]+1)}
+    ctx.myCreature.tempBonus=(ctx.myCreature.tempBonus||0)+bonus+(straight?3:0);
+    log(`混沌骰魔:${unique.size}种不同点数×2=${bonus}${straight?' +顺子+3':''},总加成${bonus+(straight?3:0)}`,'effect')}},
+{id:'leopard_king',type:'creature',name:'豹子之王',emoji:'🐆',base:0,slots:4,
+  effectDesc:'若4个骰子点数全部相同(豹子),基础值变为15',timing:'duel_start',
+  effect(ctx){const dice=ctx.myCreature.assignedDice||[];if(dice.length===4&&dice.every(v=>v===dice[0])){
+    ctx.myCreature.tempBonus=(ctx.myCreature.tempBonus||0)+15;log(`豹子之王:4个${dice[0]}! 豹子! 基础值变为15!`,'effect')}
+    else{log('豹子之王:未构成豹子,基础值为0','effect')}}},
+{id:'doom_prophet',type:'creature',name:'末日预言者',emoji:'🔮',base:1,slots:1,
+  effectDesc:'部署时预言下张牌类型,抽一张牌;预言正确则总值翻倍',timing:'deploy',
+  effect(ctx){if(!ctx.owner.isPlayer){
+    const guess=Math.random()<0.5?'creature':'spell';drawCards(ctx.owner,1);
+    const drawn=ctx.owner.hand[ctx.owner.hand.length-1];
+    if(drawn&&drawn.type===guess){ctx.myCreature._prophetDouble=true;log(`末日预言者:AI预言${guess==='creature'?'生物':'法术'},正确! 总值翻倍!`,'effect')}
+    else{log(`末日预言者:AI预言失败`,'effect')};return}
+    showOverlay('末日预言者:预言下一张牌的类型',
+      [{label:'🦎 生物牌'},{label:'✨ 法术牌'}],i=>{
+        const guess=i===0?'creature':'spell';drawCards(ctx.owner,1);
+        const drawn=ctx.owner.hand[ctx.owner.hand.length-1];
+        if(drawn&&drawn.type===guess){ctx.myCreature._prophetDouble=true;
+          log(`末日预言者:预言${guess==='creature'?'生物':'法术'},正确! 总值翻倍!`,'effect')}
+        else{log(`末日预言者:预言${guess==='creature'?'生物':'法术'},错误!`,'effect')}
+        render()})}},
+{id:'soul_thief',type:'creature',name:'灵魂窃贼',emoji:'👻',base:2,slots:2,
+  effectDesc:'胜出时从对手弃牌堆随机获得两张卡',timing:'win',
+  effect(ctx){let stolen=0;for(let i=0;i<2;i++){if(ctx.enemy.discard.length===0)break;
+    const idx=Math.floor(Math.random()*ctx.enemy.discard.length);const cardId=ctx.enemy.discard.splice(idx,1)[0];
+    const def=getCardDef(cardId);if(def){ctx.owner.hand.push(makeCardInstance(def));stolen++;log(`灵魂窃贼:从对手弃牌堆窃取了${def.name}!`,'effect')}}
+    if(stolen===0)log('灵魂窃贼:对手弃牌堆为空','effect')}},
+{id:'double_pair',type:'creature',name:'双面对子',emoji:'🎲',base:2,slots:2,
+  effectDesc:'若2个骰子点数相同(一对),基础值+4',timing:'duel_start',
+  effect(ctx){const dice=ctx.myCreature.assignedDice||[];if(dice.length===2&&dice[0]===dice[1]){
+    ctx.myCreature.tempBonus=(ctx.myCreature.tempBonus||0)+4;log(`双面对子:一对${dice[0]}! 基础值+4!`,'effect')}
+    else{log('双面对子:未构成对子','effect')}}},
 // --- SPELLS (13) ---
 {id:'even_absorb',type:'spell',name:'偶数吸收',emoji:'💚',base:0,slots:4,
   effectDesc:'槽内骰子每有1个偶数,回复2HP',timing:'duel_start',
@@ -2909,9 +2947,37 @@ const ALL_CARDS=[
     const enemyDiceSum=(enemy.deployedCreature.assignedDice||[]).reduce((a,b)=>a+b,0);
     if(enemyDiceSum>0){ctx.myCreature.tempBonus=(ctx.myCreature.tempBonus||0)+enemyDiceSum;log(`镜像空间:复制对手${enemyDiceSum}点骰子值!`,'effect')}
     else{log('镜像空间:对手无骰子','effect')}}},
+{id:'curse_sacrifice',type:'spell',name:'呪符献祭',emoji:'🕯️',base:0,slots:1,
+  effectDesc:'回合结束:若槽内骰子为6,从牌库中选一张生物牌加入手牌',timing:'turn_end',
+  effect(ctx){const d=ctx.mySpellDice||[];if(d.length>0&&d[0]===6){
+    const creatures=ctx.owner.deck.filter(c=>c.type==='creature');
+    if(creatures.length===0){log('呪符献祭:牌库无生物牌','effect');return}
+    if(!ctx.owner.isPlayer){const pick=creatures[Math.floor(Math.random()*creatures.length)];const idx=ctx.owner.deck.indexOf(pick);ctx.owner.deck.splice(idx,1);ctx.owner.hand.push(pick);log(`呪符献祭:骰子6! 从牌库获得${pick.name}!`,'effect');render();return}
+    const opts=creatures.slice(0,5).map(c=>({label:`${c.emoji} ${c.name}`}));
+    showOverlay('呪符献祭:选择一张生物牌加入手牌',opts,i=>{
+      const pick=creatures[Math.min(i,creatures.length-1)];const idx=ctx.owner.deck.indexOf(pick);
+      if(idx>=0)ctx.owner.deck.splice(idx,1);ctx.owner.hand.push(pick);
+      log(`呪符献祭:骰子6! 从牌库获得${pick.name}!`,'effect');render()})}
+    else{log('呪符献祭:骰子不是6','effect')}}},
+{id:'gourd_contract',type:'spell',name:'葫芦契约',emoji:'🍐',base:0,slots:4,
+  effectDesc:'回合结束:若4骰构成葫芦(三同+一异或两对),偷走对手牌库3张牌',timing:'turn_end',
+  effect(ctx){const d=ctx.mySpellDice||[];if(d.length!==4){log('葫芦契约:需要4个骰子','effect');return}
+    const freq={};d.forEach(v=>freq[v]=(freq[v]||0)+1);const vals=Object.values(freq).sort((a,b)=>a-b);
+    const isFullHouse=(vals.length===2&&vals[0]===1&&vals[1]===3)||(vals.length===2&&vals[0]===2&&vals[1]===2);
+    if(isFullHouse){let stolen=0;for(let i=0;i<3;i++){if(ctx.enemy.deck.length===0)break;
+      const card=ctx.enemy.deck.splice(Math.floor(Math.random()*ctx.enemy.deck.length),1)[0];
+      if(card){ctx.owner.hand.push(card);stolen++;log(`葫芦契约:偷走${card.name||card.id}!`,'effect')}}
+      if(stolen>0)log(`葫芦契约:葫芦! 偷走对手${stolen}张牌!`,'effect')}
+    else{log('葫芦契约:未构成葫芦','effect')}}},
+{id:'pair_amplify',type:'spell',name:'对子增幅',emoji:'🔊',base:0,slots:2,
+  effectDesc:'对拼开始:若2骰构成对子(相同),手牌中所有生物基础值+4',timing:'duel_start',
+  effect(ctx){const d=ctx.mySpellDice||[];if(d.length===2&&d[0]===d[1]){
+    let count=0;ctx.owner.hand.forEach(c=>{if(c.type==='creature'){c.base+=4;count++}});
+    log(`对子增幅:对子${d[0]}! 手牌${count}个生物基础值+4!`,'effect')}
+    else{log('对子增幅:未构成对子','effect')}}},
 ];
 
-const COMMON_CARDS=['shadow_rat','swift_bird','steam_sentinel','gear_hound','chimney_golem','magnet_puppet','boiler_spider','slime','time_traveler','greedy_mimic','crystal_guard','even_absorb','overload_pulse','steam_burst','emergency_repair','metal_shield'];
+const COMMON_CARDS=['shadow_rat','swift_bird','steam_sentinel','gear_hound','chimney_golem','magnet_puppet','boiler_spider','slime','time_traveler','greedy_mimic','crystal_guard','even_absorb','overload_pulse','steam_burst','emergency_repair','metal_shield','doom_prophet','soul_thief','double_pair'];
 
 const ALL_RELICS=[
   {id:'lucky_dice',name:'幸运骰子',emoji:'🎲',rarity:'common',desc:'第一回合多获得1个骰子，但该回合必须使用该骰子，否则失去遗物'},
@@ -2926,6 +2992,7 @@ const ALL_RELICS=[
   {id:'double_blade',name:'双刃剑',emoji:'⚔️',rarity:'common',desc:'所有生物基础值+2，但槽位-1'},
   {id:'life_amulet',name:'生命护符',emoji:'💚',rarity:'rare',desc:'每回合开始时，若生命<15，恢复2点生命'},
   {id:'rebirth_rune',name:'重生符文',emoji:'♻️',rarity:'rare',desc:'首次将死时(HP≤0)保留1点生命，摧毁此遗物'},
+  {id:'straight_eye',name:'大顺之眼',emoji:'👁️',rarity:'common',desc:'掷骰后若骰子能构成顺子(3+连续),抽1张牌'},
 ];
 function getRelicDef(id){return ALL_RELICS.find(r=>r.id===id)}
 function isCommonCard(id){return COMMON_CARDS.includes(id)}
@@ -2937,7 +3004,7 @@ function getCommonSpells(){return ALL_CARDS.filter(c=>c.type==='spell'&&COMMON_C
 function getRareSpells(){return ALL_CARDS.filter(c=>c.type==='spell'&&!COMMON_CARDS.includes(c.id))}
 function getCardDef(id){return ALL_CARDS.find(c=>c.id===id)}
 function makeCardInstance(def){return{...def,assignedDice:[],growth:0,tempBonus:0}}
-function getCreatureValue(c){if(!c)return 0;const frozen=new Set(c.frozenDice||[]);let val=c.base+(c.growth||0)+(c.tempBonus||0)+(c.assignedDice||[]).reduce((a,b,i)=>a+(frozen.has(i)?0:b),0);if(c.id==='greedy_mimic')val+=(c.assignedDice||[]).length;if(typeof G!=='undefined'&&G.adventureMode&&Adventure.hasRelic('double_blade')&&c.type==='creature')val+=2;return val}
+function getCreatureValue(c){if(!c)return 0;const frozen=new Set(c.frozenDice||[]);let val=c.base+(c.growth||0)+(c.tempBonus||0)+(c.assignedDice||[]).reduce((a,b,i)=>a+(frozen.has(i)?0:b),0);if(c.id==='greedy_mimic')val+=(c.assignedDice||[]).length;if(c._prophetDouble)val*=2;if(typeof G!=='undefined'&&G.adventureMode&&Adventure.hasRelic('double_blade')&&c.type==='creature')val+=2;return val}
 function discardCard(p,card){if(card&&card.id)p.discard.push(card.id)}
 function reshuffleDeck(p){if(!p.discard.length)return;const d=p.discard.map(id=>{const def=getCardDef(id);return makeCardInstance(def)});shuffle(d);p.deck=d;p.discard=[];log((p.isPlayer?'铸炉师':'机械领主')+'的弃牌堆已洗入牌库! ('+d.length+'张)','phase')}
 function drawCards(p,n){for(let i=0;i<n;i++){if(p.hand.length>=9)break;if(!p.deck.length){reshuffleDeck(p);if(!p.deck.length)break}const card=p.deck.pop();p.hand.push(card);if(card.id==='magnet_puppet'){card._magnetPending=true}}}
@@ -4313,6 +4380,13 @@ const G={
         this._overloadActive=true;
         this.p.hand.forEach(c=>{if(c.type==='creature')c.overloadSlot=1});
         log('🔌 过载槽位: 所有生物槽位+1','effect');
+      }
+      // Straight Eye: if dice form a straight (3+ consecutive), draw 1
+      if(Adventure.hasRelic('straight_eye')){
+        const sorted=[...new Set(this.p.dice)].sort((a,b)=>a-b);
+        let maxRun=1,run=1;
+        for(let i=1;i<sorted.length;i++){if(sorted[i]===sorted[i-1]+1){run++;if(run>maxRun)maxRun=run}else{run=1}}
+        if(maxRun>=3){drawCards(this.p,1);log(`👁️ 大顺之眼: ${maxRun}连顺子! 抽1牌`,'effect')}
       }
     }
 
