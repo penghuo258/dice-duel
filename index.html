@@ -58,6 +58,64 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 /* legacy compat */
 #zzz-transition .zzz-slide.slide-in{animation:zzzHIn 0.38s cubic-bezier(0.22,1.0,0.36,1.0) forwards}
 #zzz-transition .zzz-slide.slide-out{animation:zzzHOut 0.32s cubic-bezier(0.7,0,0.84,0) forwards}
+/* === ZZZ Transition Strips === */
+.zzz-strips{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.zzz-strip-bar{position:absolute;left:-120%;width:160%;height:calc(100% / 6);
+  top:calc(var(--si) * (100% / 6));
+  background:linear-gradient(135deg,rgba(255,62,122,0.0) 0%,rgba(255,62,122,0.12) 30%,
+    rgba(255,62,122,0.25) 48%,rgba(255,255,255,0.5) 50%,rgba(255,62,122,0.25) 52%,
+    rgba(255,62,122,0.12) 70%,rgba(255,62,122,0.0) 100%);
+  transform:skewX(-12deg);opacity:0;pointer-events:none}
+.zzz-strip-bar::after{content:'';position:absolute;top:0;right:48%;width:2px;height:100%;
+  background:linear-gradient(180deg,transparent,rgba(255,62,122,0.7),transparent);
+  box-shadow:0 0 8px rgba(255,62,122,0.4)}
+/* Horizontal strip sweep */
+.zzz-strips.h-strips-in .zzz-strip-bar{
+  animation:stripHIn 0.42s cubic-bezier(0.22,1,0.36,1) forwards;
+  animation-delay:calc(var(--si) * 0.04s)}
+.zzz-strips.h-strips-out .zzz-strip-bar{
+  animation:stripHOut 0.34s cubic-bezier(0.7,0,0.84,0) forwards;
+  animation-delay:calc(var(--si) * 0.03s)}
+@keyframes stripHIn{
+  0%{left:-120%;opacity:0}
+  30%{opacity:1}
+  70%{opacity:1}
+  100%{left:10%;opacity:0.8}
+}
+@keyframes stripHOut{
+  0%{left:10%;opacity:0.8}
+  40%{opacity:0.6}
+  100%{left:120%;opacity:0}
+}
+/* Vertical strip sweep */
+.zzz-strips.v-strips-in .zzz-strip-bar{
+  animation:stripVIn 0.44s cubic-bezier(0.22,1,0.36,1) forwards;
+  animation-delay:calc(var(--si) * 0.04s);
+  /* Override: vertical strips are horizontal bars sweeping upward */
+  left:0;width:100%;height:calc(100% / 6);
+  transform:skewY(-5deg) skewX(0deg);
+  background:linear-gradient(225deg,rgba(255,62,122,0.0) 0%,rgba(255,62,122,0.12) 30%,
+    rgba(255,62,122,0.25) 48%,rgba(255,255,255,0.5) 50%,rgba(255,62,122,0.25) 52%,
+    rgba(255,62,122,0.12) 70%,rgba(255,62,122,0.0) 100%)}
+.zzz-strips.v-strips-out .zzz-strip-bar{
+  animation:stripVOut 0.34s cubic-bezier(0.7,0,0.84,0) forwards;
+  animation-delay:calc(var(--si) * 0.03s);
+  left:0;width:100%;height:calc(100% / 6);
+  transform:skewY(-5deg) skewX(0deg);
+  background:linear-gradient(225deg,rgba(255,62,122,0.0) 0%,rgba(255,62,122,0.12) 30%,
+    rgba(255,62,122,0.25) 48%,rgba(255,255,255,0.5) 50%,rgba(255,62,122,0.25) 52%,
+    rgba(255,62,122,0.12) 70%,rgba(255,62,122,0.0) 100%)}
+@keyframes stripVIn{
+  0%{top:calc(var(--si) * (100% / 6) + 120vh);opacity:0}
+  30%{opacity:1}
+  70%{opacity:1}
+  100%{top:calc(var(--si) * (100% / 6));opacity:0.8}
+}
+@keyframes stripVOut{
+  0%{top:calc(var(--si) * (100% / 6));opacity:0.8}
+  40%{opacity:0.6}
+  100%{top:calc(var(--si) * (100% / 6) - 120vh);opacity:0}
+}
 /* ZZZ geometric triangle bg pattern */
 .zzz-geo-bg{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;opacity:0.08}
 .zzz-geo-bg svg{width:100%;height:100%}
@@ -664,6 +722,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 #zzz-transition .zzz-slide.v-slide-out::after{
   background:linear-gradient(90deg,rgba(255,0,50,0.9),#ff3e7a,rgba(0,200,255,0.9));
   box-shadow:0 0 20px rgba(255,62,122,0.6),0 4px 12px rgba(255,0,50,0.5),0 -4px 12px rgba(0,200,255,0.5);height:6px}
+/* Strip bar chromatic */
+.zzz-strip-bar{text-shadow:2px 0 rgba(255,0,50,0.4),-2px 0 rgba(0,200,255,0.4)}
+.zzz-strip-bar::after{box-shadow:0 0 8px rgba(255,62,122,0.5),2px 0 6px rgba(255,0,50,0.4),-2px 0 6px rgba(0,200,255,0.4)}
 
 /* === BATTLE ZONE chromatic === */
 #battle-zone{border-image:linear-gradient(90deg,rgba(255,0,50,0.3),rgba(255,62,122,0.25),rgba(0,200,255,0.3)) 1;
@@ -2219,7 +2280,17 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
 <div id="tut-overlay"><div class="tut-mask"></div><div class="tut-highlight" id="tut-hl"></div><div class="tut-box" id="tut-box"></div></div>
 
 <!-- ZZZ Transition Overlay -->
-<div id="zzz-transition"><div class="zzz-slide"></div></div>
+<div id="zzz-transition">
+  <div class="zzz-slide"></div>
+  <div class="zzz-strips">
+    <div class="zzz-strip-bar" style="--si:0"></div>
+    <div class="zzz-strip-bar" style="--si:1"></div>
+    <div class="zzz-strip-bar" style="--si:2"></div>
+    <div class="zzz-strip-bar" style="--si:3"></div>
+    <div class="zzz-strip-bar" style="--si:4"></div>
+    <div class="zzz-strip-bar" style="--si:5"></div>
+  </div>
+</div>
 
 <script>
 'use strict';
@@ -2504,17 +2575,23 @@ function showScreen(id,isBack){
   if(!isBack&&cur){_screenHistory.push(cur.id)}
   _zzzBusy=true;
   const slide=document.querySelector('#zzz-transition .zzz-slide');
+  const strips=document.querySelector('#zzz-transition .zzz-strips');
   const isV=(_zzzDir%2===1);
   _zzzDir++;
   /* reset all classes */
   slide.className='zzz-slide';
+  strips.className='zzz-strips';
   void slide.offsetWidth;
+  void strips.offsetWidth;
   const inCls=isV?'v-slide-in':'h-slide-in';
   const outCls=isV?'v-slide-out':'h-slide-out';
+  const stripInCls=isV?'v-strips-in':'h-strips-in';
+  const stripOutCls=isV?'v-strips-out':'h-strips-out';
   /* reset transform for direction */
   slide.style.transform=isV?'translateY(110%) skewY(5deg) skewX(0deg)':'translateX(-110%) skewX(-8deg)';
   void slide.offsetWidth;
   slide.classList.add(inCls);
+  strips.classList.add(stripInCls);
   setTimeout(()=>{
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -2528,9 +2605,12 @@ function showScreen(id,isBack){
     if(id==='screen-menu'){NewsMatrix.resume()}else{NewsMatrix.stop()}
     ZZZGreeting.tryShow(id);
     slide.classList.remove(inCls);
+    strips.classList.remove(stripInCls);
     void slide.offsetWidth;
+    void strips.offsetWidth;
     slide.classList.add(outCls);
-    setTimeout(()=>{slide.className='zzz-slide';slide.style.transform='';_zzzBusy=false},340);
+    strips.classList.add(stripOutCls);
+    setTimeout(()=>{slide.className='zzz-slide';slide.style.transform='';strips.className='zzz-strips';_zzzBusy=false},340);
   },400);
 }
 /* === Swipe-from-left-edge back gesture === */
