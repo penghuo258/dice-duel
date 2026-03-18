@@ -1385,9 +1385,9 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
     <div class="zzz-strip-icon">🎴</div>
     <div class="zzz-strip-text">PLAY</div>
     <div class="zzz-strip-divider"></div>
-    <div class="zzz-strip-settings" onclick="showScreen('screen-settings')">⚙</div>
-    <div class="zzz-strip-settings" onclick="showScreen('screen-wiki')">📖</div>
-    <div class="zzz-strip-settings" onclick="showScreen('screen-deck')">🃏</div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();showScreen('screen-settings')">⚙</div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();showScreen('screen-wiki')">📖</div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();showScreen('screen-deck')">🃏</div>
   </div>
   <!-- Top-right label -->
   <div class="zzz-menu-label">
@@ -1418,9 +1418,9 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
     <!-- Bottom bar -->
     <div class="zzz-menu-bottom">
       <div class="zzz-nav-row">
-        <div class="zzz-nav-icon" onclick="showScreen('screen-settings')">⚙</div>
-        <div class="zzz-nav-icon" onclick="showScreen('screen-wiki')">📖</div>
-        <div class="zzz-nav-icon" onclick="showScreen('screen-deck')">🃏</div>
+        <div class="zzz-nav-icon" onclick="event.stopPropagation();showScreen('screen-settings')">⚙</div>
+        <div class="zzz-nav-icon" onclick="event.stopPropagation();showScreen('screen-wiki')">📖</div>
+        <div class="zzz-nav-icon" onclick="event.stopPropagation();showScreen('screen-deck')">🃏</div>
       </div>
       <div class="zzz-bottom-accent">
         <div class="ba-icon">🎰</div>
@@ -1457,6 +1457,9 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
     <div class="zzz-strip-dots"><span class="active"></span><span></span><span class="active"></span></div>
     <div class="zzz-strip-text">SELECT</div>
     <div class="zzz-strip-icon">🎯</div>
+    <div class="zzz-strip-divider"></div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();showScreen('screen-settings')">⚙</div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();goBackScreen()">↩</div>
   </div>
   <!-- Top-right label -->
   <div class="zzz-menu-label">
@@ -1519,6 +1522,9 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
     <div class="zzz-strip-dots"><span class="active"></span><span></span></div>
     <div class="zzz-strip-text">MAP</div>
     <div class="zzz-strip-icon">⚔</div>
+    <div class="zzz-strip-divider"></div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();showScreen('screen-settings')">⚙</div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();goBackScreen()">↩</div>
   </div>
   <!-- Top-right label -->
   <div class="zzz-menu-label" style="top:56px">
@@ -1587,6 +1593,8 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
     <div class="zzz-strip-icon">⚔</div>
     <div class="zzz-strip-text">PLAINS</div>
     <div class="zzz-strip-dots"><span></span><span class="active"></span></div>
+    <div class="zzz-strip-divider"></div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();showScreen('screen-settings')">⚙</div>
     <div class="strip-abandon" onclick="Adventure.abandonRun()" title="放弃冒险">✕</div>
   </div>
   <!-- Top-right label -->
@@ -1637,6 +1645,9 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
     <div class="zzz-strip-dots"><span class="active"></span><span></span><span class="active"></span></div>
     <div class="zzz-strip-text">CODEX</div>
     <div class="zzz-strip-icon">🔍</div>
+    <div class="zzz-strip-divider"></div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();showScreen('screen-settings')">⚙</div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();goBackScreen()">↩</div>
   </div>
   <div class="zzz-menu-label">
     <div class="zzz-label-en">ENCYCLOPEDIA</div>
@@ -1674,6 +1685,9 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
     <div class="zzz-strip-dots"><span class="active"></span><span></span></div>
     <div class="zzz-strip-text">LORE</div>
     <div class="zzz-strip-icon">✨</div>
+    <div class="zzz-strip-divider"></div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();showScreen('screen-settings')">⚙</div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();goBackScreen()">↩</div>
   </div>
   <div class="zzz-menu-label">
     <div class="zzz-label-en">STORY</div>
@@ -1705,6 +1719,9 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
     <div class="zzz-strip-dots"><span class="active"></span><span></span><span class="active"></span></div>
     <div class="zzz-strip-text">BUILD</div>
     <div class="zzz-strip-icon">🔧</div>
+    <div class="zzz-strip-divider"></div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();showScreen('screen-settings')">⚙</div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();goBackScreen()">↩</div>
   </div>
   <div class="zzz-menu-label">
     <div class="zzz-label-en">DECK BUILDER</div>
@@ -1747,6 +1764,8 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
     <div class="zzz-strip-dots"><span class="active"></span><span></span></div>
     <div class="zzz-strip-text">CONFIG</div>
     <div class="zzz-strip-icon">🔧</div>
+    <div class="zzz-strip-divider"></div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();goBackScreen()">↩</div>
   </div>
   <div class="zzz-menu-label">
     <div class="zzz-label-en">SETTINGS</div>
@@ -1872,6 +1891,9 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
     <div class="zzz-strip-dots"><span class="active"></span><span></span><span class="active"></span></div>
     <div class="zzz-strip-text">STORE</div>
     <div class="zzz-strip-icon">💰</div>
+    <div class="zzz-strip-divider"></div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();showScreen('screen-settings')">⚙</div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();goBackScreen()">↩</div>
   </div>
   <div class="zzz-menu-label">
     <div class="zzz-label-en">CARD SHOP</div>
