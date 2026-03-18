@@ -2156,7 +2156,7 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
     <!-- Main area -->
     <div id="main-area">
       <div id="ai-zone">
-        <div class="player-bar"><span class="pname">机械领主</span>
+        <div class="player-bar"><span class="pname" id="ai-pname">机械领主</span>
           <div class="hp-bar"><div class="hp-fill" id="ai-hp-fill"></div><span id="ai-hp-text">30</span></div>
           <span class="deck-count deck-btn" id="ai-deck-count" title="牌库" onclick="DeckViewer.showBattleDeck('ai')">🃏0</span>
           <span class="deck-count deck-btn" id="ai-discard-count" title="弃牌堆" onclick="DeckViewer.showBattleDiscard('ai')" style="margin-left:2px">♻0</span>
@@ -3795,10 +3795,19 @@ const Adventure={
 
   // --- CHEST ---
   handleChest(){
-    const gold=Math.floor(Math.random()*51)+50; // 50-100
-    this.gold+=gold;
-    advMsg(`💎 打开宝箱! 获得 ${gold} 💰`);
-    setTimeout(()=>{this.closeOverlay();this.renderMap()},800);
+    const available=ALL_RELICS.filter(r=>!this.hasRelic(r.id));
+    if(available.length===0){
+      // All relics owned, fallback to gold
+      const gold=Math.floor(Math.random()*51)+50;
+      this.gold+=gold;
+      advMsg(`💎 打开宝箱! 已拥有所有遗物，获得 ${gold} 💰`);
+      setTimeout(()=>{this.closeOverlay();this.renderMap()},800);
+      return;
+    }
+    const relic=available[Math.floor(Math.random()*available.length)];
+    this.relics.push(relic.id);
+    advMsg(`💎 打开宝箱! 获得遗物「${relic.emoji} ${relic.name}」— ${relic.desc}`);
+    setTimeout(()=>{this.closeOverlay();this.renderMap()},1200);
   },
 
   // --- SHOP ---
@@ -4076,6 +4085,8 @@ const G={
       shield:0,bankedDice:[],bonusDiceNext:0,extraCreatureNext:false,stolenDice:0,effectsSilenced:false});
     Object.assign(this.p,mkP(),{isPlayer:true});
     Object.assign(this.ai,mkP(),{isPlayer:false});
+    // Reset AI display name
+    const aiNameEl=$('ai-pname');if(aiNameEl)aiNameEl.textContent='机械领主';
     // Level-based player HP penalty
     const lv=Settings.level;
     if(lv===5)this.p.hp=20;
@@ -4100,10 +4111,19 @@ const G={
     Object.assign(this.p,mkP(),{isPlayer:true});
     Object.assign(this.ai,mkP(),{isPlayer:false});
     this.p.hp=Adventure.hp;this.p.maxHp=Adventure.maxHp;
-    if(type==='normal')this.ai.hp=20;
-    else if(type==='elite')this.ai.hp=30;
+    // HP with ±3 fluctuation for normal/elite
+    const hpFluc=Math.floor(Math.random()*7)-3; // -3 to +3
+    if(type==='normal')this.ai.hp=20+hpFluc;
+    else if(type==='elite')this.ai.hp=30+hpFluc;
     else this.ai.hp=40;
     this.ai.maxHp=this.ai.hp;
+    // Update AI display name
+    const aiNameEl=$('ai-pname');
+    if(aiNameEl){
+      if(enemyCreature)aiNameEl.textContent=enemyCreature.emoji+' '+enemyCreature.name;
+      else if(type==='boss')aiNameEl.textContent='锈蚀领主';
+      else aiNameEl.textContent='机械领主';
+    }
     this.playerFirstDraw=4;
     this.p.deck=Adventure.makeAdventureDeck();
     if(type==='normal'||type==='elite'){
