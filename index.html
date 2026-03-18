@@ -847,7 +847,8 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
 .zzz-screen-bottom.has-right{right:48px}
 .zzz-screen-bottom .zzz-bottom-accent{flex:0 0 auto}
 .zzz-screen-bottom .zzz-sb-white{background:rgba(255,255,255,0.95);color:#1a1a2e;padding:14px 18px;flex:1;
-  position:relative;overflow:hidden;border-top:4px solid #ff3e7a;box-shadow:0 -4px 24px rgba(0,0,0,0.2)}
+  position:relative;overflow:hidden;border-top:4px solid #ff3e7a;box-shadow:0 -4px 24px rgba(0,0,0,0.2);min-width:0}
+.zzz-screen-bottom .zzz-sb-white+.zzz-sb-white{border-left:1px solid rgba(200,180,200,0.25)}
 .zzz-screen-bottom .zzz-sb-white::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;z-index:1}
 .zzz-screen-bottom .zzz-sb-white .sb-label{font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:2px}
 .zzz-screen-bottom .zzz-sb-white .sb-big{font-size:22px;font-weight:900;line-height:1;font-family:'Baloo 2','Fredoka',sans-serif;color:#1a1a2e}
@@ -896,8 +897,11 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
 #screen-levels .zzz-screen-info{right:48px}
 #screen-adventure .zzz-screen-info{left:48px}
 .zzz-screen-info .zzz-widget-card{background:rgba(255,255,255,0.95);color:#1a1a2e;padding:14px 22px;
-  backdrop-filter:blur(10px);min-width:100px;position:relative;overflow:hidden;flex:1;
+  backdrop-filter:blur(10px);min-width:0;position:relative;overflow:hidden;flex:1;
   border-top:4px solid #ff3e7a;box-shadow:0 -4px 24px rgba(0,0,0,0.2);border-radius:0}
+.zzz-screen-info .zzz-widget-card:nth-child(1){flex:3}
+.zzz-screen-info .zzz-widget-card:nth-child(2){flex:2}
+.zzz-screen-info .zzz-widget-card:nth-child(3){flex:1}
 .zzz-screen-info .zzz-widget-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;
   background:linear-gradient(90deg,#ff3e7a,#ff6b9d,#ff3e7a);z-index:1}
 #screen-levels .zzz-screen-info .zzz-widget-card{border-top-color:#a3e635}
@@ -1939,7 +1943,9 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
   </div>
   <div class="zzz-screen-bottom has-left">
     <div class="zzz-bottom-accent"><div class="ba-icon">📖</div><div class="ba-text">DICE<br>WIKI</div></div>
-    <div class="zzz-sb-white"><div class="sb-label">CODEX</div><div class="sb-big">百科全书</div><div class="sb-sub">卡牌 · 遗物 · 事件 · 音乐</div></div>
+    <div class="zzz-sb-white" style="flex:3"><div class="sb-label">CODEX</div><div class="sb-big">百科全书</div><div class="sb-sub">卡牌 · 遗物 · 事件 · 音乐</div></div>
+    <div class="zzz-sb-white" style="flex:2"><div class="sb-label">CARDS</div><div class="sb-big" id="wiki-total-cards">—</div><div class="sb-sub">📚 卡牌总数</div></div>
+    <div class="zzz-sb-white" style="flex:1"><div class="sb-label">RELICS</div><div class="sb-big" id="wiki-total-relics">—</div><div class="sb-sub">🏺 遗物</div></div>
   </div>
 </div>
 
@@ -1973,7 +1979,9 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
   </div>
   <div class="zzz-screen-bottom has-left">
     <div class="zzz-bottom-accent"><div class="ba-icon">📜</div><div class="ba-text">DICE<br>LORE</div></div>
-    <div class="zzz-sb-white"><div class="sb-label">STORY</div><div class="sb-big">剧情篇章</div><div class="sb-sub">锈蚀世界的故事</div></div>
+    <div class="zzz-sb-white" style="flex:3"><div class="sb-label">STORY</div><div class="sb-big">剧情篇章</div><div class="sb-sub">锈蚀世界的故事</div></div>
+    <div class="zzz-sb-white" style="flex:2"><div class="sb-label">CHAPTER</div><div class="sb-big">1</div><div class="sb-sub">📜 篇章</div></div>
+    <div class="zzz-sb-white" style="flex:1"><div class="sb-label">LORE</div><div class="sb-big">🏚️</div><div class="sb-sub">锈蚀平原</div></div>
   </div>
 </div>
 
@@ -2017,7 +2025,9 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
     </div>
   </div>
   <div class="zzz-screen-bottom has-right">
-    <div class="zzz-sb-white"><div class="sb-label">DECK</div><div class="sb-big">牌组构筑</div><div class="sb-sub">打造你的策略</div></div>
+    <div class="zzz-sb-white" style="flex:3"><div class="sb-label">DECK</div><div class="sb-big">牌组构筑</div><div class="sb-sub">打造你的策略</div></div>
+    <div class="zzz-sb-white" style="flex:2"><div class="sb-label">SIZE</div><div class="sb-big" id="deck-bottom-count">20</div><div class="sb-sub">🃏 张</div></div>
+    <div class="zzz-sb-white" style="flex:1"><div class="sb-label">LIMIT</div><div class="sb-big">20</div><div class="sb-sub">📋 上限</div></div>
     <div class="zzz-bottom-accent"><div class="ba-icon">🃏</div><div class="ba-text">DECK<br>BUILD</div></div>
   </div>
 </div>
@@ -2145,7 +2155,9 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
   </div>
   <div class="zzz-screen-bottom has-left">
     <div class="zzz-bottom-accent"><div class="ba-icon">⚙</div><div class="ba-text">GAME<br>SET</div></div>
-    <div class="zzz-sb-white"><div class="sb-label">SETTINGS</div><div class="sb-big">游戏设置</div><div class="sb-sub">音量 · 速度 · 音乐 · 背景</div></div>
+    <div class="zzz-sb-white" style="flex:3"><div class="sb-label">SETTINGS</div><div class="sb-big">游戏设置</div><div class="sb-sub">音量 · 速度 · 音乐 · 背景</div></div>
+    <div class="zzz-sb-white" style="flex:2"><div class="sb-label">VERSION</div><div class="sb-big">v2</div><div class="sb-sub">🔧 当前版本</div></div>
+    <div class="zzz-sb-white" style="flex:1"><div class="sb-label">STATUS</div><div class="sb-big">✓</div><div class="sb-sub">⚙ 正常</div></div>
   </div>
 </div>
 
@@ -2186,7 +2198,9 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
   </div>
   <div class="zzz-screen-bottom has-left">
     <div class="zzz-bottom-accent"><div class="ba-icon">🛒</div><div class="ba-text">CARD<br>SHOP</div></div>
-    <div class="zzz-sb-white"><div class="sb-label">SHOP</div><div class="sb-big">卡牌商店</div><div class="sb-sub">购买卡包 · 收集卡牌</div></div>
+    <div class="zzz-sb-white" style="flex:3"><div class="sb-label">SHOP</div><div class="sb-big">卡牌商店</div><div class="sb-sub">购买卡包 · 收集卡牌</div></div>
+    <div class="zzz-sb-white" style="flex:2"><div class="sb-label">GOLD</div><div class="sb-big" id="shop-bottom-gold">0</div><div class="sb-sub">💰 金币</div></div>
+    <div class="zzz-sb-white" style="flex:1"><div class="sb-label">OWNED</div><div class="sb-big" id="shop-bottom-owned">0</div><div class="sb-sub">🃏 已有</div></div>
   </div>
 </div>
 
@@ -2590,10 +2604,10 @@ function showScreen(id,isBack){
     document.getElementById(id).classList.add('active');
     AudioMgr.switchTo(id);
     if(id==='screen-levels')LevelMgr.render();
-    if(id==='screen-shop')Shop.renderShop();
-    if(id==='screen-deck'){DeckBuilder.renderPool();DeckBuilder.renderList()}
+    if(id==='screen-shop'){Shop.renderShop();try{$('shop-bottom-gold').textContent=PlayerData.gold;$('shop-bottom-owned').textContent=PlayerData.unlockedCards.length}catch(e){}}
+    if(id==='screen-deck'){DeckBuilder.renderPool();DeckBuilder.renderList();try{$('deck-bottom-count').textContent=DeckBuilder.deck.length}catch(e){}}
     if(id==='screen-map')Adventure.renderMap();
-    if(id==='screen-wiki')Wiki.showTab(Wiki.currentTab);
+    if(id==='screen-wiki'){Wiki.showTab(Wiki.currentTab);try{$('wiki-total-cards').textContent=ALL_CARDS.length;$('wiki-total-relics').textContent=ALL_RELICS.length}catch(e){}}
     if(id==='screen-story')Story.init();
     if(id==='screen-menu'){NewsMatrix.resume()}else{NewsMatrix.stop()}
     ZZZGreeting.tryShow(id);
@@ -3608,14 +3622,13 @@ const Adventure={
     const rares=shuffle([...getRareCards()]);
     const picks=rares.slice(0,3);
     const p=$('adv-panel');
-    let html=`<h3>🌟 初始天赋</h3><p>冒险开始前，选择一张稀有卡加入你的牌组:</p><div class="adv-card-pick">`;
+    let html=`<h3>🌟 初始天赋</h3><p>冒险开始前，选择一张稀有卡加入你的牌组:</p><div class="zzz-reward-picks">`;
     picks.forEach((c,i)=>{
-      html+=`<div class="card ${c.type==='spell'?'spell-card':''}" onclick="Adventure.pickStarterCard('${c.id}')" style="width:130px;cursor:pointer">
-        <div class="c-name"><span class="c-tag">${c.type==='creature'?'生物':'法术'}</span>${c.name}</div>
-        <div class="c-art">${c.emoji}</div>
-        <div class="c-stats">${c.type==='creature'?`<span>基础:${c.base}</span>`:'<span>法术</span>'}<span>槽:${c.slots}</span></div>
-        ${c.effectDesc?`<div class="c-effect">${c.effectDesc}</div>`:''}
-      </div>`;
+      html+=`<div class="zzz-reward-row" style="margin-left:${i*30}px">
+        <div class="adv-shop-item rare-reward" onclick="Adventure.pickStarterCard('${c.id}')" style="cursor:pointer">
+          <div class="item-info"><span class="item-name">${c.emoji} ${c.name} <span style="color:#c084fc;font-size:10px">★稀有</span></span>
+          <span class="item-desc">${c.type==='creature'?'生物 基础:'+c.base:'法术'} | 槽:${c.slots}${c.effectDesc?' | '+c.effectDesc:''}</span></div>
+        </div></div>`;
     });
     html+=`</div>`;
     p.innerHTML=html;
@@ -3942,12 +3955,13 @@ const Adventure={
     });
     if(creatures.length===0){advMsg('没有可升级的生物卡!');return}
     const p=$('adv-panel');
-    let html=`<h3>🔥 选择升级的生物</h3><p>基础值+2 (每张卡最多升级1次)</p><div class="adv-card-pick">`;
-    creatures.forEach(c=>{
-      html+=`<div class="card" onclick="Adventure.doUpgrade('${c.id}')" style="width:130px;cursor:pointer">
-        <div class="c-name">${c.name}</div><div class="c-art">${c.emoji}</div>
-        <div class="c-stats"><span>基础:${c.base} → ${c.base+2}</span></div>
-      </div>`;
+    let html=`<h3>🔥 选择升级的生物</h3><p>基础值+2 (每张卡最多升级1次)</p><div class="zzz-reward-picks">`;
+    creatures.forEach((c,i)=>{
+      html+=`<div class="zzz-reward-row" style="margin-left:${i*25}px">
+        <div class="adv-shop-item" onclick="Adventure.doUpgrade('${c.id}')" style="cursor:pointer">
+          <div class="item-info"><span class="item-name">${c.emoji} ${c.name}</span>
+          <span class="item-desc">基础值: ${c.base} → ${c.base+2}</span></div>
+        </div></div>`;
     });
     html+=`</div><button class="adv-btn" onclick="Adventure.closeOverlay();Adventure.renderMap()">取消</button>`;
     p.innerHTML=html;
@@ -4067,10 +4081,10 @@ const Adventure={
     const p=$('adv-panel');
     let html=`<h3>🗑️ 选择删除的卡牌</h3><p>花费 ${removePrice}💰 删除1张卡</p><div style="max-height:300px;overflow-y:auto">`;
     const entries=[...seen.entries()];
-    entries.forEach(([id,count])=>{
+    entries.forEach(([id,count],i)=>{
       const def=getCardDef(id);
       if(!def)return;
-      html+=`<div class="adv-shop-item" onclick="Adventure.doRemoveCard('${id}')" style="cursor:pointer">
+      html+=`<div class="adv-shop-item" onclick="Adventure.doRemoveCard('${id}')" style="cursor:pointer;margin-left:${(i%5)*15}px">
         <div class="item-info"><span class="item-name">${def.emoji} ${def.name} x${count}</span></div>
         <span class="item-price">🗑️</span></div>`;
     });
@@ -4123,10 +4137,10 @@ const Adventure={
       this.deck.forEach(id=>seen.set(id,(seen.get(id)||0)+1));
       const p=$('adv-panel');
       let html=`<h3>⚙️ 选择献祭的卡牌</h3><p>删除1张卡, 获得30💰</p><div style="max-height:300px;overflow-y:auto">`;
-      [...seen.entries()].forEach(([id,count])=>{
+      [...seen.entries()].forEach(([id,count],i)=>{
         const def=getCardDef(id);
         if(!def)return;
-        html+=`<div class="adv-shop-item" onclick="Adventure.eventRemoveForGold('${id}')" style="cursor:pointer">
+        html+=`<div class="adv-shop-item" onclick="Adventure.eventRemoveForGold('${id}')" style="cursor:pointer;margin-left:${(i%5)*15}px">
           <div class="item-info"><span class="item-name">${def.emoji} ${def.name} x${count}</span></div></div>`;
       });
       html+=`</div><button class="adv-btn" onclick="Adventure.closeOverlay();Adventure.renderMap()">取消</button>`;
@@ -4172,7 +4186,7 @@ const Adventure={
     this._bmCards.forEach((c,i)=>{
       const cost=COMMON_CARDS.includes(c.id)?3:6;
       const canBuy=this.hp>cost;
-      html+=`<div class="adv-shop-item" ${canBuy?`onclick="Adventure.buyBlackMarket(${i},${cost})" style="cursor:pointer"`:'style="opacity:0.5"'}>
+      html+=`<div class="adv-shop-item" style="margin-left:${i*20}px;${canBuy?'cursor:pointer':'opacity:0.5'}" ${canBuy?`onclick="Adventure.buyBlackMarket(${i},${cost})"`:''}>
         <div class="item-info"><span class="item-name">${c.emoji} ${c.name}</span><span class="item-desc"> ${c.effectDesc||''}</span></div>
         <span class="item-price">${cost}❤️</span></div>`;
     });
@@ -4202,9 +4216,9 @@ const Adventure={
     if(seen.size<2){advMsg('生物牌不足2张,无法使用祭坛!');return}
     const p=$('adv-panel');
     let html=`<h3>🗿 远古祭坛</h3><p>选择要献祭的生物</p><div style="max-height:300px;overflow-y:auto">`;
-    [...seen.entries()].forEach(([id,count])=>{
+    [...seen.entries()].forEach(([id,count],i)=>{
       const def=getCardDef(id);
-      html+=`<div class="adv-shop-item" onclick="Adventure.altarSacrifice('${id}')" style="cursor:pointer">
+      html+=`<div class="adv-shop-item" onclick="Adventure.altarSacrifice('${id}')" style="cursor:pointer;margin-left:${(i%5)*15}px">
         <div class="item-info"><span class="item-name">${def.emoji} ${def.name} x${count}</span><span class="item-desc"> 基础:${def.base}</span></div>
         <span class="item-price">🔥</span></div>`;
     });
@@ -4222,9 +4236,9 @@ const Adventure={
     if(seen.size===0){advMsg(`献祭了「${getCardDef(cardId).name}」,但没有可升级的生物!`);setTimeout(()=>{this.closeOverlay();this.renderMap()},800);return}
     const p=$('adv-panel');
     let html=`<h3>🗿 选择要升级的生物</h3><p>已献祭「${getCardDef(cardId).name}」</p><div style="max-height:300px;overflow-y:auto">`;
-    [...seen.entries()].forEach(([id,count])=>{
+    [...seen.entries()].forEach(([id,count],i)=>{
       const def=getCardDef(id);
-      html+=`<div class="adv-shop-item" onclick="Adventure.altarUpgrade('${id}')" style="cursor:pointer">
+      html+=`<div class="adv-shop-item" onclick="Adventure.altarUpgrade('${id}')" style="cursor:pointer;margin-left:${(i%5)*15}px">
         <div class="item-info"><span class="item-name">${def.emoji} ${def.name} x${count}</span><span class="item-desc"> 基础:${def.base}</span></div>
         <span class="item-price">⬆️</span></div>`;
     });
