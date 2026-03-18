@@ -909,18 +909,23 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
 #screen-levels .zzz-levels-content{display:flex;flex-direction:column;align-items:flex-start;gap:8px;width:100%}
 #screen-levels .zzz-levels-content .title{font-size:28px;text-align:left;margin-bottom:8px;transform:skewX(-6deg)}
 #screen-levels .zzz-levels-content .subtitle{text-align:left;color:#a3e635;letter-spacing:6px;transform:skewX(-6deg)}
-#screen-levels .zzz-levels-btns{display:flex;flex-direction:column;gap:6px;max-width:400px;width:100%}
-#screen-levels .zzz-levels-btns .lv-row{display:flex;justify-content:flex-start}
-#screen-levels .zzz-levels-btns .lv-row:nth-child(odd){margin-left:0}
-#screen-levels .zzz-levels-btns .lv-row:nth-child(even){margin-left:24px}
-#screen-levels .zzz-levels-btns .menu-btn{text-align:left;padding:10px 20px;border-radius:4px;margin:0;width:auto;display:inline-block;
-  border-color:rgba(163,230,53,0.3);font-size:14px;transform:skewX(-8deg)}
+#screen-levels .zzz-levels-btns{display:flex;flex-direction:column;gap:0;max-width:400px;width:100%}
+#screen-levels .zzz-levels-btns .lv-row{display:flex;justify-content:flex-start;position:relative;margin-bottom:6px}
+#screen-levels .zzz-levels-btns .lv-row:nth-child(1){margin-left:0;z-index:7}
+#screen-levels .zzz-levels-btns .lv-row:nth-child(2){margin-left:25px;margin-bottom:10px;z-index:6}
+#screen-levels .zzz-levels-btns .lv-row:nth-child(3){margin-left:45px;z-index:5}
+#screen-levels .zzz-levels-btns .lv-row:nth-child(4){margin-left:65px;margin-bottom:10px;z-index:4}
+#screen-levels .zzz-levels-btns .lv-row:nth-child(5){margin-left:85px;z-index:3}
+#screen-levels .zzz-levels-btns .lv-row:nth-child(6){margin-left:105px;margin-bottom:10px;z-index:2}
+#screen-levels .zzz-levels-btns .lv-row:nth-child(7){margin-left:125px;z-index:1}
+#screen-levels .zzz-levels-btns .menu-btn{text-align:left;padding:12px 24px;border-radius:4px;margin:0;width:auto;display:inline-block;
+  border-color:rgba(163,230,53,0.3);font-size:14px;transform:skewX(-10deg);transition:all 0.25s cubic-bezier(.22,1,.36,1);white-space:nowrap}
 #screen-levels .zzz-levels-btns .menu-btn::before{background:#a3e635;border-radius:4px 0 0 4px}
 #screen-levels .zzz-levels-btns .menu-btn:hover{border-color:rgba(163,230,53,0.6);
-  box-shadow:0 0 20px rgba(163,230,53,0.3);transform:skewX(-8deg) translateX(6px) scale(1.03)}
+  box-shadow:0 0 20px rgba(163,230,53,0.3);transform:skewX(-10deg) translateX(8px) scale(1.04)}
 #screen-levels .zzz-levels-btns .menu-btn.locked{opacity:0.35;pointer-events:none}
-#screen-levels .zzz-levels-bottom-btns{display:flex;gap:10px;margin-top:16px}
-#screen-levels .zzz-levels-bottom-btns .menu-btn{width:auto;padding:8px 18px;font-size:13px;border-radius:4px;margin:0;display:inline-block;transform:skewX(-8deg)}
+#screen-levels .zzz-levels-bottom-btns{display:flex;flex-direction:column;gap:0;margin-top:16px}
+#screen-levels .zzz-levels-bottom-btns .menu-btn{width:auto;padding:10px 22px;font-size:13px;border-radius:4px;margin:0;display:inline-block;transform:skewX(-10deg)}
 /* Adventure screen layout */
 #screen-adventure .zzz-adv-main{position:absolute;inset:0;display:flex;flex-direction:column;z-index:2;padding-top:48px;padding-left:48px}
 #screen-adventure .zzz-adv-top{flex:1;display:flex;align-items:center;justify-content:center;padding:20px 24px 80px}
