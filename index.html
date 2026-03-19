@@ -1711,10 +1711,8 @@ body{animation:chromaticFlicker 15s steps(1) infinite}
 .status-icon:hover{background:rgba(255,255,255,0.18)}
 .status-icon .status-emoji{font-size:13px}
 .status-icon .status-label{font-size:10px;opacity:0.85}
-.status-tooltip{display:none;position:absolute;left:50%;transform:translateX(-50%);background:rgba(20,20,30,0.95);border:1px solid rgba(130,100,255,0.4);border-radius:6px;padding:6px 10px;font-size:11px;color:#e0e0e0;white-space:normal;word-break:break-word;z-index:100;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.5);max-width:70vw}
-#ai-status-bar .status-tooltip{top:calc(100% + 6px);bottom:auto}
-#player-status-bar .status-tooltip{bottom:calc(100% + 6px);top:auto}
-.status-icon:hover .status-tooltip,.status-icon.active .status-tooltip{display:block}
+.status-tooltip{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(15,15,30,0.97);border:1px solid rgba(130,100,255,0.5);border-radius:10px;padding:12px 18px;font-size:14px;line-height:1.6;color:#e8e8f0;white-space:normal;word-break:break-word;z-index:9999;pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,0.7),0 0 12px rgba(130,100,255,0.15);max-width:80vw;min-width:120px;text-align:center}
+.status-icon.active .status-tooltip{display:block}
 .status-icon.buff{border-color:rgba(80,200,120,0.4);color:#6ee7b7}
 .status-icon.debuff{border-color:rgba(255,80,80,0.4);color:#fca5a5}
 .status-icon.skill{border-color:rgba(130,100,255,0.4);color:#c4b5fd}
@@ -6599,7 +6597,7 @@ function showVictorIntro(callback){
   overlay.id='boss-intro';
   overlay.style.cssText='--bi-accent:#a855f7;--bi-glow:rgba(130,60,220,0.5)';
   const deckHtml=VICTOR_DECK_IDS.map(id=>{const c=getCardDef(id);return c?`<span class="bi-card" title="${c.name}">${c.emoji}</span>`:''}).join('');
-  overlay.innerHTML=`<div class="bi-bg" style="background:radial-gradient(ellipse at center,rgba(80,30,120,0.3) 0%,rgba(10,10,20,0.95) 70%)"></div>
+  overlay.innerHTML=`<div class="bi-bg" style="background:radial-gradient(ellipse at center,rgba(80,30,120,0.55) 0%,rgba(10,10,20,0.97) 70%)"></div>
     <div class="bi-content">
       <div class="bi-warning" style="color:#a855f7">♠ CASINO BOSS ♠</div>
       <div class="bi-icon">🎲</div>
@@ -6691,7 +6689,7 @@ function renderStatusBar(){
   if(G.p.bankedDice&&G.p.bankedDice.length>0) pIcons.push({emoji:'🏦',label:'存骰'+G.p.bankedDice.join(','),cls:'buff',tip:'骰子银行: 保留骰子 ['+G.p.bankedDice.join(', ')+']'});
 
   function buildHTML(icons){
-    return icons.map(i=>`<span class="status-icon ${i.cls}" onclick="this.classList.toggle('active');document.querySelectorAll('.status-icon.active').forEach(e=>{if(e!==this)e.classList.remove('active')})"><span class="status-emoji">${i.emoji}</span><span class="status-label">${i.label}</span><span class="status-tooltip">${i.tip}</span></span>`).join('');
+    return icons.map(i=>`<span class="status-icon ${i.cls}" onclick="event.stopPropagation();this.classList.toggle('active');document.querySelectorAll('.status-icon.active').forEach(e=>{if(e!==this)e.classList.remove('active')});let bk=document.getElementById('status-backdrop');if(this.classList.contains('active')){if(!bk){bk=document.createElement('div');bk.id='status-backdrop';bk.style.cssText='position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.3)';bk.onclick=()=>{document.querySelectorAll('.status-icon.active').forEach(e=>e.classList.remove('active'));bk.remove()};document.body.appendChild(bk)}}else if(bk)bk.remove()"><span class="status-emoji">${i.emoji}</span><span class="status-label">${i.label}</span><span class="status-tooltip"><div style="font-size:20px;margin-bottom:4px">${i.emoji}</div>${i.tip}</span></span>`).join('');
   }
 
   aiBar.innerHTML=buildHTML(aiIcons);
