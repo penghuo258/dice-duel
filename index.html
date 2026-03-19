@@ -293,6 +293,23 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .pack-summary{display:flex;gap:16px;justify-content:center;margin:8px 0;font-family:'Share Tech Mono',monospace;font-size:12px}
 .pack-summary .ps-item{color:var(--text-dim);letter-spacing:1px}
 .pack-summary .ps-item b{color:var(--gold);font-size:14px}
+/* Keyword tooltips */
+.kw{position:relative;color:var(--gold);font-weight:700;cursor:help;border-bottom:1px dashed rgba(255,107,157,0.4);
+  white-space:nowrap;transition:color 0.15s}
+.kw:hover,.kw:active{color:#fff}
+.kw .kw-tip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  width:max-content;max-width:200px;padding:8px 12px;border-radius:6px;font-size:11px;font-weight:400;
+  color:#e8e0f0;line-height:1.5;letter-spacing:0.5px;white-space:normal;z-index:999;pointer-events:none;
+  background:rgba(14,12,30,0.96);border:1px solid rgba(255,107,157,0.35);
+  box-shadow:0 4px 20px rgba(0,0,0,0.5),0 0 12px rgba(255,62,122,0.15);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.kw .kw-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  border:5px solid transparent;border-top-color:rgba(255,107,157,0.35)}
+.kw:hover .kw-tip,.kw:active .kw-tip,.kw.kw-show .kw-tip{display:block;animation:kwFade 0.15s ease-out}
+@keyframes kwFade{from{opacity:0;transform:translateX(-50%) translateY(4px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+/* In small containers, position tooltip above or below smartly */
+.pcf-effect .kw .kw-tip,.c-effect .kw .kw-tip{bottom:auto;top:calc(100% + 6px)}
+.pcf-effect .kw .kw-tip::after,.c-effect .kw .kw-tip::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:rgba(255,107,157,0.35)}
 /* Game layout */
 #screen-game{display:none;background:linear-gradient(180deg,#08081a 0%,#10102a 40%,#14122a 60%,#08081a 100%)}
 #screen-game.active{display:flex;position:relative;background:
@@ -3225,6 +3242,22 @@ const ALL_RELICS=[
   {id:'corrupted_heart',name:'腐化心脏',emoji:'🖤',rarity:'common',desc:'每回合开始回2血，获得时最大生命-5'},
 ];
 function getRelicDef(id){return ALL_RELICS.find(r=>r.id===id)}
+// --- Keyword tooltip system ---
+const KW_DEFS={
+  '诅咒':'回合结束时，受到等于诅咒层数的伤害，之后诅咒层数-1。可叠加。',
+  '胜出':'对拼中数值更高的一方获胜，触发胜出效果。',
+  '部署':'将卡牌从手牌放置到场上，分配骰子后生效。',
+  '对拼':'双方生物比较总值（基础值+骰子+加成），高者胜出并造成差值伤害。',
+  '护盾':'减少下一次受到的伤害，用完即消失。',
+  '槽位':'生物或法术可分配的骰子数量上限。',
+  '摧毁':'生物在对拼中败北后被移入弃牌堆。',
+  '冻结':'被冻结的骰子本回合不计入总值计算。'
+};
+function kwHL(text){
+  if(!text)return '';
+  return text.replace(/诅咒|胜出|部署|对拼|护盾|槽位|摧毁|冻结/g,m=>
+    `<span class="kw" ontouchstart="this.classList.toggle('kw-show')">${m}<span class="kw-tip">${KW_DEFS[m]}</span></span>`);
+}
 // --- Curse system ---
 function applyCurse(target,stacks,source){
   if(!target)return;
@@ -3363,7 +3396,7 @@ const Shop={
           <div class="pcf-type">${c.type==='creature'?'CREATURE 生物':'SPELL 法术'}</div>
           <div class="pcf-stats">${c.type==='creature'?`<span>基础 <b>${c.base}</b></span><span>槽位 <b>${c.slots}</b></span>`:`<span>槽位 <b>${c.slots}</b></span>`}</div>
           ${slotsHtml?`<div class="pcf-slots">${slotsHtml}</div>`:''}
-          ${c.effectDesc?`<div class="pcf-effect">${c.effectDesc}</div>`:''}
+          ${c.effectDesc?`<div class="pcf-effect">${kwHL(c.effectDesc)}</div>`:''}
         </div></div>`;
       container.appendChild(div);
       cardEls.push(div);
@@ -3452,7 +3485,7 @@ const DeckBuilder={
         <div class="c-art">${c.emoji}</div>
         <div class="c-stats">${c.type==='creature'?`<span>基础:${c.base}</span>`:'<span>法术</span>'}<span>槽:${c.slots}</span></div>
         <div class="c-slots">${Array(c.slots).fill('<span class="slot-dot"></span>').join('')}</div>
-        <div class="c-effect">${c.effectDesc}</div>
+        <div class="c-effect">${kwHL(c.effectDesc)}</div>
         <div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;background:rgba(0,0,0,0.45);border-radius:8px;pointer-events:none">🔒</div>
       </div>`;
       return `<div class="card ${c.type==='spell'?'spell-card':''} fade-in"
@@ -3461,7 +3494,7 @@ const DeckBuilder={
         <div class="c-art">${c.emoji}</div>
         <div class="c-stats">${c.type==='creature'?`<span>基础:${c.base}</span>`:'<span>法术</span>'}<span>槽:${c.slots}</span></div>
         <div class="c-slots">${Array(c.slots).fill('<span class="slot-dot"></span>').join('')}</div>
-        <div class="c-effect">${c.effectDesc}</div>
+        <div class="c-effect">${kwHL(c.effectDesc)}</div>
         ${count?`<div style="position:absolute;bottom:1px;left:1px;font-size:8px;color:var(--gold);background:rgba(0,0,0,0.7);padding:0 3px;border-radius:2px">x${count}</div>`:''}
       </div>`;
     }).join('');
@@ -3560,7 +3593,7 @@ const Wiki={
         <div class="wc-name">${c.name}</div>
         <div class="wc-type">${c.type==='creature'?'生物':'法术'} · ${rarityLabel}</div>
         <div class="wc-stats">${c.type==='creature'?`基础:${c.base} `:' '}槽:${c.slots}</div>
-        ${c.effectDesc?`<div class="wc-effect">${c.effectDesc}</div>`:''}
+        ${c.effectDesc?`<div class="wc-effect">${kwHL(c.effectDesc)}</div>`:''}
       </div>`;
     });
     html+='</div>';
@@ -3589,7 +3622,7 @@ const Wiki={
         <div class="wc-emoji">${r.emoji}</div>
         <div class="wc-name">${r.name}</div>
         <div class="wc-type">遗物 · ${r.rarity==='common'?'普通':'稀有'}</div>
-        <div class="wc-effect">${r.desc}</div>
+        <div class="wc-effect">${kwHL(r.desc)}</div>
       </div>`;
     });
     html+='</div>';
@@ -3828,7 +3861,7 @@ function renderCardDetail(c,onclick,isRare){
         <span class="rcd-stat">槽位 <b>${c.slots}</b></span>
       </div>
       ${slotsHtml?`<div class="rcd-slots">${slotsHtml}</div>`:''}
-      ${c.effectDesc?`<div class="rcd-effect">${c.effectDesc}</div>`:''}
+      ${c.effectDesc?`<div class="rcd-effect">${kwHL(c.effectDesc)}</div>`:''}
     </div>
   </div>`;
 }
@@ -4253,7 +4286,7 @@ const Adventure={
       }else{
         const canBuy=this.gold>=c.price;
         html+=`<div class="adv-shop-item" style="margin-left:${ml}px;${canBuy?'cursor:pointer':'opacity:0.5'}" ${canBuy?`onclick="Adventure.buyShopCard(${i})"`:''}>
-          <div class="item-info"><span class="item-name">${c.emoji} ${c.name}</span><span class="item-desc">${c.type==='creature'?`基础:${c.base}`:c.type} 槽:${c.slots}${c.effectDesc?` | ${c.effectDesc}`:''}</span></div>
+          <div class="item-info"><span class="item-name">${c.emoji} ${c.name}</span><span class="item-desc">${c.type==='creature'?`基础:${c.base}`:c.type} 槽:${c.slots}${c.effectDesc?` | ${kwHL(c.effectDesc)}`:''}</span></div>
           <span class="item-price">${c.price}💰</span></div>`;
       }
     });
@@ -4429,7 +4462,7 @@ const Adventure={
       const cost=COMMON_CARDS.includes(c.id)?3:6;
       const canBuy=this.hp>cost;
       html+=`<div class="adv-shop-item" style="margin-left:${i*20}px;${canBuy?'cursor:pointer':'opacity:0.5'}" ${canBuy?`onclick="Adventure.buyBlackMarket(${i},${cost})"`:''}>
-        <div class="item-info"><span class="item-name">${c.emoji} ${c.name}</span><span class="item-desc"> ${c.effectDesc||''}</span></div>
+        <div class="item-info"><span class="item-name">${c.emoji} ${c.name}</span><span class="item-desc"> ${kwHL(c.effectDesc||'')}</span></div>
         <span class="item-price">${cost}❤️</span></div>`;
     });
     html+=`<button class="adv-btn" onclick="Adventure.closeOverlay();Adventure.renderMap()">离开</button>`;
@@ -5609,7 +5642,7 @@ function renderCard(c,onclick,faceDown,extraClass=''){
     <div class="c-slots">${Array(Math.max(0,_ts)).fill(0).map((_,si)=>
       `<span class="slot-dot ${si<(c.assignedDice||[]).length?'filled':''} ${si>=c.slots?'overload':''}"></span>`).join('')}</div>
     <div class="c-dice">${(c.assignedDice||[]).map(d=>`<span class="a-die">${d}</span>`).join('')}</div>
-    <div class="c-effect">${c.effectDesc}</div>
+    <div class="c-effect">${kwHL(c.effectDesc)}</div>
   </div>`;
 }
 
@@ -5737,7 +5770,7 @@ function showCardDetail(cardJson){
     <div class="cd-stats">${stats}</div>
     <div class="cd-slots">${slots}</div>
     ${dice?`<div class="cd-dice">${dice}</div>`:''}
-    <div class="cd-effect">${c.effectDesc}</div>
+    <div class="cd-effect">${kwHL(c.effectDesc)}</div>
     <button class="cd-close" onclick="event.stopPropagation();$('card-detail').classList.remove('show')">关闭</button>`;
   $('card-detail').classList.add('show');
 }
