@@ -848,7 +848,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .adv-panel h3{animation:chromaticPulse 4s ease-in-out infinite}
 
 /* === GLOBAL chromatic flicker === */
-body{animation:chromaticFlicker 12s steps(1) infinite}
+body{animation:chromaticFlicker 15s steps(1) infinite}
 
 /* === RED VIGNETTE enhanced with chromatic === */
 .red-vignette{background:radial-gradient(ellipse at center,transparent 50%,rgba(200,30,30,0.25) 100%);
@@ -925,6 +925,13 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
 .tg-flow-step{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:4px 10px;font-size:11px;color:#e0e0e0;text-align:center}
 .tg-flow-arrow{color:var(--rust-light);font-size:14px;font-weight:bold}
 .tg-start-btn{margin-top:12px;text-align:center}
+/* Mini guide overlay */
+#mini-guide-overlay{display:none;position:fixed;inset:0;z-index:250}
+.mg-mask{position:absolute;inset:0;background:rgba(0,0,0,0.5);pointer-events:auto}
+.mg-highlight{position:fixed;border:2px solid var(--gold);border-radius:6px;box-shadow:0 0 20px rgba(255,200,50,0.4);z-index:251;pointer-events:none;transition:all 0.3s}
+.mg-box{position:fixed;bottom:20%;left:50%;transform:translateX(-50%);z-index:252;background:linear-gradient(135deg,rgba(20,16,30,0.97),rgba(30,25,45,0.97));border:1px solid rgba(255,200,50,0.3);border-radius:8px;padding:14px 18px;max-width:320px;width:85vw;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+.mg-text{font-size:13px;color:#e0e0e0;line-height:1.6;margin-bottom:10px}
+.mg-btns{display:flex;gap:8px;justify-content:center}
 /* ========== ZZZ SCREEN DECORATIONS (levels, adventure, battle) ========== */
 /* Right accent strip (for levels screen) */
 .zzz-right-strip{position:absolute;top:0;right:0;bottom:0;width:48px;z-index:3;
@@ -1230,7 +1237,7 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
   .zzz-side-strip .zzz-strip-text.big{font-size:11px;letter-spacing:3px}
   .zzz-side-strip .zzz-strip-icon{font-size:14px}
   #screen-wiki .zzz-screen-main,#screen-story .zzz-screen-main,#screen-shop .zzz-screen-main,
-  #screen-settings .zzz-screen-main{padding-left:36px;padding-bottom:52px}
+  #screen-settings .zzz-screen-main,#screen-tutorial .zzz-screen-main{padding-left:36px;padding-bottom:52px}
   #screen-deck .zzz-screen-main-deck{padding-right:36px;padding-bottom:52px}
   #screen-deck .zzz-menu-label{right:44px}
   .zzz-screen-bottom.has-left{left:36px}
@@ -1260,6 +1267,21 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
   .map-bottom-bar .mb-stat .stat-val{font-size:12px}
   .map-bottom-bar .mb-stat .stat-label{font-size:5px;letter-spacing:1px}
   .map-bottom-bar .mb-stat .stat-sub{font-size:6px}
+  /* Mobile: status bar compact */
+  .status-bar{gap:3px;padding:1px 4px}
+  .status-icon{padding:1px 4px;font-size:10px;gap:1px}
+  .status-icon .status-emoji{font-size:11px}
+  .status-icon .status-label{font-size:8px}
+  .status-tooltip{left:0;transform:none;font-size:10px;padding:5px 8px;max-width:65vw}
+  /* Mobile: tutorial guide screen */
+  #screen-tutorial .menu-wrap{max-height:calc(100vh - 80px);padding-bottom:60px}
+  .tg-card{padding:8px 10px}
+  .tg-card-title{font-size:12px}
+  .tg-card-body{font-size:11px}
+  .tg-section-title{font-size:14px}
+  .tg-flow{gap:4px}
+  .tg-flow-step{padding:3px 6px;font-size:10px}
+  .tg-flow-arrow{font-size:12px}
 }
 /* ============ ADVENTURE MAP ============ */
 .adventure-map-card{background:linear-gradient(135deg,#18162e,#1e1d32);border:1.5px solid rgba(122,90,205,0.35);border-radius:4px;
@@ -1689,8 +1711,8 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
 .status-icon:hover{background:rgba(255,255,255,0.18)}
 .status-icon .status-emoji{font-size:13px}
 .status-icon .status-label{font-size:10px;opacity:0.85}
-.status-tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(20,20,30,0.95);border:1px solid rgba(130,100,255,0.4);border-radius:6px;padding:6px 10px;font-size:11px;color:#e0e0e0;white-space:nowrap;z-index:100;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.5)}
-.status-icon:hover .status-tooltip{display:block}
+.status-tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(20,20,30,0.95);border:1px solid rgba(130,100,255,0.4);border-radius:6px;padding:6px 10px;font-size:11px;color:#e0e0e0;white-space:nowrap;z-index:100;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.5);max-width:70vw;white-space:normal;word-break:break-word}
+.status-icon:hover .status-tooltip,.status-icon.active .status-tooltip{display:block}
 .status-icon.buff{border-color:rgba(80,200,120,0.4);color:#6ee7b7}
 .status-icon.debuff{border-color:rgba(255,80,80,0.4);color:#fca5a5}
 .status-icon.skill{border-color:rgba(130,100,255,0.4);color:#c4b5fd}
@@ -6667,7 +6689,7 @@ function renderStatusBar(){
   if(G.p.bankedDice&&G.p.bankedDice.length>0) pIcons.push({emoji:'🏦',label:'存骰'+G.p.bankedDice.join(','),cls:'buff',tip:'骰子银行: 保留骰子 ['+G.p.bankedDice.join(', ')+']'});
 
   function buildHTML(icons){
-    return icons.map(i=>`<span class="status-icon ${i.cls}"><span class="status-emoji">${i.emoji}</span><span class="status-label">${i.label}</span><span class="status-tooltip">${i.tip}</span></span>`).join('');
+    return icons.map(i=>`<span class="status-icon ${i.cls}" onclick="this.classList.toggle('active');document.querySelectorAll('.status-icon.active').forEach(e=>{if(e!==this)e.classList.remove('active')})"><span class="status-emoji">${i.emoji}</span><span class="status-label">${i.label}</span><span class="status-tooltip">${i.tip}</span></span>`).join('');
   }
 
   aiBar.innerHTML=buildHTML(aiIcons);
@@ -6991,6 +7013,97 @@ const TutorialGuide={
   },
   init(){this.showTab('ui')},
 
+  // --- Practice launchers ---
+  practiceUI(){
+    showScreen('screen-menu');
+    setTimeout(()=>{
+      const steps=[
+        {target:'.zzz-left-strip',text:'这是左侧功能栏，包含设置(⚙)、百科(📖)、构筑(🃏)快捷入口'},
+        {target:'.zzz-menu-btns',text:'这是主菜单按钮区：开始对决、冒险、教程、百科、剧情'},
+        {target:'.zzz-info-widget',text:'底部信息栏显示日期、天气等装饰信息'},
+        {target:'.zzz-menu-label',text:'右上角标签显示当前界面名称和编号'}
+      ];
+      TutorialGuide._runMiniGuide(steps);
+    },500);
+  },
+  practiceDuel(){
+    showScreen('screen-levels');
+    setTimeout(()=>{
+      const steps=[
+        {target:'.zzz-levels-content .title',text:'这是对决模式界面，选择一个难度关卡开始对战'},
+        {target:'.zzz-levels-btns',text:'6个难度逐步解锁，击败当前关卡解锁下一个'},
+        {target:'.zzz-levels-bottom-btns',text:'解锁后可在这里挑战Boss：铁面·机械领主和骰魔·维克多'},
+        {target:null,text:'选择一个关卡开始对战吧！点击任意关卡按钮即可开始。'}
+      ];
+      TutorialGuide._runMiniGuide(steps);
+    },500);
+  },
+  practiceAdventure(){
+    showScreen('screen-adventure');
+    setTimeout(()=>{
+      const steps=[
+        {target:'.zzz-adv-content .title',text:'这是冒险模式入口，点击地图卡片开始冒险'},
+        {target:'.adventure-map-card',text:'点击地图进入冒险！你将带着初始牌组一路战斗、收集遗物'},
+        {target:null,text:'冒险中会遇到战斗、精英、篝火、商店、宝箱和事件。死亡后从头开始，祝你好运！'}
+      ];
+      TutorialGuide._runMiniGuide(steps);
+    },500);
+  },
+  practiceKeywords(){
+    showScreen('screen-wiki');
+    setTimeout(()=>{
+      if(typeof Wiki!=='undefined')Wiki.showTab('cards');
+      const steps=[
+        {target:'#wiki-content',text:'这是百科的卡牌图鉴，点击任意卡牌查看详细效果和关键词说明'},
+        {target:null,text:'试试切换顶部标签查看遗物、Boss、事件等内容！'}
+      ];
+      TutorialGuide._runMiniGuide(steps);
+    },500);
+  },
+
+  // Mini guide overlay system
+  _miniGuideStep:0,
+  _miniGuideSteps:[],
+  _runMiniGuide(steps){
+    this._miniGuideSteps=steps;
+    this._miniGuideStep=0;
+    this._showMiniStep();
+  },
+  _showMiniStep(){
+    let ov=document.getElementById('mini-guide-overlay');
+    if(!ov){
+      ov=document.createElement('div');
+      ov.id='mini-guide-overlay';
+      ov.innerHTML='<div class="mg-mask"></div><div class="mg-highlight" id="mg-hl"></div><div class="mg-box" id="mg-box"></div>';
+      document.body.appendChild(ov);
+    }
+    const s=this._miniGuideSteps[this._miniGuideStep];
+    if(!s){this._endMiniGuide();return}
+    ov.style.display='block';
+    const hl=document.getElementById('mg-hl');
+    const box=document.getElementById('mg-box');
+    // Highlight target
+    if(s.target){
+      const el=document.querySelector(s.target);
+      if(el){
+        const r=el.getBoundingClientRect();
+        hl.style.display='block';
+        hl.style.left=(r.left-4)+'px';hl.style.top=(r.top-4)+'px';
+        hl.style.width=(r.width+8)+'px';hl.style.height=(r.height+8)+'px';
+      } else {hl.style.display='none'}
+    } else {hl.style.display='none'}
+    const isLast=this._miniGuideStep>=this._miniGuideSteps.length-1;
+    box.innerHTML=`<div class="mg-text">${s.text}</div><div class="mg-btns">${isLast?'<button class="menu-btn sm" onclick="TutorialGuide._endMiniGuide()">完成</button>':'<button class="menu-btn sm" onclick="TutorialGuide._nextMiniStep()">下一步</button><button class="menu-btn sm" onclick="TutorialGuide._endMiniGuide()">跳过</button>'}</div>`;
+  },
+  _nextMiniStep(){
+    this._miniGuideStep++;
+    this._showMiniStep();
+  },
+  _endMiniGuide(){
+    const ov=document.getElementById('mini-guide-overlay');
+    if(ov)ov.style.display='none';
+  },
+
   _render_ui(){return `
 <div class="tg-section">
   <div class="tg-section-title">📱 主界面总览</div>
@@ -7024,7 +7137,8 @@ const TutorialGuide={
   <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🃏</span>手牌区域</div>
     <div class="tg-card-body">底部显示你的手牌。<b>长按/点击</b> 卡牌可查看详细效果说明。<br>
     在部署阶段点击手牌可将卡牌部署到战场。</div></div>
-</div>`;
+</div>
+<div class="tg-start-btn"><button class="menu-btn primary" onclick="TutorialGuide.practiceUI()">▶ 开始界面导览</button></div>`;
   },
 
   _render_battle(){return `
@@ -7086,7 +7200,8 @@ const TutorialGuide={
     <div class="tg-card-body">所有 AI 对手都拥有 <b>精确计算</b> 被动：<br>
     智能评估骰子质量并决定是否重掷，优先分配高骰子给生物。<br>
     战斗界面的状态栏会显示对手当前的被动和技能。</div></div>
-</div>`;
+</div>
+<div class="tg-start-btn"><button class="menu-btn primary" onclick="TutorialGuide.practiceDuel()">▶ 进入对决模式</button></div>`;
   },
 
   _render_adventure(){return `
@@ -7120,7 +7235,8 @@ const TutorialGuide={
     </div>
     每层结束后进入下一层，难度递增（怪物+5HP）。<br>
     冒险中的血量会 <b>跨战斗保留</b>，请注意保持血量！</div></div>
-</div>`;
+</div>
+<div class="tg-start-btn"><button class="menu-btn primary" onclick="TutorialGuide.practiceAdventure()">▶ 进入冒险模式</button></div>`;
   },
 
   _render_keywords(){return `
@@ -7174,7 +7290,8 @@ const TutorialGuide={
     <div class="tg-card-body">所有 AI 对手的被动能力。<br>
     AI 会智能评估骰子质量（均值低于3.5时重掷），优先将高骰子分配给生物，<br>
     并为特殊法术预留最优骰子组合。</div></div>
-</div>`;
+</div>
+<div class="tg-start-btn"><button class="menu-btn primary" onclick="TutorialGuide.practiceKeywords()">▶ 查看百科实例</button></div>`;
   }
 };
 
