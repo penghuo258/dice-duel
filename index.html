@@ -5871,10 +5871,30 @@ const BossDialogue={
   eggDraw(){return '"平局？系统无法定义。"'},
 };
 
+let _bossSayLast=0;
+const _bossSayQueue=[];
+let _bossSayTimer=null;
 function bossSay(text){
   if(!text)return;
+  const now=Date.now();
+  const cooldown=4000; // 4s minimum interval
+  if(now-_bossSayLast<cooldown){
+    // Queue it for later
+    _bossSayQueue.push(text);
+    if(!_bossSayTimer){
+      _bossSayTimer=setInterval(()=>{
+        if(_bossSayQueue.length===0){clearInterval(_bossSayTimer);_bossSayTimer=null;return}
+        if(Date.now()-_bossSayLast>=cooldown){_bossSayNow(_bossSayQueue.shift())}
+      },500);
+    }
+    return;
+  }
+  _bossSayNow(text);
+}
+function _bossSayNow(text){
+  if(!text)return;
+  _bossSayLast=Date.now();
   log(`⚙ 铁面·机械领主: ${text}`,'effect');
-  // Show floating boss dialogue bubble
   const el=document.createElement('div');
   el.className='boss-bubble';
   el.textContent=text;
