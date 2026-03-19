@@ -3225,7 +3225,7 @@ const ALL_CARDS=[
     showOverlay('时空旅者:选择要修改的骰子',opts,i=>{
       const valOpts=[1,2,3,4,5,6].map(v=>({label:`改为 ${v}`}));
       showOverlay('时空旅者:选择新点数',valOpts,vi=>{ctx.myCreature.assignedDice[i]=vi+1;log(`时空旅者:将骰子改为${vi+1}!`,'effect');render()})})}},
-{id:'greedy_mimic',type:'creature',name:'贪婪宝箱怪',emoji:'📦',base:0,slots:3,
+{id:'greedy_mimic',type:'creature',name:'贪婪宝箱怪',emoji:'📦',base:1,slots:3,
   effectDesc:'每有1个分配的骰子,基础值+1',timing:'passive',
   effect(ctx){/* handled in getCreatureValue or duel resolve */}},
 {id:'crystal_guard',type:'creature',name:'水晶守卫',emoji:'🔷',base:3,slots:2,
