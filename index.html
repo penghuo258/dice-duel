@@ -66,7 +66,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   transform:skewX(-5deg);transform-origin:bottom right}
 .zzz-widget-card{background:rgba(255,255,255,0.95);color:#1a1a2e;border-radius:0;padding:18px 28px;
   backdrop-filter:blur(10px);min-width:0;position:relative;overflow:hidden;flex:1;
-  border-top:4px solid #ff3e7a;box-shadow:0 -4px 24px rgba(0,0,0,0.2)}
+  border-top:4px solid #ff3e7a;box-shadow:0 -4px 24px rgba(0,0,0,0.2);
+  transition:transform 0.35s cubic-bezier(0.22,1,0.36,1),box-shadow 0.35s ease,background 0.25s ease;cursor:default}
 .zzz-widget-card>*{transform:skewX(5deg)}
 #zzz-date-card{flex:3}
 #zzz-weather-card{flex:2}
@@ -232,35 +233,66 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .shop-gold-display{font-family:'Baloo 2','Fredoka',sans-serif;font-size:22px;color:var(--gold);letter-spacing:2px}
 .card-locked{opacity:0.35;pointer-events:none;filter:grayscale(0.8)}
 /* Pack opening */
-.pack-box{width:120px;height:160px;cursor:pointer;position:relative;margin:0 auto;transition:all 0.3s}
+.pack-box{width:140px;height:190px;cursor:pointer;position:relative;margin:0 auto;transition:all 0.3s}
 .pack-box-inner{width:100%;height:100%;background:linear-gradient(135deg,#2a1838,#3a1848,#2a1838);
-  border:3px solid var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;
-  font-size:50px;box-shadow:0 0 30px rgba(255,107,157,0.3);transition:all 0.3s;transform:skewX(-5deg)}
-.pack-box-glow{position:absolute;inset:-10px;border-radius:14px;
-  background:radial-gradient(ellipse,rgba(255,107,157,0.2),transparent 70%);animation:packGlow 1.5s ease-in-out infinite alternate}
-@keyframes packGlow{0%{opacity:0.5;transform:scale(0.95)}100%{opacity:1;transform:scale(1.05)}}
-.pack-box:hover .pack-box-inner{transform:scale(1.05);box-shadow:0 0 40px rgba(255,107,157,0.5)}
-@keyframes packOpen{0%{transform:scale(1);opacity:1}50%{transform:scale(1.3) rotateY(90deg);opacity:0.5}100%{transform:scale(0) rotateY(180deg);opacity:0}}
-.pack-box.pack-open .pack-box-inner{animation:packOpen 0.6s ease-in forwards}
-.pack-box.pack-open .pack-box-glow{animation:none;opacity:0}
-.pack-cards-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:600px;margin:10px auto;padding:10px}
-.pack-card{width:110px;height:155px;perspective:600px;cursor:default}
-.pack-card-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.5s ease-out}
+  border:3px solid var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:60px;box-shadow:0 0 30px rgba(255,107,157,0.3);transition:all 0.3s;transform:skewX(-5deg)}
+.pack-box-glow{position:absolute;inset:-20px;border-radius:20px;
+  background:radial-gradient(ellipse,rgba(255,107,157,0.25),transparent 70%);animation:packGlow 1.5s ease-in-out infinite alternate}
+@keyframes packGlow{0%{opacity:0.5;transform:scale(0.9)}100%{opacity:1;transform:scale(1.1)}}
+.pack-box:hover .pack-box-inner{transform:skewX(-5deg) scale(1.08);box-shadow:0 0 50px rgba(255,107,157,0.6)}
+.pack-box:active .pack-box-inner{transform:skewX(-5deg) scale(0.95)}
+@keyframes packOpen{0%{transform:skewX(-5deg) scale(1);opacity:1}30%{transform:skewX(-5deg) scale(1.2);opacity:1}
+  60%{transform:skewX(0) scale(1.4) rotateY(90deg);opacity:0.5}100%{transform:scale(0) rotateY(180deg);opacity:0}}
+.pack-box.pack-open .pack-box-inner{animation:packOpen 0.8s ease-in forwards}
+.pack-box.pack-open .pack-box-glow{animation:none;opacity:0;transition:opacity 0.3s}
+/* Pack burst particles */
+@keyframes packBurst{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--bx),var(--by)) scale(0)}}
+.pack-burst{position:absolute;width:8px;height:8px;border-radius:50%;pointer-events:none;
+  animation:packBurst 0.8s ease-out forwards;z-index:10}
+/* Card grid */
+.pack-cards-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:680px;margin:10px auto;padding:10px}
+/* Individual card */
+.pack-card{width:120px;height:170px;perspective:800px;cursor:default;opacity:0;transform:translateY(40px) scale(0.8);
+  transition:opacity 0.4s ease,transform 0.5s cubic-bezier(0.22,1,0.36,1)}
+.pack-card.pack-visible{opacity:1;transform:translateY(0) scale(1)}
+.pack-card-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.6s cubic-bezier(0.34,1.56,0.64,1)}
 .pack-card.flipped .pack-card-inner{transform:rotateY(180deg)}
 .pack-card-back{position:absolute;inset:0;backface-visibility:hidden;background:linear-gradient(135deg,#2a1838,#1a1028);
-  border:2px solid var(--gold-dim);border-radius:6px;display:flex;align-items:center;justify-content:center;
-  font-size:28px;color:var(--gold-dim)}
+  border:2px solid var(--gold-dim);border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:32px;color:var(--gold-dim);overflow:hidden}
+.pack-card-back::after{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(135deg,transparent,transparent 8px,rgba(255,107,157,0.04) 8px,rgba(255,107,157,0.04) 10px)}
 .pack-card-front{position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);
-  background:linear-gradient(145deg,#1e1d32,#16152a);border:2px solid var(--card-border);border-radius:6px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px;overflow:hidden}
+  background:linear-gradient(145deg,#1e1d32,#16152a);border:2px solid var(--card-border);border-radius:8px;
+  display:flex;flex-direction:column;align-items:center;padding:8px 6px;overflow:hidden}
 .pack-card-front.spell{border-color:var(--spell-border)}
-.pack-new .pack-card-front{border-color:var(--gold);box-shadow:0 0 15px rgba(255,107,157,0.5)}
-.pcf-tag{font-size:9px;padding:1px 6px;border-radius:8px;margin-bottom:4px;font-weight:700}
-.pack-new .pcf-tag{background:rgba(255,107,157,0.3);color:var(--gold)}
-.pack-card:not(.pack-new) .pcf-tag{background:rgba(100,100,100,0.3);color:#888}
-.pcf-emoji{font-size:30px;margin:4px 0}
-.pcf-name{font-size:10px;color:var(--gold);font-weight:700;text-align:center;font-family:'Baloo 2','Fredoka',sans-serif}
-.pcf-type{font-size:8px;color:var(--text-dim);margin-top:2px}
+.pack-new .pack-card-front{border-color:var(--gold);box-shadow:0 0 20px rgba(255,107,157,0.5),inset 0 0 15px rgba(255,107,157,0.08)}
+@keyframes newCardShine{0%{left:-100%}100%{left:200%}}
+.pack-new .pack-card-front::after{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent);
+  animation:newCardShine 2s ease-in-out 0.8s infinite}
+.pcf-tag{font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700;letter-spacing:1px;align-self:flex-start}
+.pack-new .pcf-tag{background:linear-gradient(135deg,rgba(255,107,157,0.3),rgba(255,62,122,0.2));color:var(--gold)}
+.pack-card:not(.pack-new) .pcf-tag{background:rgba(100,100,100,0.2);color:#666}
+.pcf-emoji{font-size:32px;margin:4px 0;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))}
+.pcf-name{font-size:11px;color:var(--gold);font-weight:700;text-align:center;font-family:'Baloo 2','Fredoka',sans-serif;
+  line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pcf-type{font-family:'Share Tech Mono',monospace;font-size:8px;color:rgba(255,255,255,0.35);letter-spacing:1px;
+  text-transform:uppercase;margin:2px 0}
+.pcf-stats{display:flex;gap:6px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dim);margin:2px 0}
+.pcf-stats b{color:var(--rust-light)}
+.pcf-slots{display:flex;gap:2px;margin:2px 0}
+.pcf-slots span{width:7px;height:7px;border-radius:50%;border:1.5px solid var(--gold-dim)}
+.pcf-effect{font-size:8px;color:var(--text-dim);line-height:1.3;max-height:28px;overflow:hidden;text-align:center;
+  margin-top:auto;padding:3px 4px;background:rgba(0,0,0,0.2);border-radius:3px;width:100%}
+/* Rare card glow */
+.pack-card.pack-rare .pack-card-front{border-color:#c084fc;box-shadow:0 0 16px rgba(192,132,252,0.4)}
+.pack-card.pack-rare.pack-new .pack-card-front{box-shadow:0 0 20px rgba(192,132,252,0.5),0 0 15px rgba(255,107,157,0.3)}
+/* Pack summary counter */
+.pack-summary{display:flex;gap:16px;justify-content:center;margin:8px 0;font-family:'Share Tech Mono',monospace;font-size:12px}
+.pack-summary .ps-item{color:var(--text-dim);letter-spacing:1px}
+.pack-summary .ps-item b{color:var(--gold);font-size:14px}
 /* Game layout */
 #screen-game{display:none;background:linear-gradient(180deg,#08081a 0%,#10102a 40%,#14122a 60%,#08081a 100%)}
 #screen-game.active{display:flex;position:relative;background:
@@ -1084,7 +1116,9 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
   .zzz-screen-info .zzz-widget-card{padding:10px 14px;min-width:auto}
   .zzz-screen-info .si-big{font-size:22px}
   .zzz-screen-info .si-sub{font-size:9px}
-  #screen-adventure .zzz-adv-main{padding-top:36px;padding-left:36px}
+  .zzz-screen-info{transform:skewX(-3deg)}
+  .zzz-screen-info .zzz-widget-card:hover{transform:skewX(3deg) translateY(-3px) scale(1.01)}
+  #screen-adventure .zzz-adv-main{padding-top:36px;padding-left:36px;padding-bottom:90px}
   #screen-adventure .zzz-screen-info{left:36px}
   #screen-adventure .zzz-adv-top{padding:12px 16px 72px}
   /* Mobile: side strips for new screens */
@@ -1234,9 +1268,13 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
 .map-paths path.path-active{stroke:rgba(255,62,122,0.75);stroke-width:2.5;stroke-dasharray:none;filter:drop-shadow(0 0 6px rgba(255,62,122,0.4))}
 .map-node-tooltip{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%) skewX(-5deg);background:#12122a;border:1px solid rgba(255,62,122,0.2);border-radius:6px;padding:5px 14px;font-size:11px;color:var(--text);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .25s;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,0.5)}
 .map-node:hover .map-node-tooltip{opacity:1}
-.adv-overlay{position:fixed;inset:0;background:rgba(5,5,15,0.92);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(12px)}
+.adv-overlay{position:fixed;inset:0;background:rgba(5,5,15,0.92);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(12px);
+  opacity:0;transition:opacity 0.3s ease;pointer-events:none}
+.adv-overlay.adv-show{opacity:1;pointer-events:auto}
 .adv-panel{background:#12122a;border:1px solid rgba(255,62,122,0.2);border-radius:8px;padding:28px 24px;max-width:460px;width:92%;text-align:center;max-height:82vh;overflow-y:auto;
-  box-shadow:0 20px 60px rgba(0,0,0,0.7),0 0 40px rgba(255,62,122,0.06);position:relative;transform:skewX(-5deg)}
+  box-shadow:0 20px 60px rgba(0,0,0,0.7),0 0 40px rgba(255,62,122,0.06);position:relative;transform:skewX(-5deg) translateY(30px) scale(0.95);
+  transition:transform 0.35s cubic-bezier(0.22,1,0.36,1),opacity 0.3s ease;opacity:0}
+.adv-overlay.adv-show .adv-panel{transform:skewX(-5deg) translateY(0) scale(1);opacity:1}
 .adv-panel>*{transform:skewX(5deg)}
 .adv-panel::before{content:'';position:absolute;left:0;top:20px;bottom:20px;width:3px;background:#ff3e7a;border-radius:0 2px 2px 0;box-shadow:0 0 10px rgba(255,62,122,0.4)}
 .adv-panel h3{color:var(--gold);margin:0 0 16px;font-size:22px;text-shadow:0 2px 8px rgba(255,107,157,0.15);letter-spacing:1px}
@@ -1256,6 +1294,46 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
 .adv-card-pick{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:14px 0}
 .adv-card-pick .card{cursor:pointer;transition:all .25s}
 .adv-card-pick .card:hover{transform:translateY(-10px) scale(1.03);box-shadow:0 8px 25px rgba(255,107,157,0.35)}
+/* Widget card interactive effects */
+.zzz-widget-card,.zzz-screen-info .zzz-widget-card{
+  transition:transform 0.35s cubic-bezier(0.22,1,0.36,1),box-shadow 0.35s ease,background 0.25s ease;
+  cursor:default;user-select:none;-webkit-user-select:none}
+.zzz-widget-card:hover,.zzz-screen-info .zzz-widget-card:hover{
+  transform:skewX(5deg) translateY(-4px) scale(1.02);
+  box-shadow:0 -6px 30px rgba(0,0,0,0.3),0 8px 20px rgba(0,0,0,0.15);
+  background:rgba(255,255,255,1)}
+.zzz-widget-card:active,.zzz-screen-info .zzz-widget-card:active{
+  transform:skewX(5deg) translateY(-1px) scale(0.98);
+  transition-duration:0.1s}
+/* Reward card detail style */
+.reward-card-detail{display:flex;align-items:flex-start;gap:14px;padding:14px 18px 14px 24px;margin:8px 0;
+  background:#1a1a2e;border:none;border-radius:4px;position:relative;overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,0.4);transform:skewX(-7deg);cursor:pointer;
+  transition:all 0.25s cubic-bezier(0.22,1,0.36,1)}
+.reward-card-detail>*{transform:skewX(7deg)}
+.reward-card-detail::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:4px;
+  background:#ff3e7a;border-radius:0 2px 2px 0;box-shadow:0 0 8px rgba(255,62,122,0.5);transition:all 0.25s}
+.reward-card-detail:hover{background:#22223a;transform:skewX(-7deg) translateX(8px) scale(1.03);
+  box-shadow:0 4px 20px rgba(0,0,0,0.5),0 0 15px rgba(255,62,122,0.15)}
+.reward-card-detail:hover::before{width:5px;top:4px;bottom:4px;box-shadow:0 0 12px rgba(255,62,122,0.7)}
+.reward-card-detail:active{transform:skewX(-7deg) scale(0.97)}
+.reward-card-detail.rare-reward{border-left:none}
+.reward-card-detail.rare-reward::before{background:rgba(192,132,252,0.8);box-shadow:0 0 8px rgba(192,132,252,0.5)}
+.reward-card-detail.rare-reward:hover::before{box-shadow:0 0 12px rgba(192,132,252,0.7)}
+.reward-card-detail.rare-reward:hover{box-shadow:0 4px 20px rgba(192,132,252,0.2),0 0 15px rgba(192,132,252,0.12)}
+.rcd-emoji{font-size:36px;line-height:1;flex-shrink:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.4))}
+.rcd-body{flex:1;min-width:0;text-align:left}
+.rcd-name{font-family:'Baloo 2','Fredoka',sans-serif;font-size:15px;color:var(--gold);letter-spacing:1px;line-height:1.2}
+.rcd-name .rcd-rare{color:#c084fc;font-size:10px;margin-left:4px;letter-spacing:0}
+.rcd-type{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin:2px 0}
+.rcd-stats{display:flex;gap:10px;margin:4px 0}
+.rcd-stat{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim)}
+.rcd-stat b{color:var(--rust-light);font-weight:700}
+.rcd-slots{display:flex;gap:3px;align-items:center;margin:3px 0}
+.rcd-slots span{width:10px;height:10px;border-radius:50%;border:2px solid var(--gold-dim);display:inline-block}
+.rcd-effect{font-size:11px;color:var(--text-dim);line-height:1.5;margin-top:4px;padding:6px 8px;
+  background:rgba(0,0,0,0.25);border-radius:3px;border-left:2px solid rgba(255,62,122,0.3)}
+/* Reward picks staggered layout */
 .zzz-reward-picks{display:flex;flex-direction:column;gap:0;margin:14px 0;width:100%}
 .zzz-reward-row{margin-bottom:6px}
 .adv-shop-item.rare-reward{border-color:rgba(192,132,252,0.3)}
@@ -3177,43 +3255,68 @@ const Shop={
     const info=$('pack-info');info.textContent='点击卡包开启!';
     const packEl=$('pack-box');packEl.classList.remove('hidden');packEl.classList.remove('pack-open');
     $('pack-done-btn').classList.add('hidden');
+    // Remove old summary if any
+    const oldSummary=o.querySelector('.pack-summary');if(oldSummary)oldSummary.remove();
     const newCards=[];
     cards.forEach(c=>{if(!PlayerData.hasCard(c.id))newCards.push(c.id)});
+    const rareCards=cards.filter(c=>!COMMON_CARDS.includes(c.id));
     packEl.onclick=()=>{
       packEl.classList.add('pack-open');
+      // Spawn burst particles from pack center
+      const rect=packEl.getBoundingClientRect();
+      const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+      const colors=['#ff6b9d','#c084fc','#ffd700','#ff3e7a','#7a5acd'];
+      for(let i=0;i<18;i++){
+        const p=document.createElement('div');p.className='pack-burst';
+        const angle=Math.random()*Math.PI*2;const dist=60+Math.random()*80;
+        p.style.cssText=`left:${cx}px;top:${cy}px;background:${colors[i%colors.length]};--bx:${Math.cos(angle)*dist}px;--by:${Math.sin(angle)*dist}px`;
+        document.body.appendChild(p);
+        setTimeout(()=>p.remove(),900);
+      }
+      // Show summary
+      const summaryDiv=document.createElement('div');summaryDiv.className='pack-summary';
+      summaryDiv.innerHTML=`<div class="ps-item">新卡 <b>${newCards.length}</b></div><div class="ps-item">稀有 <b>${rareCards.length}</b></div><div class="ps-item">总计 <b>${cards.length}</b></div>`;
       info.textContent=newCards.length>0?`获得 ${newCards.length} 张新卡!`:'全部重复卡';
-      setTimeout(()=>{packEl.classList.add('hidden');this.revealCards(cards,container,newCards)},600);
+      info.after(summaryDiv);
+      setTimeout(()=>{packEl.classList.add('hidden');this.revealCards(cards,container,newCards)},800);
     };
   },
   revealCards(cards,container,newCardIds){
-    let idx=0;
-    const revealNext=()=>{
-      if(idx>=cards.length){
-        $('pack-done-btn').classList.remove('hidden');
-        this.renderShop();
-        return;
-      }
-      const c=cards[idx];
+    // Create all card elements first (hidden), then stagger fly-in + flip
+    const cardEls=[];
+    cards.forEach((c,i)=>{
       const isNew=newCardIds.includes(c.id);
       if(isNew)PlayerData.addCard(c.id);
-      const div=document.createElement('div');
-      div.className='pack-card'+(isNew?' pack-new':'');
       const isRare=!COMMON_CARDS.includes(c.id);
+      const div=document.createElement('div');
+      div.className='pack-card'+(isNew?' pack-new':'')+(isRare?' pack-rare':'');
+      const slotsHtml=c.type==='creature'?Array.from({length:c.slots},()=>'<span></span>').join(''):'';
       div.innerHTML=`<div class="pack-card-inner">
         <div class="pack-card-back">?</div>
-        <div class="pack-card-front ${c.type==='spell'?'spell':''}" style="${isRare?'border-color:#c084fc;box-shadow:0 0 12px rgba(192,132,252,0.4)':''}">
-          <div class="pcf-tag">${isNew?'新':'已有'}</div>
+        <div class="pack-card-front ${c.type==='spell'?'spell':''}">
+          <div class="pcf-tag">${isNew?'NEW ✦':'已有'}</div>
           <div class="pcf-emoji">${c.emoji}</div>
           <div class="pcf-name">${c.name}</div>
-          <div class="pcf-type">${c.type==='creature'?'生物 基础:'+c.base:'法术 槽:'+c.slots}</div>
-          <div class="pcf-effect" style="font-size:8px;color:var(--text-dim);margin-top:3px;line-height:1.3;max-height:32px;overflow:hidden">${c.effectDesc||''}</div>
+          <div class="pcf-type">${c.type==='creature'?'CREATURE 生物':'SPELL 法术'}</div>
+          <div class="pcf-stats">${c.type==='creature'?`<span>基础 <b>${c.base}</b></span><span>槽位 <b>${c.slots}</b></span>`:`<span>槽位 <b>${c.slots}</b></span>`}</div>
+          ${slotsHtml?`<div class="pcf-slots">${slotsHtml}</div>`:''}
+          ${c.effectDesc?`<div class="pcf-effect">${c.effectDesc}</div>`:''}
         </div></div>`;
       container.appendChild(div);
-      setTimeout(()=>div.classList.add('flipped'),50);
-      idx++;
-      setTimeout(revealNext,250);
-    };
-    revealNext();
+      cardEls.push(div);
+    });
+    // Stagger: fly-in then flip
+    cardEls.forEach((div,i)=>{
+      setTimeout(()=>{
+        div.classList.add('pack-visible');
+        setTimeout(()=>div.classList.add('flipped'),200);
+      },i*120);
+    });
+    // Show done button after all revealed
+    setTimeout(()=>{
+      $('pack-done-btn').classList.remove('hidden');
+      this.renderShop();
+    },cards.length*120+500);
   },
   closePack(){
     $('pack-overlay').classList.add('hidden');
@@ -3616,7 +3719,56 @@ const RANDOM_EVENTS=[
     ]}
 ];
 
-function advMsg(msg){const p=$('adv-panel');p.innerHTML=`<h3>${msg}</h3><button class="adv-btn" onclick="Adventure.closeOverlay()">确定</button>`;$('adv-overlay').style.display='flex'}
+function advMsg(msg){const p=$('adv-panel');p.innerHTML=`<h3>${msg}</h3><button class="adv-btn" onclick="Adventure.closeOverlay()">确定</button>`;advShowOverlay()}
+
+function advShowOverlay(){
+  const el=$('adv-overlay');
+  el.style.display='flex';
+  el.classList.remove('adv-show');
+  void el.offsetWidth;
+  el.classList.add('adv-show');
+}
+function advHideOverlay(){
+  const el=$('adv-overlay');
+  el.classList.remove('adv-show');
+  setTimeout(()=>{el.style.display='none'},350);
+}
+/* Play ZZZ transition then show overlay (for adventure events) */
+function advTransitionOverlay(contentFn){
+  const slide=document.querySelector('#zzz-transition .zzz-slide');
+  if(!slide){contentFn();advShowOverlay();return}
+  const isV=(_zzzDir%2===1);_zzzDir++;
+  slide.className='zzz-slide';void slide.offsetWidth;
+  const inCls=isV?'v-slide-in':'h-slide-in';
+  const outCls=isV?'v-slide-out':'h-slide-out';
+  slide.style.transform=isV?'translateY(110%) skewY(5deg) skewX(0deg)':'translateX(-110%) skewX(-8deg)';
+  void slide.offsetWidth;
+  slide.classList.add(inCls);
+  setTimeout(()=>{
+    contentFn();
+    advShowOverlay();
+    slide.classList.remove(inCls);void slide.offsetWidth;
+    slide.classList.add(outCls);
+    setTimeout(()=>{slide.className='zzz-slide';slide.style.transform=''},340);
+  },400);
+}
+
+function renderCardDetail(c,onclick,isRare){
+  const slotsHtml=Array.from({length:c.slots},()=>'<span></span>').join('');
+  return `<div class="reward-card-detail${isRare?' rare-reward':''}" onclick="${onclick}">
+    <div class="rcd-emoji">${c.emoji}</div>
+    <div class="rcd-body">
+      <div class="rcd-name">${c.name}${isRare?'<span class="rcd-rare">★ 稀有</span>':''}</div>
+      <div class="rcd-type">${c.type==='creature'?'生物 CREATURE':'法术 SPELL'}</div>
+      <div class="rcd-stats">
+        ${c.type==='creature'?`<span class="rcd-stat">基础 <b>${c.base}</b></span>`:''}
+        <span class="rcd-stat">槽位 <b>${c.slots}</b></span>
+      </div>
+      ${slotsHtml?`<div class="rcd-slots">${slotsHtml}</div>`:''}
+      ${c.effectDesc?`<div class="rcd-effect">${c.effectDesc}</div>`:''}
+    </div>
+  </div>`;
+}
 
 const Adventure={
   active:false, map:null, currentFloor:-1, visitedNode:null,
@@ -3651,14 +3803,12 @@ const Adventure={
     let html=`<h3>🌟 初始天赋</h3><p>冒险开始前，选择一张稀有卡加入你的牌组:</p><div class="zzz-reward-picks">`;
     picks.forEach((c,i)=>{
       html+=`<div class="zzz-reward-row" style="margin-left:${i*30}px">
-        <div class="adv-shop-item rare-reward" onclick="Adventure.pickStarterCard('${c.id}')" style="cursor:pointer">
-          <div class="item-info"><span class="item-name">${c.emoji} ${c.name} <span style="color:#c084fc;font-size:10px">★稀有</span></span>
-          <span class="item-desc">${c.type==='creature'?'生物 基础:'+c.base:'法术'} | 槽:${c.slots}${c.effectDesc?' | '+c.effectDesc:''}</span></div>
-        </div></div>`;
+        ${renderCardDetail(c,"Adventure.pickStarterCard('"+c.id+"')",true)}
+      </div>`;
     });
     html+=`</div>`;
     p.innerHTML=html;
-    $('adv-overlay').style.display='flex';
+    advShowOverlay();
   },
 
   pickStarterCard(cardId){
@@ -3912,14 +4062,14 @@ const Adventure={
     this.active=false;
     const p=$('adv-panel');
     p.innerHTML=`<h3>💀 冒险失败</h3><p>你在锈蚀平原倒下了...</p><button class="adv-btn" onclick="Adventure.closeOverlay();showScreen('screen-menu')">返回主菜单</button>`;
-    $('adv-overlay').style.display='flex';
+    advShowOverlay();
     showScreen('screen-map');
   },
 
   showBossVictory(){
     const p=$('adv-panel');
     p.innerHTML=`<h3>👑 冒险胜利!</h3><p>你击败了锈蚀领主!</p><button class="adv-btn" onclick="Adventure.closeOverlay();Adventure.active=false;showScreen('screen-menu')">返回主菜单</button>`;
-    $('adv-overlay').style.display='flex';
+    advShowOverlay();
   },
 
   showBattleReward(type,gold){
@@ -3932,14 +4082,12 @@ const Adventure={
     picks.forEach((c,i)=>{
       const isRare=!COMMON_CARDS.includes(c.id);
       html+=`<div class="zzz-reward-row" style="margin-left:${i*30}px">
-        <div class="adv-shop-item${isRare?' rare-reward':''}" onclick="Adventure.pickRewardCard('${c.id}',${i})" style="cursor:pointer">
-          <div class="item-info"><span class="item-name">${c.emoji} ${c.name}${isRare?' <span style="color:#c084fc;font-size:10px">★稀有</span>':''}</span>
-          <span class="item-desc">${c.type==='creature'?'生物 基础:'+c.base:'法术'} | 槽:${c.slots}${c.effectDesc?' | '+c.effectDesc:''}</span></div>
-        </div></div>`;
+        ${renderCardDetail(c,"Adventure.pickRewardCard('"+c.id+"',"+i+")",isRare)}
+      </div>`;
     });
     html+=`</div><button class="adv-btn" onclick="Adventure.closeOverlay();Adventure.renderMap()">跳过</button>`;
     p.innerHTML=html;
-    $('adv-overlay').style.display='flex';
+    advShowOverlay();
   },
 
   pickRewardCard(cardId){
@@ -3952,12 +4100,13 @@ const Adventure={
   // --- CAMPFIRE ---
   handleCampfire(){
     const heal=Math.ceil(this.maxHp*0.3);
-    const p=$('adv-panel');
-    let html=`<h3>🔥 篝火</h3><p>在温暖的篝火旁休息...</p>`;
-    html+=`<button class="adv-btn" onclick="Adventure.campfireRest()">休息 (恢复${heal}HP)</button>`;
-    html+=`<button class="adv-btn" onclick="Adventure.campfireUpgrade()">升级生物 (基础值+2)</button>`;
-    p.innerHTML=html;
-    $('adv-overlay').style.display='flex';
+    advTransitionOverlay(()=>{
+      const p=$('adv-panel');
+      let html=`<h3>🔥 篝火</h3><p>在温暖的篝火旁休息...</p>`;
+      html+=`<button class="adv-btn" onclick="Adventure.campfireRest()">休息 (恢复${heal}HP)</button>`;
+      html+=`<button class="adv-btn" onclick="Adventure.campfireUpgrade()">升级生物 (基础值+2)</button>`;
+      p.innerHTML=html;
+    });
   },
 
   campfireRest(){
@@ -3983,11 +4132,10 @@ const Adventure={
     const p=$('adv-panel');
     let html=`<h3>🔥 选择升级的生物</h3><p>基础值+2 (每张卡最多升级1次)</p><div class="zzz-reward-picks">`;
     creatures.forEach((c,i)=>{
+      const upgraded={...c,base:c.base+2,effectDesc:`基础值: ${c.base} → ${c.base+2}`};
       html+=`<div class="zzz-reward-row" style="margin-left:${i*25}px">
-        <div class="adv-shop-item" onclick="Adventure.doUpgrade('${c.id}')" style="cursor:pointer">
-          <div class="item-info"><span class="item-name">${c.emoji} ${c.name}</span>
-          <span class="item-desc">基础值: ${c.base} → ${c.base+2}</span></div>
-        </div></div>`;
+        ${renderCardDetail(upgraded,"Adventure.doUpgrade('"+c.id+"')",false)}
+      </div>`;
     });
     html+=`</div><button class="adv-btn" onclick="Adventure.closeOverlay();Adventure.renderMap()">取消</button>`;
     p.innerHTML=html;
@@ -4004,27 +4152,29 @@ const Adventure={
   handleChest(){
     const available=ALL_RELICS.filter(r=>!this.hasRelic(r.id));
     if(available.length===0){
-      // All relics owned, fallback to gold
       const gold=Math.floor(Math.random()*51)+50;
       this.gold+=gold;
-      advMsg(`💎 打开宝箱! 已拥有所有遗物，获得 ${gold} 💰`);
-      setTimeout(()=>{this.closeOverlay();this.renderMap()},800);
+      advTransitionOverlay(()=>{
+        advMsg(`💎 打开宝箱! 已拥有所有遗物，获得 ${gold} 💰`);
+      });
+      setTimeout(()=>{this.closeOverlay();this.renderMap()},1200);
       return;
     }
     const relic=available[Math.floor(Math.random()*available.length)];
     this.relics.push(relic.id);
-    advMsg(`💎 打开宝箱! 获得遗物「${relic.emoji} ${relic.name}」— ${relic.desc}`);
-    setTimeout(()=>{this.closeOverlay();this.renderMap()},1200);
+    advTransitionOverlay(()=>{
+      const p=$('adv-panel');
+      p.innerHTML=`<h3>💎 打开宝箱!</h3><p>获得遗物「${relic.emoji} ${relic.name}」</p><p style="color:var(--text-dim);font-size:12px">${relic.desc}</p><button class="adv-btn" onclick="Adventure.closeOverlay();Adventure.renderMap()">确定</button>`;
+    });
   },
 
   // --- SHOP ---
   handleShop(){
     this._shopCards=shuffle([...ALL_CARDS]).slice(0,3).map(c=>({...c,price:COMMON_CARDS.includes(c.id)?40+Math.floor(Math.random()*31):70+Math.floor(Math.random()*51),sold:false}));
-    // Generate relic offerings (3 random, not already owned)
     const available=ALL_RELICS.filter(r=>!this.hasRelic(r.id));
     this._shopRelics=shuffle([...available]).slice(0,Math.min(3,available.length)).map(r=>({...r,price:r.rarity==='common'?80+Math.floor(Math.random()*31):110+Math.floor(Math.random()*41),sold:false}));
     this._shopRemovedCard=false;
-    this.renderShop();
+    advTransitionOverlay(()=>{this.renderShop()});
   },
 
   renderShop(){
@@ -4065,7 +4215,7 @@ const Adventure={
     }
     html+=`<div style="margin-top:12px"><button class="adv-btn" onclick="Adventure.closeOverlay();Adventure.renderMap()">离开商店</button></div>`;
     p.innerHTML=html;
-    $('adv-overlay').style.display='flex';
+    advShowOverlay();
   },
 
   buyShopRelic(idx){
@@ -4139,17 +4289,18 @@ const Adventure={
   // --- EVENT ---
   handleEvent(){
     const evt=RANDOM_EVENTS[Math.floor(Math.random()*RANDOM_EVENTS.length)];
-    const p=$('adv-panel');
-    let html=`<h3>${evt.emoji} ${evt.name}</h3><p>${evt.desc}</p><div style="display:flex;flex-direction:column;gap:0;margin:10px 0">`;
-    evt.options.forEach((opt,i)=>{
-      html+=`<div style="margin-left:${i*25}px;margin-bottom:6px"><button class="adv-btn" style="margin:0;width:auto;display:inline-block" onclick="Adventure.doEvent('${evt.id}',${i})">${opt.label}</button></div>`;
+    advTransitionOverlay(()=>{
+      const p=$('adv-panel');
+      let html=`<h3>${evt.emoji} ${evt.name}</h3><p>${evt.desc}</p><div style="display:flex;flex-direction:column;gap:0;margin:10px 0">`;
+      evt.options.forEach((opt,i)=>{
+        html+=`<div style="margin-left:${i*25}px;margin-bottom:6px"><button class="adv-btn" style="margin:0;width:auto;display:inline-block" onclick="Adventure.doEvent('${evt.id}',${i})">${opt.label}</button></div>`;
+      });
+      if(evt.skippable!==false){
+        html+=`<div style="margin-left:${evt.options.length*25}px"><button class="adv-btn" style="margin:0;width:auto;display:inline-block" onclick="Adventure.closeOverlay();Adventure.renderMap()">离开</button></div>`;
+      }
+      html+=`</div>`;
+      p.innerHTML=html;
     });
-    if(evt.skippable!==false){
-      html+=`<div style="margin-left:${evt.options.length*25}px"><button class="adv-btn" style="margin:0;width:auto;display:inline-block" onclick="Adventure.closeOverlay();Adventure.renderMap()">离开</button></div>`;
-    }
-    html+=`</div>`;
-    p.innerHTML=html;
-    $('adv-overlay').style.display='flex';
   },
 
   doEvent(evtId,optIdx){
@@ -4280,7 +4431,7 @@ const Adventure={
   },
 
   // --- UTILITY ---
-  closeOverlay(){$('adv-overlay').style.display='none'},
+  closeOverlay(){advHideOverlay()},
 
   abandonRun(){
     if(!confirm('确定放弃本次冒险?'))return;
@@ -4600,7 +4751,7 @@ const G={
     });
     html+=`</div><button class="adv-btn" onclick="G.skipCalibrator()">跳过</button>`;
     p.innerHTML=html;
-    $('adv-overlay').style.display='flex';
+    advShowOverlay();
   },
   applyCalibratorChoice(idx){
     const old=this.p.dice[idx];
