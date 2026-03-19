@@ -1153,17 +1153,33 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
   .zzz-top-strip .st-text.big{font-size:10px}
   .zzz-top-strip .st-icon{font-size:14px}
   #screen-levels .zzz-levels-main{padding-right:36px}
-  #screen-levels .zzz-levels-top{padding:16px 16px 72px 20px}
-  #screen-levels .zzz-levels-content .title{font-size:22px;letter-spacing:3px}
+  #screen-levels .zzz-levels-top{padding:12px 12px 66px 16px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  #screen-levels .zzz-levels-content .title{font-size:20px;letter-spacing:2px}
+  #screen-levels .zzz-levels-content .subtitle{font-size:9px;letter-spacing:3px}
+  #screen-levels .zzz-levels-btns .menu-btn{padding:8px 16px;font-size:11px}
+  #screen-levels .zzz-levels-btns .lv-row{margin-bottom:3px}
+  #screen-levels .zzz-levels-btns .lv-row:nth-child(n+2){margin-left:15px}
+  #screen-levels .zzz-levels-btns .lv-row:nth-child(n+3){margin-left:28px}
+  #screen-levels .zzz-levels-btns .lv-row:nth-child(n+4){margin-left:40px}
+  #screen-levels .zzz-levels-btns .lv-row:nth-child(n+5){margin-left:50px}
+  #screen-levels .zzz-levels-btns .lv-row:nth-child(n+6){margin-left:60px}
+  #screen-levels .zzz-levels-bottom-btns{margin-top:8px}
+  #screen-levels .zzz-levels-bottom-btns .zbtn-row{margin-bottom:3px}
+  #screen-levels .zzz-levels-bottom-btns .menu-btn{padding:8px 16px;font-size:11px}
   #screen-levels .zzz-screen-info{right:36px}
-  .zzz-screen-info .zzz-widget-card{padding:10px 14px;min-width:auto}
-  .zzz-screen-info .si-big{font-size:22px}
-  .zzz-screen-info .si-sub{font-size:9px}
+  .zzz-screen-info .zzz-widget-card{padding:8px 10px;min-width:auto}
+  .zzz-screen-info .si-big{font-size:18px}
+  .zzz-screen-info .si-sub{font-size:8px}
+  .zzz-screen-info .si-label{font-size:7px;letter-spacing:2px}
   .zzz-screen-info{transform:skewX(-3deg)}
   .zzz-screen-info .zzz-widget-card:hover{transform:skewX(3deg) translateY(-3px) scale(1.01)}
-  #screen-adventure .zzz-adv-main{padding-top:36px;padding-left:36px;padding-bottom:90px}
+  #screen-adventure .zzz-adv-main{padding-top:36px;padding-left:36px;padding-bottom:66px}
   #screen-adventure .zzz-screen-info{left:36px}
-  #screen-adventure .zzz-adv-top{padding:12px 16px 72px}
+  #screen-adventure .zzz-adv-top{padding:10px 12px 66px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  #screen-adventure .zzz-adv-content .title{font-size:22px}
+  .adventure-map-card{padding:12px 20px 12px 24px;margin:6px 0}
+  .adventure-map-card h3{font-size:15px}
+  .adventure-map-card p{font-size:11px}
   /* Mobile: side strips for new screens */
   .zzz-side-strip{width:36px;padding:14px 0;gap:10px}
   .zzz-side-strip .zzz-strip-text{font-size:8px;letter-spacing:2px}
@@ -1192,14 +1208,14 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
   .map-top-bar .map-stats span{padding:3px 7px}
   .map-container{padding-left:36px;padding-bottom:10px}
   .map-bottom-bar{margin-left:36px}
-  .map-bottom-bar .mb-accent{padding:6px 8px;min-width:56px}
-  .map-bottom-bar .mb-accent .mb-icon{font-size:12px}
-  .map-bottom-bar .mb-accent .mb-text{font-size:7px;letter-spacing:1px}
-  .map-bottom-bar .mb-white{padding:6px 8px;gap:8px;flex-wrap:nowrap;overflow-x:auto}
-  .map-bottom-bar .mb-stat{min-width:44px}
-  .map-bottom-bar .mb-stat .stat-val{font-size:14px}
-  .map-bottom-bar .mb-stat .stat-label{font-size:6px;letter-spacing:1px}
-  .map-bottom-bar .mb-stat .stat-sub{font-size:7px}
+  .map-bottom-bar .mb-accent{padding:4px 6px;min-width:48px}
+  .map-bottom-bar .mb-accent .mb-icon{font-size:11px}
+  .map-bottom-bar .mb-accent .mb-text{font-size:6px;letter-spacing:1px}
+  .map-bottom-bar .mb-white{padding:4px 6px;gap:6px;flex-wrap:nowrap;overflow-x:auto}
+  .map-bottom-bar .mb-stat{min-width:38px}
+  .map-bottom-bar .mb-stat .stat-val{font-size:12px}
+  .map-bottom-bar .mb-stat .stat-label{font-size:5px;letter-spacing:1px}
+  .map-bottom-bar .mb-stat .stat-sub{font-size:6px}
 }
 /* ============ ADVENTURE MAP ============ */
 .adventure-map-card{background:linear-gradient(135deg,#18162e,#1e1d32);border:1.5px solid rgba(122,90,205,0.35);border-radius:4px;
@@ -1864,6 +1880,8 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
     <div class="zzz-strip-text">SELECT</div>
     <div class="zzz-strip-icon">🎯</div>
     <div class="zzz-strip-divider"></div>
+    <div class="zzz-strip-settings" id="btn-boss-challenge" onclick="LevelMgr.startBossChallenge()" title="挑战Boss">🤖</div>
+    <div class="zzz-strip-divider"></div>
     <div class="zzz-strip-settings" onclick="event.stopPropagation();showScreen('screen-settings')">⚙</div>
     <div class="zzz-strip-settings" onclick="event.stopPropagation();goBackScreen()">↩</div>
   </div>
@@ -1883,8 +1901,7 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
         <div class="zzz-levels-bottom-btns zzz-menu-btns" style="max-width:320px">
           <div class="zbtn-row" style="margin-left:0"><button class="menu-btn" onclick="showScreen('screen-shop')">🛒 商店</button></div>
           <div class="zbtn-row" style="margin-left:24px"><button class="menu-btn" onclick="showScreen('screen-deck')">🃏 构筑牌组</button></div>
-          <div class="zbtn-row" style="margin-left:48px"><button class="menu-btn" id="btn-boss-challenge" onclick="LevelMgr.startBossChallenge()">🤖 挑战Boss</button></div>
-          <div class="zbtn-row" style="margin-left:72px"><button class="menu-btn" onclick="showScreen('screen-menu')">↩ 返回</button></div>
+          <div class="zbtn-row" style="margin-left:48px"><button class="menu-btn" onclick="showScreen('screen-menu')">↩ 返回</button></div>
         </div>
       </div>
     </div>
@@ -2496,10 +2513,10 @@ const LevelMgr={
       const deckEl=document.getElementById('levels-deck-count');if(deckEl)deckEl.textContent=PlayerData.unlockedCards.length;
       const lvEl=document.getElementById('levels-max-level');if(lvEl)lvEl.textContent=unlocked;
     }catch(e){}
-    // Update boss button label
+    // Update boss button title
     try{
       const bossBtn=document.getElementById('btn-boss-challenge');
-      if(bossBtn)bossBtn.textContent=PlayerData.bossRewardClaimed?'🤖 挑战Boss (已通关)':'🤖 挑战Boss';
+      if(bossBtn)bossBtn.title=PlayerData.bossRewardClaimed?'挑战Boss (已通关)':'挑战Boss';
     }catch(e){}
   },
   startLevel(lv){
@@ -3288,7 +3305,7 @@ const ALL_RELICS=[
   {id:'straight_eye',name:'大顺之眼',emoji:'👁️',rarity:'common',desc:'掷骰后若骰子能构成顺子(3+连续),抽1张牌'},
   {id:'curse_source',name:'诅咒之源',emoji:'🔮',rarity:'common',desc:'每次施加诅咒时，额外叠加一层'},
   {id:'curse_orb',name:'诅咒宝珠',emoji:'🟣',rarity:'common',desc:'每回合结束，对手每有3层诅咒抽1牌（最多2张）'},
-  {id:'corrupted_heart',name:'腐化心脏',emoji:'🖤',rarity:'common',desc:'每回合开始回2血，获得时最大生命-5'},
+  {id:'corrupted_heart',name:'腐化心脏',emoji:'🖤',rarity:'rare',desc:'每回合开始回2血，获得时最大生命-6'},
 ];
 function getRelicDef(id){return ALL_RELICS.find(r=>r.id===id)}
 // --- Keyword tooltip system ---
@@ -4009,7 +4026,7 @@ const Adventure={
   hasRelic(id){return this.relics.includes(id)},
   addRelic(id){if(!this.hasRelic(id)){this.relics.push(id);if(this.relics.length>=3)Achievements.unlock('relic_collector');
     // 腐化心脏: max HP -5 on acquire
-    if(id==='corrupted_heart'){this.maxHp=(this.maxHp||30)-5;this.hp=Math.min(this.hp,this.maxHp);log('🖤 腐化心脏:最大生命-5!','effect')}}},
+    if(id==='corrupted_heart'){this.maxHp=(this.maxHp||30)-6;this.hp=Math.min(this.hp,this.maxHp);log('🖤 腐化心脏:最大生命-6!','effect')}}},
   removeRelic(id){const i=this.relics.indexOf(id);if(i>=0)this.relics.splice(i,1)},
 
   // --- MAP GENERATION ---
