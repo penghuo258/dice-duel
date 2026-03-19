@@ -1054,16 +1054,16 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
   #game-layout{grid-template-columns:1fr;grid-template-rows:1fr auto}
   #game-log{bottom:0;width:260px}
   #log-toggle{display:none}
-  #right-panel{position:fixed;bottom:0;left:0;right:0;height:auto;max-height:110px;flex-direction:row;flex-wrap:wrap;
-    align-items:center;border-left:none;border-top:2px solid var(--gold-dim);z-index:100;padding:5px 6px;gap:3px;overflow-x:auto;
+  #right-panel{position:fixed;bottom:0;left:0;right:0;height:auto;max-height:88px;flex-direction:row;flex-wrap:nowrap;
+    align-items:stretch;border-left:none;border-top:2px solid var(--gold-dim);z-index:100;padding:4px 5px;gap:4px;overflow:visible;
     background:rgba(20,16,12,0.98)}
   #right-panel .panel-title{display:none}
   #right-panel .divider-sm{display:none}
   #turn-info{display:none}
-  #dice-container{grid-template-columns:repeat(4,1fr);gap:3px;flex:0 0 auto;width:35%}
+  #dice-container{grid-template-columns:repeat(2,1fr);gap:3px;flex:0 0 auto;width:auto;min-width:56px;max-width:64px}
   .die{font-size:18px;border-radius:3px}
-  .action-btn{width:auto;flex:1;min-width:48px;padding:6px 3px;font-size:10px}
-  #main-area{padding-bottom:115px;height:100vh}
+  .action-btn{width:auto;flex:none;min-width:0;padding:6px 8px;font-size:10px;white-space:nowrap}
+  #main-area{padding-bottom:100px;height:100vh}
   #ai-zone,#player-zone{padding:2px 4px}
   #ai-zone{flex:0.6}
   .player-bar{gap:6px;padding:3px 4px}
@@ -1674,27 +1674,29 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
   /* --- Game layout: shift for 32px strip --- */
   #game-layout{margin-left:32px!important;width:calc(100% - 32px)!important;
     grid-template-columns:1fr!important;grid-template-rows:1fr auto!important}
-  /* --- Right panel: above bottom bar, compact row --- */
+  /* --- Right panel: compact bottom bar with 2 rows --- */
   #right-panel{position:fixed!important;bottom:22px!important;left:32px!important;right:0!important;
-    height:auto!important;max-height:96px!important;flex-direction:row!important;flex-wrap:wrap!important;
-    align-items:center!important;border-left:none!important;border-top:1px solid rgba(255,62,122,0.25)!important;
-    z-index:100!important;padding:3px 4px!important;gap:2px!important;overflow-x:auto!important;
-    background:rgba(10,10,26,0.95)!important;backdrop-filter:blur(12px)!important}
+    height:auto!important;max-height:88px!important;flex-direction:row!important;flex-wrap:nowrap!important;
+    align-items:stretch!important;border-left:none!important;border-top:1px solid rgba(255,62,122,0.25)!important;
+    z-index:100!important;padding:4px 5px!important;gap:4px!important;overflow:visible!important;
+    background:rgba(10,10,26,0.97)!important;backdrop-filter:blur(12px)!important}
   #right-panel .panel-title{display:none!important}
   #right-panel .divider-sm{display:none!important}
   #turn-info{display:none!important}
   .battle-info-widget{display:none!important}
-  /* --- Dice: compact inline row --- */
-  #dice-container{grid-template-columns:repeat(4,1fr)!important;gap:2px!important;flex:0 0 auto!important;width:28%!important}
-  .die{font-size:15px!important;border-radius:2px!important}
-  /* --- Action buttons: compact row --- */
-  .action-btn{width:auto!important;flex:1!important;min-width:44px!important;padding:5px 2px!important;font-size:9px!important}
+  /* --- Dice: compact left column --- */
+  #dice-container{grid-template-columns:repeat(2,1fr)!important;gap:2px!important;flex:0 0 auto!important;width:auto!important;
+    min-width:56px!important;max-width:64px!important}
+  .die{font-size:16px!important;border-radius:2px!important;min-width:0!important;aspect-ratio:1!important}
+  /* --- Action buttons: vertical stack right of dice --- */
+  .action-btn{width:auto!important;flex:none!important;min-width:0!important;padding:6px 8px!important;font-size:10px!important;
+    white-space:nowrap!important}
   /* --- Main area: padding for panel + bottom bar --- */
   #main-area{padding-bottom:0!important;height:100vh!important}
   /* --- Zones: compact --- */
   #ai-zone,#player-zone{padding:1px 3px!important}
   #ai-zone{flex:0.45!important;overflow:hidden!important}
-  #player-zone{flex:1!important;min-height:0!important;justify-content:flex-end!important;padding-bottom:130px!important}
+  #player-zone{flex:1!important;min-height:0!important;justify-content:flex-end!important;padding-bottom:118px!important}
   .player-bar{gap:4px!important;padding:2px 3px!important;flex-wrap:wrap!important}
   .pname{font-size:9px!important;min-width:40px!important;letter-spacing:0px!important;flex-shrink:0!important}
   .hp-bar{width:80px!important;height:16px!important;border-radius:3px!important}
@@ -3291,7 +3293,7 @@ const ALL_RELICS=[
 function getRelicDef(id){return ALL_RELICS.find(r=>r.id===id)}
 // --- Keyword tooltip system ---
 const KW_DEFS={
-  '诅咒':'回合结束时，受到等于诅咒层数的伤害，之后诅咒层数-1。可叠加。',
+  '诅咒':'回合结束时，受到等于诅咒层数的伤害。不会自然衰减，可叠加。',
   '胜出':'对拼中数值更高的一方获胜，触发胜出效果。',
   '部署':'将卡牌从手牌放置到场上，分配骰子后生效。',
   '对拼':'双方生物比较总值（基础值+骰子+加成），高者胜出并造成差值伤害。',
@@ -3325,8 +3327,7 @@ function processCurseDamage(player,label){
   const stacks=player.curseStacks||0;
   if(stacks>0){
     player.hp-=stacks;
-    player.curseStacks=Math.max(0,stacks-1);
-    log(`${label}受到${stacks}层诅咒伤害! (诅咒衰减至${player.curseStacks}层)`,'effect');
+    log(`${label}受到${stacks}层诅咒伤害! (当前诅咒${stacks}层)`,'effect');
   }
 }
 function isCommonCard(id){return COMMON_CARDS.includes(id)}
@@ -5230,13 +5231,9 @@ const G={
       });
     }
 
-    // --- Pick creature ---
+    // --- Pick creature (always pick strongest) ---
     if(creatures.length>0){
-      let pick;
-      const lv=Settings.level;
-      if(lv>=3){pick=creatures[0]}
-      else if(lv===1){pick=creatures[creatures.length-1]}
-      else{pick=creatures[Math.floor(Math.random()*Math.min(3,creatures.length))]}
+      let pick=creatures[0]; // creatures already sorted by base desc
       pick.assignedDice=[];pick.tempBonus=0;
       this.ai.deployedCreature=pick;
       this.ai.hand=this.ai.hand.filter(c=>c!==pick);
