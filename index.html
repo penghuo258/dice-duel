@@ -2890,7 +2890,7 @@ const ALL_CARDS=[
 {id:'shadow_rat',type:'creature',name:'阴影老鼠',emoji:'🐀',base:3,slots:2,
   effectDesc:'胜出:对手下回合骰子-1,我方骰子+1',timing:'win',
   effect(ctx){ctx.enemy.bonusDiceNext=(ctx.enemy.bonusDiceNext||0)-1;ctx.owner.bonusDiceNext=(ctx.owner.bonusDiceNext||0)+1;log('阴影老鼠:对手骰子-1,我方+1!','effect')}},
-{id:'tyrant_rex',type:'creature',name:'暴君霸王龙',emoji:'🦖',base:5,slots:4,
+{id:'tyrant_rex',type:'creature',name:'暴君霸王龙',emoji:'🦖',base:5,slots:3,
   effectDesc:'胜出且差值≥5:额外伤害=差值/2',timing:'win',
   effect(ctx){if(ctx.diff>=5){const extra=Math.floor(ctx.diff/2);ctx.bonusDmg+=extra;log(`暴君效果:额外${extra}伤害`,'effect')}}},
 {id:'swift_bird',type:'creature',name:'迅捷蜂鸟',emoji:'🐦',base:2,slots:3,
@@ -2950,12 +2950,12 @@ const ALL_CARDS=[
   effectDesc:'胜出:若骰子之和<10,恢复3HP',timing:'win',
   effect(ctx){const sum=(ctx.myDice||[]).reduce((a,b)=>a+b,0);if(sum<10){ctx.owner.hp=Math.min(ctx.owner.maxHp||30,ctx.owner.hp+3);log(`史莱姆:骰子和${sum}<10,恢复3HP!`,'effect')}else{log(`史莱姆:骰子和${sum}≥10,未恢复`,'effect')}}},
 {id:'glutton_grum',type:'creature',name:'暴食者格鲁姆',emoji:'🐗',base:7,slots:0,
-  effectDesc:'部署时:弃掉1张手牌,若成功,槽位变为5',timing:'deploy',
+  effectDesc:'部署时:弃掉1张手牌,若成功,槽位变为4',timing:'deploy',
   effect(ctx){const c=ctx.myCreature;if(ctx.owner.hand.length===0){log('暴食者格鲁姆:无手牌可弃,槽位不变','effect');return}
-    c.slots=5;
+    c.slots=4;
     if(ctx.owner.isPlayer){const opts=ctx.owner.hand.map((h,i)=>({label:`${h.emoji}${h.name}`}));
-      showOverlay('暴食者格鲁姆:选择弃掉1张手牌',opts,i=>{const removed=ctx.owner.hand.splice(i,1)[0];discardCard(ctx.owner,removed);log('暴食者格鲁姆:弃掉手牌,槽位变为5!','effect');render()})
-    }else{const i=Math.floor(Math.random()*ctx.owner.hand.length);const removed=ctx.owner.hand.splice(i,1)[0];discardCard(ctx.owner,removed);log('暴食者格鲁姆:弃掉手牌,槽位变为5!','effect');render()}}},
+      showOverlay('暴食者格鲁姆:选择弃掉1张手牌',opts,i=>{const removed=ctx.owner.hand.splice(i,1)[0];discardCard(ctx.owner,removed);log('暴食者格鲁姆:弃掉手牌,槽位变为4!','effect');render()})
+    }else{const i=Math.floor(Math.random()*ctx.owner.hand.length);const removed=ctx.owner.hand.splice(i,1)[0];discardCard(ctx.owner,removed);log('暴食者格鲁姆:弃掉手牌,槽位变为4!','effect');render()}}},
 {id:'frost_dragon',type:'creature',name:'霜鳞龙永冬',emoji:'🐲',base:4,slots:1,
   effectDesc:'部署后:冻结随机生物的随机骰子(该骰子本回合无效)',timing:'duel_start',
   effect(ctx){const targets=[];[ctx.owner,ctx.enemy].forEach(p=>{if(p.deployedCreature&&p.deployedCreature!==ctx.myCreature&&(p.deployedCreature.assignedDice||[]).length>0)targets.push(p.deployedCreature)});
@@ -2995,7 +2995,7 @@ const ALL_CARDS=[
     showOverlay('时空旅者:选择要修改的骰子',opts,i=>{
       const valOpts=[1,2,3,4,5,6].map(v=>({label:`改为 ${v}`}));
       showOverlay('时空旅者:选择新点数',valOpts,vi=>{ctx.myCreature.assignedDice[i]=vi+1;log(`时空旅者:将骰子改为${vi+1}!`,'effect');render()})})}},
-{id:'greedy_mimic',type:'creature',name:'贪婪宝箱怪',emoji:'📦',base:0,slots:4,
+{id:'greedy_mimic',type:'creature',name:'贪婪宝箱怪',emoji:'📦',base:0,slots:3,
   effectDesc:'每有1个分配的骰子,基础值+1',timing:'passive',
   effect(ctx){/* handled in getCreatureValue or duel resolve */}},
 {id:'crystal_guard',type:'creature',name:'水晶守卫',emoji:'🔷',base:3,slots:2,
@@ -3019,9 +3019,9 @@ const ALL_CARDS=[
     ctx.myCreature.tempBonus=(ctx.myCreature.tempBonus||0)+bonus+(straight?3:0);
     log(`混沌骰魔:${unique.size}种不同点数×2=${bonus}${straight?' +顺子+3':''},总加成${bonus+(straight?3:0)}`,'effect')}},
 {id:'leopard_king',type:'creature',name:'豹子之王',emoji:'🐆',base:0,slots:4,
-  effectDesc:'3个骰子相同:基础值10;4个全同:基础值20',timing:'duel_start',
+  effectDesc:'3个骰子相同:基础值10;4个全同:基础值15',timing:'duel_start',
   effect(ctx){const dice=ctx.myCreature.assignedDice||[];const freq={};dice.forEach(v=>freq[v]=(freq[v]||0)+1);const maxCount=Math.max(0,...Object.values(freq));
-    if(maxCount>=4){ctx.myCreature.tempBonus=(ctx.myCreature.tempBonus||0)+20;Achievements.unlock('leopard_trigger');log(`豹子之王:4个相同! 基础值+20!`,'effect')}
+    if(maxCount>=4){ctx.myCreature.tempBonus=(ctx.myCreature.tempBonus||0)+15;Achievements.unlock('leopard_trigger');log(`豹子之王:4个相同! 基础值+15!`,'effect')}
     else if(maxCount>=3){ctx.myCreature.tempBonus=(ctx.myCreature.tempBonus||0)+10;Achievements.unlock('leopard_trigger');log(`豹子之王:3个相同! 基础值+10!`,'effect')}
     else{log('豹子之王:未达成3个相同','effect')}}},
 {id:'doom_prophet',type:'creature',name:'末日预言者',emoji:'🔮',base:1,slots:1,
@@ -3157,13 +3157,57 @@ const ALL_CARDS=[
     let count=0;ctx.owner.hand.forEach(c=>{if(c.type==='creature'){c.growth=(c.growth||0)+bonus;count++}});
     if(count>0)log(`对子增幅:${isPair?'对子'+d[0]+'! ':''}手牌${count}个生物基础值+${bonus}!`,'effect');
     else log('对子增幅:手牌无生物','effect')}},
+// --- CURSE CREATURES (common) ---
+{id:'curse_venom',type:'creature',name:'诅咒毒虫',emoji:'🦂',base:2,slots:2,
+  effectDesc:'胜出:给对手施加2层诅咒',timing:'win',
+  effect(ctx){applyCurse(ctx.enemy,2,ctx.owner);log('诅咒毒虫:对手获得2层诅咒!','effect')}},
+{id:'blood_beast',type:'creature',name:'血潮魔兽',emoji:'🐃',base:7,slots:2,
+  effectDesc:'部署时失去3生命',timing:'deploy',
+  effect(ctx){ctx.owner.hp-=3;log('血潮魔兽:部署代价,失去3生命!','effect')}},
+{id:'life_reaper',type:'creature',name:'生命收割者',emoji:'💀',base:2,slots:2,
+  effectDesc:'胜出:给对手1层诅咒,恢复等于对手诅咒层数的生命',timing:'win',
+  effect(ctx){applyCurse(ctx.enemy,1,ctx.owner);const stacks=ctx.enemy.curseStacks||0;
+    ctx.owner.hp=Math.min(ctx.owner.maxHp||30,ctx.owner.hp+stacks);log(`生命收割者:+1诅咒,恢复${stacks}HP!`,'effect')}},
+{id:'fear_chimera',type:'creature',name:'畏怖合成兽',emoji:'🐲',base:6,slots:1,
+  effectDesc:'手牌中:每使用一张法术,基础值+1',timing:'hand_spell_use',
+  effect(ctx){ctx.card.growth=(ctx.card.growth||0)+1;log(`畏怖合成兽(手牌):使用法术,基础值+1! (当前${ctx.card.base+(ctx.card.growth||0)})`,'effect')}},
+// --- CURSE CREATURES (rare) ---
+{id:'blood_curse_vulture',type:'creature',name:'血咒鷲',emoji:'🦅',base:2,slots:3,
+  effectDesc:'部署时失去3生命,给对手施加3层诅咒',timing:'deploy',
+  effect(ctx){ctx.owner.hp-=3;applyCurse(ctx.enemy,3,ctx.owner);log('血咒鷲:失去3HP,对手获得3层诅咒!','effect')}},
+{id:'curse_parasite',type:'creature',name:'诅咒寄生体',emoji:'🦠',base:1,slots:3,
+  effectDesc:'对拼时:对手每有1层诅咒,本回合基础值+1',timing:'duel_start',
+  effect(ctx){const stacks=ctx.enemy.curseStacks||0;if(stacks>0){ctx.myCreature.tempBonus=(ctx.myCreature.tempBonus||0)+stacks;
+    log(`诅咒寄生体:对手${stacks}层诅咒,基础值+${stacks}!`,'effect')}else{log('诅咒寄生体:对手无诅咒','effect')}}},
+{id:'spacetime_distorter',type:'creature',name:'时空扭曲者',emoji:'🌌',base:3,slots:2,
+  effectDesc:'同时视为法术(可放在法术槽)',timing:'none',isAlsoSpell:true,
+  effect(ctx){}},
+// --- CURSE SPELLS (common) ---
+{id:'curse_spread',type:'spell',name:'诅咒扩散',emoji:'☠️',base:0,slots:1,
+  effectDesc:'胜出:施加等于槽内骰子数值层诅咒',timing:'win',
+  effect(ctx){const v=(ctx.mySpellDice&&ctx.mySpellDice[0])||1;applyCurse(ctx.enemy,v,ctx.owner);
+    log(`诅咒扩散:施加${v}层诅咒!`,'effect')}},
+{id:'blood_curse_resonance',type:'spell',name:'血咒共鸣',emoji:'🩸',base:0,slots:2,
+  effectDesc:'失去槽内骰子值的生命,对手获得等量诅咒',timing:'duel_start',
+  effect(ctx){const v=(ctx.mySpellDice||[]).reduce((a,b)=>a+b,0);if(v>0){ctx.owner.hp-=v;applyCurse(ctx.enemy,v,ctx.owner);
+    log(`血咒共鸣:失去${v}HP,对手+${v}诅咒!`,'effect')}}},
+// --- CURSE SPELLS (rare) ---
+{id:'chain_reaction',type:'spell',name:'连锁反应',emoji:'⛓️',base:0,slots:1,
+  effectDesc:'若槽内骰子为偶数,本回合法术效果触发两次',timing:'duel_start',
+  effect(ctx){const v=(ctx.mySpellDice&&ctx.mySpellDice[0])||0;if(v>0&&v%2===0){ctx.owner._chainReaction=true;
+    log(`连锁反应:骰子${v}为偶数,法术效果将触发两次!`,'effect')}else{log(`连锁反应:骰子${v}为奇数,无效果`,'effect')}}},
+{id:'curse_explosion',type:'spell',name:'诅咒爆发',emoji:'💥',base:0,slots:2,
+  effectDesc:'对拼开始:移除对手等于槽内数值的诅咒,每移除1层造成3点伤害',timing:'duel_start',
+  effect(ctx){const v=(ctx.mySpellDice||[]).reduce((a,b)=>a+b,0);const stacks=ctx.enemy.curseStacks||0;
+    const removed=Math.min(v,stacks);if(removed>0){ctx.enemy.curseStacks-=removed;const dmg=removed*3;ctx.enemy.hp-=dmg;
+    log(`诅咒爆发:移除${removed}层诅咒,造成${dmg}伤害!`,'effect')}else{log('诅咒爆发:对手无诅咒可移除','effect')}}},
 ];
 
-const COMMON_CARDS=['shadow_rat','swift_bird','steam_sentinel','gear_hound','chimney_golem','magnet_puppet','boiler_spider','slime','time_traveler','greedy_mimic','crystal_guard','even_absorb','overload_pulse','steam_burst','emergency_repair','metal_shield','doom_prophet','soul_thief','double_pair','curse_sacrifice','gourd_contract','pair_amplify','iron_giant','clock_prophet'];
+const COMMON_CARDS=['shadow_rat','swift_bird','steam_sentinel','gear_hound','chimney_golem','magnet_puppet','boiler_spider','slime','time_traveler','greedy_mimic','crystal_guard','even_absorb','overload_pulse','steam_burst','emergency_repair','metal_shield','doom_prophet','soul_thief','double_pair','curse_sacrifice','gourd_contract','pair_amplify','iron_giant','clock_prophet','curse_venom','blood_beast','life_reaper','fear_chimera','curse_spread','blood_curse_resonance'];
 
 const ALL_RELICS=[
   {id:'lucky_dice',name:'幸运骰子',emoji:'🎲',rarity:'common',desc:'第一回合多获得1个骰子，但该回合必须使用该骰子，否则失去遗物'},
-  {id:'overload_slot',name:'过载槽位',emoji:'🔌',rarity:'common',desc:'每回合所有生物槽位+1，但出战生物必须投入至少2个骰子，否则失去遗物'},
+  {id:'overload_slot',name:'过载槽位',emoji:'🔌',rarity:'rare',desc:'每回合所有生物槽位+1，但出战生物必须投入至少2个骰子，否则失去遗物'},
   {id:'tidal_bottle',name:'潮汐瓶',emoji:'🌊',rarity:'rare',desc:'掷骰后，所有点数≤2的骰子点数+1'},
   {id:'dice_calibrator',name:'骰子校准器',emoji:'🎯',rarity:'rare',desc:'每回合掷骰后，可将任意一个骰子改为6，该骰子只能用于法术'},
   {id:'blood_contract',name:'血之契约',emoji:'🩸',rarity:'rare',desc:'生命值低于10时，所有生物获得+2基础值'},
@@ -3171,12 +3215,30 @@ const ALL_RELICS=[
   {id:'war_horn',name:'战争号角',emoji:'📯',rarity:'rare',desc:'每回合第一次对拼中，你的生物总值+2'},
   {id:'immortal_seed',name:'不朽之种',emoji:'🌱',rarity:'rare',desc:'生物被摧毁时，将其复制牌(基础值+1)加入牌库'},
   {id:'spell_book',name:'魔法书',emoji:'📖',rarity:'common',desc:'使用法术牌时30%概率复制一张加入手牌(每回合1次)'},
-  {id:'double_blade',name:'双刃剑',emoji:'⚔️',rarity:'common',desc:'所有生物基础值+2，但槽位-1'},
+  {id:'double_blade',name:'双刃剑',emoji:'⚔️',rarity:'common',desc:'所有生物基础值+3，但槽位-1'},
   {id:'life_amulet',name:'生命护符',emoji:'💚',rarity:'rare',desc:'每回合开始时，若生命<15，恢复2点生命'},
   {id:'rebirth_rune',name:'重生符文',emoji:'♻️',rarity:'rare',desc:'首次将死时(HP≤0)保留1点生命，摧毁此遗物'},
   {id:'straight_eye',name:'大顺之眼',emoji:'👁️',rarity:'common',desc:'掷骰后若骰子能构成顺子(3+连续),抽1张牌'},
+  {id:'curse_source',name:'诅咒之源',emoji:'🔮',rarity:'common',desc:'每次施加诅咒时，额外叠加一层'},
+  {id:'curse_orb',name:'诅咒宝珠',emoji:'🟣',rarity:'common',desc:'每回合结束，对手每有3层诅咒抽1牌（最多2张）'},
+  {id:'corrupted_heart',name:'腐化心脏',emoji:'🖤',rarity:'common',desc:'每回合开始回2血，获得时最大生命-5'},
 ];
 function getRelicDef(id){return ALL_RELICS.find(r=>r.id===id)}
+// --- Curse system ---
+function applyCurse(target,stacks,source){
+  if(!target)return;
+  // Relic: 诅咒之源 — extra +1 per application
+  if(source&&source.isPlayer&&typeof G!=='undefined'&&G.adventureMode&&Adventure.hasRelic('curse_source')){stacks+=1;log('🔮 诅咒之源:额外+1层诅咒!','effect')}
+  target.curseStacks=(target.curseStacks||0)+stacks;
+}
+function processCurseDamage(player,label){
+  const stacks=player.curseStacks||0;
+  if(stacks>0){
+    player.hp-=stacks;
+    player.curseStacks=Math.max(0,stacks-1);
+    log(`${label}受到${stacks}层诅咒伤害! (诅咒衰减至${player.curseStacks}层)`,'effect');
+  }
+}
 function isCommonCard(id){return COMMON_CARDS.includes(id)}
 function getCommonCards(){return ALL_CARDS.filter(c=>COMMON_CARDS.includes(c.id))}
 function getRareCards(){return ALL_CARDS.filter(c=>!COMMON_CARDS.includes(c.id))}
@@ -3186,7 +3248,7 @@ function getCommonSpells(){return ALL_CARDS.filter(c=>c.type==='spell'&&COMMON_C
 function getRareSpells(){return ALL_CARDS.filter(c=>c.type==='spell'&&!COMMON_CARDS.includes(c.id))}
 function getCardDef(id){return ALL_CARDS.find(c=>c.id===id)}
 function makeCardInstance(def){return{...def,assignedDice:[],growth:0,tempBonus:0}}
-function getCreatureValue(c){if(!c)return 0;const frozen=new Set(c.frozenDice||[]);let val=c.base+(c.growth||0)+(c.tempBonus||0)+(c.assignedDice||[]).reduce((a,b,i)=>a+(frozen.has(i)?0:b),0);if(c.id==='greedy_mimic')val+=(c.assignedDice||[]).length;if(c._prophetDouble)val*=2;if(typeof G!=='undefined'&&G.adventureMode&&Adventure.hasRelic('double_blade')&&c.type==='creature')val+=2;return val}
+function getCreatureValue(c){if(!c)return 0;const frozen=new Set(c.frozenDice||[]);let val=c.base+(c.growth||0)+(c.tempBonus||0)+(c.assignedDice||[]).reduce((a,b,i)=>a+(frozen.has(i)?0:b),0);if(c.id==='greedy_mimic')val+=(c.assignedDice||[]).length;if(c._prophetDouble)val*=2;if(typeof G!=='undefined'&&G.adventureMode&&Adventure.hasRelic('double_blade')&&c.type==='creature')val+=3;return val}
 function discardCard(p,card){if(card&&card.id)p.discard.push(card.id)}
 function reshuffleDeck(p){if(!p.discard.length)return;const d=p.discard.map(id=>{const def=getCardDef(id);return makeCardInstance(def)});shuffle(d);p.deck=d;p.discard=[];log((p.isPlayer?'铸炉师':'机械领主')+'的弃牌堆已洗入牌库! ('+d.length+'张)','phase')}
 function drawCards(p,n){for(let i=0;i<n;i++){if(p.hand.length>=9)break;if(!p.deck.length){reshuffleDeck(p);if(!p.deck.length)break}const card=p.deck.pop();p.hand.push(card);if(card.id==='magnet_puppet'){card._magnetPending=true}}}
@@ -3200,7 +3262,7 @@ const STARTER_CARDS=['swift_bird','gear_hound','copper_dragon','chimney_golem','
 const PlayerData={
   gold:0,
   unlockedCards:[],
-  VERSION:2,
+  VERSION:3,
   init(){
     try{
       const savedVer=parseInt(localStorage.getItem('dd_version'))||0;
@@ -3776,7 +3838,9 @@ const Adventure={
   bonusDiceNextBattle:0, mapId:null, relics:[],
 
   hasRelic(id){return this.relics.includes(id)},
-  addRelic(id){if(!this.hasRelic(id)){this.relics.push(id);if(this.relics.length>=3)Achievements.unlock('relic_collector')}},
+  addRelic(id){if(!this.hasRelic(id)){this.relics.push(id);if(this.relics.length>=3)Achievements.unlock('relic_collector');
+    // 腐化心脏: max HP -5 on acquire
+    if(id==='corrupted_heart'){this.maxHp=(this.maxHp||30)-5;this.hp=Math.min(this.hp,this.maxHp);log('🖤 腐化心脏:最大生命-5!','effect')}}},
   removeRelic(id){const i=this.relics.indexOf(id);if(i>=0)this.relics.splice(i,1)},
 
   // --- MAP GENERATION ---
@@ -4464,7 +4528,7 @@ const G={
   start(){
     // Reset
     const mkP=()=>({hp:30,hand:[],deck:[],discard:[],dice:[],rerolled:false,deployedCreature:null,deployedSpells:[],
-      shield:0,bankedDice:[],bonusDiceNext:0,extraCreatureNext:false,stolenDice:0,effectsSilenced:false});
+      shield:0,bankedDice:[],bonusDiceNext:0,extraCreatureNext:false,stolenDice:0,effectsSilenced:false,curseStacks:0});
     Object.assign(this.p,mkP(),{isPlayer:true});
     Object.assign(this.ai,mkP(),{isPlayer:false});
     this._spellsUsedThisGame=0;
@@ -4490,7 +4554,7 @@ const G={
   adventureMode:false, adventureBattleType:null,
   startAdventure(type,enemyCreature){
     const mkP=()=>({hp:30,hand:[],deck:[],discard:[],dice:[],rerolled:false,deployedCreature:null,deployedSpells:[],
-      shield:0,bankedDice:[],bonusDiceNext:0,extraCreatureNext:false,stolenDice:0,effectsSilenced:false});
+      shield:0,bankedDice:[],bonusDiceNext:0,extraCreatureNext:false,stolenDice:0,effectsSilenced:false,curseStacks:0});
     Object.assign(this.p,mkP(),{isPlayer:true});
     Object.assign(this.ai,mkP(),{isPlayer:false});
     this.p.hp=Adventure.hp;this.p.maxHp=Adventure.maxHp;
@@ -4589,6 +4653,9 @@ const G={
     // Relic: 生命护符 — heal 2 if HP < 15
     if(this.adventureMode&&Adventure.hasRelic('life_amulet')&&this.p.hp<15){
       this.p.hp=Math.min(this.p.maxHp||30,this.p.hp+2);log('💚 生命护符: 生命值低于15, 恢复2HP!','effect')}
+    // Relic: 腐化心脏 — heal 2 each turn start
+    if(this.adventureMode&&Adventure.hasRelic('corrupted_heart')){
+      this.p.hp=Math.min(this.p.maxHp||30,this.p.hp+2);log('🖤 腐化心脏: 回复2HP!','effect')}
     // Reset spell_book trigger for this turn
     this._spellBookUsed=false;
 
@@ -4792,6 +4859,21 @@ const G={
     if(this.phase!=='deploy')return;
     const card=this.p.hand[idx];
     if(!card)return;
+    // isAlsoSpell creatures: deploy as creature if slot free, else as spell
+    if(card.isAlsoSpell&&card.type==='creature'){
+      if(!this.p.deployedCreature||this.p.extraCreatureNext){
+        // Deploy as creature
+        card.assignedDice=[];card.tempBonus=0;
+        this.p.deployedCreature=card;StatsTracker.recordCard(card.name);SFX.play('click');
+        this.p.hand.splice(idx,1);this.p.extraCreatureNext=false;
+        log(`部署 ${card.name} (作为生物)`);render();return;
+      } else {
+        // Deploy as spell
+        card.assignedDice=[];
+        this.p.deployedSpells.push(card);this.p.hand.splice(idx,1);
+        log(`部署 ${card.name} (作为法术)`);render();return;
+      }
+    }
     if(card.type==='creature'){
       if(this.p.deployedCreature&&!this.p.extraCreatureNext){log('每回合只能出1个生物');return}
       if(this.p.deployedCreature&&this.p.extraCreatureNext){/* allow second */}
@@ -4803,7 +4885,7 @@ const G={
       // Deploy effects now trigger in doRevealAndDuel after dice are assigned
       // Exception: glutton_grum and other non-dice-dependent deploy effects trigger early
       if(card.timing==='deploy'&&card.effect&&!card._deployTriggered){
-        if(card.id==='glutton_grum'||card.id==='doom_prophet'||card.id==='clock_prophet'||card.id==='dream_morpheus'){
+        if(card.id==='glutton_grum'||card.id==='doom_prophet'||card.id==='clock_prophet'||card.id==='dream_morpheus'||card.id==='blood_beast'||card.id==='blood_curse_vulture'){
           card._deployTriggered=true;
           card.effect({owner:this.p,enemy:this.ai,myCreature:card,myDice:card.assignedDice,mySpellDice:[]});
         }
@@ -4820,6 +4902,8 @@ const G={
       if(this.adventureMode&&Adventure.hasRelic('spell_book')&&!this._spellBookUsed&&Math.random()<0.3){
         this._spellBookUsed=true;const copy=makeCardInstance(getCardDef(card.id));this.p.hand.push(copy);
         log('📖 魔法书: 法术被复制了一张到手牌!','effect')}
+      // 畏怖合成兽: trigger hand_spell_use for hand creatures
+      this.p.hand.forEach(c=>{if(c.timing==='hand_spell_use'&&c.effect){c.effect({card:c,owner:this.p})}});
     }
     render();
     // Slam animation on deployed card
@@ -4937,6 +5021,10 @@ const G={
         this.ai.hand=this.ai.hand.filter(c=>c!==s);
       }
     }
+    // Trigger hand_spell_use for AI hand creatures (畏怖合成兽)
+    if(this.ai.deployedSpells.length>0){
+      this.ai.deployedSpells.forEach(()=>{this.ai.hand.forEach(c=>{if(c.timing==='hand_spell_use'&&c.effect){c.effect({card:c,owner:this.ai})}})});
+    }
   },
 
   // --- Reveal & Duel ---
@@ -5012,6 +5100,17 @@ const G={
     this.triggerEffects('turn_end',this.p);
     this.triggerEffects('turn_end',this.ai);
 
+    // Curse turn-end damage
+    processCurseDamage(this.p,'铸炉师');
+    processCurseDamage(this.ai,'机械领主');
+    // Relic: 诅咒宝珠 — draw cards based on enemy curse stacks
+    if(this.adventureMode&&Adventure.hasRelic('curse_orb')){
+      const stacks=this.ai.curseStacks||0;const draws=Math.min(2,Math.floor(stacks/3));
+      if(draws>0){drawCards(this.p,draws);log(`🟣 诅咒宝珠:对手${stacks}层诅咒,抽${draws}牌!`,'effect')}
+    }
+    // Clear chain reaction flag
+    delete this.p._chainReaction;delete this.ai._chainReaction;
+
     await delay(600);
     if(this.checkGameOver())return;
     this.newTurn();
@@ -5038,9 +5137,12 @@ const G={
         const spellEl=findDeployedCardEl(side,'spell',i);
         pulseEffect(spellEl);
         triggerCardEffectAnim(spellEl,s.name+' 发动!',s.id);
-        s.effect({owner:player,enemy,myCreature:player.deployedCreature,
+        const spellCtx={owner:player,enemy,myCreature:player.deployedCreature,
           myDice:player.deployedCreature?player.deployedCreature.assignedDice:[],
-          mySpellDice:s.assignedDice});
+          mySpellDice:s.assignedDice};
+        s.effect(spellCtx);
+        // 连锁反应: trigger spell twice
+        if(player._chainReaction&&s.id!=='chain_reaction'){s.effect(spellCtx);log(`⛓️ 连锁反应:${s.name}再次发动!`,'effect')}
       }
     });
   },
@@ -5347,9 +5449,9 @@ function renderHp(){
   renderHp._prevP=pH;renderHp._prevA=aH;
   const pFill=$('player-hp-fill'),aFill=$('ai-hp-fill');
   pFill.style.width=(pH/(G.p.maxHp||30)*100)+'%';
-  $('player-hp-text').textContent=pH+(G.p.shield?` 🛡${G.p.shield}`:'');
+  $('player-hp-text').textContent=pH+(G.p.shield?` 🛡${G.p.shield}`:'')+(G.p.curseStacks?` ☠${G.p.curseStacks}`:'');
   aFill.style.width=(aH/(G.ai.maxHp||30)*100)+'%';
-  $('ai-hp-text').textContent=aH+(G.ai.shield?` 🛡${G.ai.shield}`:'');
+  $('ai-hp-text').textContent=aH+(G.ai.shield?` 🛡${G.ai.shield}`:'')+(G.ai.curseStacks?` ☠${G.ai.curseStacks}`:'');
   pFill.classList.toggle('critical', pH<=10);
   pFill.parentElement.classList.toggle('low-hp', pH<=9);
   aFill.classList.toggle('critical', aH<=10);
