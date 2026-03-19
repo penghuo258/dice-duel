@@ -1668,6 +1668,18 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
   background:rgba(10,10,26,0.6);border:1px solid rgba(255,62,122,0.1);border-radius:4px;
   backdrop-filter:blur(8px);transform:skewX(-5deg)}
 .player-bar>*{transform:skewX(5deg)}
+.status-bar{display:flex;flex-wrap:wrap;gap:4px;padding:2px 6px;min-height:0}
+.status-bar:empty{display:none}
+.status-icon{position:relative;display:inline-flex;align-items:center;gap:2px;padding:2px 6px;border-radius:4px;font-size:11px;cursor:pointer;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#ccc;transition:background 0.2s}
+.status-icon:hover{background:rgba(255,255,255,0.18)}
+.status-icon .status-emoji{font-size:13px}
+.status-icon .status-label{font-size:10px;opacity:0.85}
+.status-tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(20,20,30,0.95);border:1px solid rgba(130,100,255,0.4);border-radius:6px;padding:6px 10px;font-size:11px;color:#e0e0e0;white-space:nowrap;z-index:100;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.5)}
+.status-icon:hover .status-tooltip{display:block}
+.status-icon.buff{border-color:rgba(80,200,120,0.4);color:#6ee7b7}
+.status-icon.debuff{border-color:rgba(255,80,80,0.4);color:#fca5a5}
+.status-icon.skill{border-color:rgba(130,100,255,0.4);color:#c4b5fd}
+.status-icon.info{border-color:rgba(255,200,50,0.4);color:#fde68a}
 .deploy-zone{display:flex;gap:8px;align-items:center;justify-content:center;min-height:46px;padding:5px 10px;position:relative;
   background:rgba(10,10,26,0.4);border:1px solid rgba(255,62,122,0.1);border-radius:4px;margin:4px 0;
   box-shadow:inset 0 0 20px rgba(0,0,0,0.2);transform:skewX(-4deg)}
@@ -2444,6 +2456,7 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
           <span class="deck-count deck-btn" id="ai-discard-count" title="弃牌堆" onclick="DeckViewer.showBattleDiscard('ai')" style="margin-left:2px">♻0</span>
           <span id="ai-hand-count" class="hand-count">0</span>
         </div>
+        <div id="ai-status-bar" class="status-bar"></div>
         <div id="ai-deploy" class="deploy-zone">
           <div id="ai-creature-slot" class="creature-slot"></div>
           <div id="ai-spell-slots" class="spell-slots"></div>
@@ -2460,6 +2473,7 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
           <span class="deck-count deck-btn" id="player-deck-count" title="牌库" onclick="DeckViewer.showBattleDeck('player')">🃏0</span>
           <span class="deck-count deck-btn" id="player-discard-count" title="弃牌堆" onclick="DeckViewer.showBattleDiscard('player')" style="margin-left:2px">♻0</span>
         </div>
+        <div id="player-status-bar" class="status-bar"></div>
         <div id="player-hand"></div>
       </div>
     </div>
@@ -5532,7 +5546,8 @@ const G={
   aiDeploy(){
     // AI rolls (already done), maybe reroll
     const avg=this.ai.dice.reduce((a,b)=>a+b,0)/this.ai.dice.length;
-    if(avg<3&&!this.ai.rerolled){this.ai.dice=rollDice(this.ai.dice.length);this.ai.rerolled=true}
+    // 精确计算: smarter reroll - reroll if avg<3.5 (not just 3)
+    if(avg<3.5&&!this.ai.rerolled){this.ai.dice=rollDice(this.ai.dice.length);this.ai.rerolled=true;log('🧮 精确计算: 对手重新掷骰!','effect')}
 
     const creatures=this.ai.hand.filter(c=>c.type==='creature').sort((a,b)=>b.base-a.base);
     const spells=this.ai.hand.filter(c=>c.type==='spell');
@@ -5557,6 +5572,15 @@ const G={
     // Curse Sacrifice: needs a 6
     const curseSac=spells.find(s=>s.id==='curse_sacrifice');
     if(curseSac&&dicePool.includes(6)){reservedDice['curse_sacrifice']=[6]}
+    // Dice Bank: reserve highest die for banking
+    const diceBank=spells.find(s=>s.id==='dice_bank');
+    if(diceBank){
+      const sorted=[...dicePool].sort((a,b)=>b-a);
+      if(sorted.length>0){
+        const best=sorted.slice(0,Math.min(3,sorted.length));
+        reservedDice['dice_bank']=best;
+      }
+    }
     // Prioritize draw spells when hand is low
     if(lowHand){
       const drawSpells=['wisdom_tree','spark_inspiration','foresight','fate_wheel'];
@@ -6221,7 +6245,7 @@ const G={
 // ============================================================
 const BOSS_DECK_IDS=['copper_dragon','piston_warrior','clockwork_assassin','furnace_phoenix','magnet_puppet','iron_giant','metal_shield','steam_burst','overload_pulse','gear_boost','emergency_repair'];
 
-const VICTOR_DECK_IDS=['chaos_dice_demon','leopard_king','greedy_mimic','double_pair','trick_fairy','rift_walker','clock_prophet','rage_ogre','fate_wheel','gold_rain','frost_dragon'];
+const VICTOR_DECK_IDS=['chaos_dice_demon','leopard_king','greedy_mimic','double_pair','trick_fairy','dice_bank','clock_prophet','rage_ogre','fate_wheel','foresight','dice_copy'];
 
 const BossDialogue={
   _used:{},
@@ -6519,7 +6543,7 @@ function showVictorIntro(callback){
 // RENDERING
 // ============================================================
 function render(){
-  renderHp();renderHand();renderDeploy(G.p,false);renderDeploy(G.ai,true);renderDice();renderAiHand();
+  renderHp();renderStatusBar();renderHand();renderDeploy(G.p,false);renderDeploy(G.ai,true);renderDice();renderAiHand();
   $('turn-info').textContent=`回合${G.turn} | ${G.phase}`;
   const pdz=document.getElementById('player-deploy');if(pdz)pdz.classList.toggle('deploy-active',G.phase==='deploy');
   // Battle info widget
@@ -6538,6 +6562,57 @@ function render(){
     chipEl.textContent=`🎰 筹码: ${G._victorChips||0}`;
     chipEl.style.display='block';
   } else if(chipEl){chipEl.style.display='none'}
+}
+
+function renderStatusBar(){
+  // AI status bar
+  const aiBar=document.getElementById('ai-status-bar');
+  const pBar=document.getElementById('player-status-bar');
+  if(!aiBar||!pBar)return;
+
+  let aiIcons=[];
+  let pIcons=[];
+
+  // --- Boss skills ---
+  if(G.isBossFight()){
+    aiIcons.push({emoji:'⚙',label:'校准',cls:'skill',tip:'每回合随机将玩家一个骰子改为4'});
+  }
+  if(G.isVictorFight()){
+    aiIcons.push({emoji:'🎰',label:'筹码'+(G._victorChips||0),cls:'info',tip:'筹码: 每回合获得玩家最大骰子值的筹码'});
+    aiIcons.push({emoji:'🎡',label:'轮盘',cls:'skill',tip:'花费6筹码: 回复5HP或对玩家造成5伤害'});
+    aiIcons.push({emoji:'🎲',label:'双倍赌注',cls:'skill',tip:'花费5筹码: 下次对拼双倍伤害或零伤害'});
+    aiIcons.push({emoji:'🃏',label:'换牌',cls:'skill',tip:'花费3筹码: 弃掉手牌并重新抽取等量手牌'});
+    aiIcons.push({emoji:'💪',label:'被动',cls:'skill',tip:'被动: 生物基础值+1+筹码/3(最多+3)'});
+    if(G._victorDoubleOrNothing){
+      aiIcons.push({emoji:'⚡',label:'双倍赌注激活',cls:'buff',tip:'下次对拼: 伤害翻倍或归零'});
+    }
+  }
+
+  // --- Precise Calculation (all opponents) ---
+  aiIcons.push({emoji:'🧮',label:'精确计算',cls:'skill',tip:'被动: 优先分配高骰子给生物,智能预留法术骰子组合'});
+
+  // --- Status effects for AI ---
+  if(G.ai.shield>0) aiIcons.push({emoji:'🛡',label:G.ai.shield,cls:'buff',tip:'护盾: 减免'+G.ai.shield+'点伤害'});
+  if(G.ai.curseStacks>0) aiIcons.push({emoji:'☠',label:G.ai.curseStacks+'层',cls:'debuff',tip:'诅咒: 每回合受到'+G.ai.curseStacks+'点伤害'});
+  if(G.ai.effectsSilenced) aiIcons.push({emoji:'🔇',label:'封印',cls:'debuff',tip:'效果封印: 本回合生物效果无效'});
+  if(G.ai.bonusDiceNext>0) aiIcons.push({emoji:'🎯',label:'+'+G.ai.bonusDiceNext+'骰',cls:'buff',tip:'下回合额外骰子: +'+G.ai.bonusDiceNext});
+  if(G.ai.extraCreatureNext) aiIcons.push({emoji:'👥',label:'双生物',cls:'buff',tip:'下回合可出2个生物'});
+  if(G.ai.bankedDice&&G.ai.bankedDice.length>0) aiIcons.push({emoji:'🏦',label:'存骰'+G.ai.bankedDice.join(','),cls:'buff',tip:'骰子银行: 保留骰子 ['+G.ai.bankedDice.join(', ')+']'});
+
+  // --- Status effects for Player ---
+  if(G.p.shield>0) pIcons.push({emoji:'🛡',label:G.p.shield,cls:'buff',tip:'护盾: 减免'+G.p.shield+'点伤害'});
+  if(G.p.curseStacks>0) pIcons.push({emoji:'☠',label:G.p.curseStacks+'层',cls:'debuff',tip:'诅咒: 每回合受到'+G.p.curseStacks+'点伤害'});
+  if(G.p.effectsSilenced) pIcons.push({emoji:'🔇',label:'封印',cls:'debuff',tip:'效果封印: 本回合生物效果无效'});
+  if(G.p.bonusDiceNext>0) pIcons.push({emoji:'🎯',label:'+'+G.p.bonusDiceNext+'骰',cls:'buff',tip:'下回合额外骰子: +'+G.p.bonusDiceNext});
+  if(G.p.extraCreatureNext) pIcons.push({emoji:'👥',label:'双生物',cls:'buff',tip:'下回合可出2个生物'});
+  if(G.p.bankedDice&&G.p.bankedDice.length>0) pIcons.push({emoji:'🏦',label:'存骰'+G.p.bankedDice.join(','),cls:'buff',tip:'骰子银行: 保留骰子 ['+G.p.bankedDice.join(', ')+']'});
+
+  function buildHTML(icons){
+    return icons.map(i=>`<span class="status-icon ${i.cls}"><span class="status-emoji">${i.emoji}</span><span class="status-label">${i.label}</span><span class="status-tooltip">${i.tip}</span></span>`).join('');
+  }
+
+  aiBar.innerHTML=buildHTML(aiIcons);
+  pBar.innerHTML=buildHTML(pIcons);
 }
 
 function renderHp(){
