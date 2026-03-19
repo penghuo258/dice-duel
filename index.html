@@ -911,6 +911,20 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
 #tut-overlay .tut-btn{padding:4px 12px;border:1px solid var(--gold-dim);background:rgba(255,62,122,0.2);
   color:var(--gold);cursor:pointer;border-radius:4px;font-size:10px;font-family:'ZCOOL KuaiLe','Fredoka',sans-serif}
 #tut-overlay .tut-btn.primary{background:linear-gradient(180deg,var(--rust-dark),#4a1028);border-color:var(--rust)}
+/* Tutorial Guide screen cards */
+.tg-section{margin-bottom:16px}
+.tg-section-title{font-family:'Baloo 2','Fredoka',sans-serif;font-size:16px;font-weight:700;color:var(--rust-light);margin-bottom:8px;padding-left:4px;border-left:3px solid var(--rust);display:flex;align-items:center;gap:6px}
+.tg-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 14px;margin-bottom:8px;transition:background 0.2s}
+.tg-card:hover{background:rgba(255,255,255,0.08)}
+.tg-card-title{font-weight:700;font-size:13px;color:#e0e0e0;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.tg-card-title .tg-emoji{font-size:16px}
+.tg-card-body{font-size:12px;color:rgba(255,255,255,0.7);line-height:1.6}
+.tg-card-body b{color:#c4b5fd;font-weight:600}
+.tg-card-body .tg-key{display:inline-block;background:rgba(130,100,255,0.15);border:1px solid rgba(130,100,255,0.3);border-radius:4px;padding:1px 6px;font-size:11px;color:#c4b5fd;margin:1px 2px}
+.tg-flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0}
+.tg-flow-step{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:4px 10px;font-size:11px;color:#e0e0e0;text-align:center}
+.tg-flow-arrow{color:var(--rust-light);font-size:14px;font-weight:bold}
+.tg-start-btn{margin-top:12px;text-align:center}
 /* ========== ZZZ SCREEN DECORATIONS (levels, adventure, battle) ========== */
 /* Right accent strip (for levels screen) */
 .zzz-right-strip{position:absolute;top:0;right:0;bottom:0;width:48px;z-index:3;
@@ -956,6 +970,7 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
 .zzz-side-strip.strip-deck{right:0;background:linear-gradient(180deg,#3b82f6 0%,#2563eb 50%,#3b82f6 100%)}
 .zzz-side-strip.strip-shop{left:0;background:linear-gradient(180deg,#eab308 0%,#ca8a04 50%,#eab308 100%)}
 .zzz-side-strip.strip-settings{left:0;background:linear-gradient(180deg,#64748b 0%,#475569 50%,#64748b 100%)}
+.zzz-side-strip.strip-tutorial{left:0;background:linear-gradient(180deg,#8b5cf6 0%,#7c3aed 50%,#8b5cf6 100%)}
 .zzz-side-strip.strip-adventure{left:0;background:linear-gradient(180deg,#7a5acd 0%,#6040b0 50%,#7a5acd 100%)}
 /* Per-screen bottom accent bars */
 .zzz-screen-bottom{position:absolute;bottom:0;left:0;right:0;z-index:5;display:flex;gap:0;align-items:stretch;
@@ -1872,7 +1887,7 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
         <div class="zzz-menu-btns">
           <div class="zbtn-row"><button class="menu-btn" onclick="showScreen('screen-levels')">⚔ 开始对决</button></div>
           <div class="zbtn-row"><button class="menu-btn" onclick="showScreen('screen-adventure')">🗺 开始冒险</button></div>
-          <div class="zbtn-row"><button class="menu-btn" onclick="Tutorial.startFromMenu()">📘 新手教程</button></div>
+          <div class="zbtn-row"><button class="menu-btn" onclick="showScreen('screen-tutorial')">📘 新手教程</button></div>
           <div class="zbtn-row"><button class="menu-btn" onclick="showScreen('screen-wiki')">📖 百科</button></div>
           <div class="zbtn-row"><button class="menu-btn" onclick="showScreen('screen-story')">📜 剧情</button></div>
         </div>
@@ -2418,6 +2433,49 @@ body{animation:chromaticFlicker 12s steps(1) infinite}
   <button id="pack-done-btn" class="menu-btn primary hidden" onclick="Shop.closePack()" style="margin-top:20px">确定</button>
 </div>
 
+<!-- TUTORIAL SCREEN -->
+<div id="screen-tutorial" class="screen">
+  <div class="screen-particles" data-colors="#8b5cf6,#a78bfa,#7c3aed,#ffffff" data-count="18"></div>
+  <div class="zzz-geo-bg"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><defs><pattern id="zzztriT" width="60" height="52" patternUnits="userSpaceOnUse"><polygon points="30,0 60,52 0,52" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#zzztriT)"/></svg></div>
+  <div class="zzz-side-strip strip-tutorial">
+    <div class="zzz-strip-icon">📘</div>
+    <div class="zzz-strip-text big">GUIDE</div>
+    <div class="zzz-strip-dots"><span class="active"></span><span></span><span class="active"></span></div>
+    <div class="zzz-strip-text">LEARN</div>
+    <div class="zzz-strip-icon">🎓</div>
+    <div class="zzz-strip-divider"></div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();showScreen('screen-settings')">⚙</div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();goBackScreen()">↩</div>
+  </div>
+  <div class="zzz-menu-label">
+    <div class="zzz-label-en">TUTORIAL</div>
+    <div class="zzz-label-num">07</div>
+  </div>
+  <div class="zzz-screen-main">
+    <div class="menu-wrap" style="max-width:720px;width:95%;max-height:80vh;overflow-y:auto">
+      <h2 class="title" style="font-size:24px">新手教程</h2>
+      <div style="display:flex;gap:8px;justify-content:center;margin-bottom:14px;flex-wrap:wrap">
+        <button class="menu-btn sm" id="tg-tab-ui" onclick="TutorialGuide.showTab('ui')" style="flex:1;min-width:60px">界面</button>
+        <button class="menu-btn sm" id="tg-tab-battle" onclick="TutorialGuide.showTab('battle')" style="flex:1;min-width:60px">战斗</button>
+        <button class="menu-btn sm" id="tg-tab-duel" onclick="TutorialGuide.showTab('duel')" style="flex:1;min-width:60px">对决</button>
+        <button class="menu-btn sm" id="tg-tab-adventure" onclick="TutorialGuide.showTab('adventure')" style="flex:1;min-width:60px">冒险</button>
+        <button class="menu-btn sm" id="tg-tab-keywords" onclick="TutorialGuide.showTab('keywords')" style="flex:1;min-width:60px">关键词</button>
+      </div>
+      <div id="tg-content"></div>
+      <div class="divider"></div>
+      <div class="zzz-menu-btns" style="max-width:320px;margin:18px auto 0">
+        <div class="zbtn-row" style="margin-left:0"><button class="menu-btn" onclick="goBackScreen()">↩ 返回</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="zzz-screen-bottom has-left">
+    <div class="zzz-bottom-accent"><div class="ba-icon">📘</div><div class="ba-text">DICE<br>GUIDE</div></div>
+    <div class="zzz-sb-white" style="flex:3"><div class="sb-label">TUTORIAL</div><div class="sb-big">新手指南</div><div class="sb-sub">界面 · 战斗 · 对决 · 冒险 · 关键词</div></div>
+    <div class="zzz-sb-white" style="flex:2"><div class="sb-label">SECTIONS</div><div class="sb-big">5</div><div class="sb-sub">📚 章节</div></div>
+    <div class="zzz-sb-white" style="flex:1"><div class="sb-label">MODE</div><div class="sb-big">🎓</div><div class="sb-sub">学习</div></div>
+  </div>
+</div>
+
 <!-- GAME SCREEN -->
 <div id="screen-game" class="screen">
   <div class="screen-bg" style="background-image:url('assets/bg-game.png')"></div>
@@ -2854,6 +2912,7 @@ function showScreen(id,isBack){
     if(id==='screen-map')Adventure.renderMap();
     if(id==='screen-wiki'){Wiki.showTab(Wiki.currentTab);try{$('wiki-total-cards').textContent=ALL_CARDS.length;$('wiki-total-relics').textContent=ALL_RELICS.length}catch(e){}}
     if(id==='screen-story')Story.init();
+    if(id==='screen-tutorial')TutorialGuide.init();
     if(id==='screen-menu'){NewsMatrix.resume()}else{NewsMatrix.stop()}
     ZZZGreeting.tryShow(id);
     slide.classList.remove(inCls);
@@ -6914,6 +6973,210 @@ function showCardDetail(cardJson){
     <button class="cd-close" onclick="event.stopPropagation();$('card-detail').classList.remove('show')">关闭</button>`;
   $('card-detail').classList.add('show');
 }
+
+// ============================================================
+// TUTORIAL GUIDE — Screen-based tutorial with multiple sections
+// ============================================================
+const TutorialGuide={
+  _tab:'ui',
+  showTab(tab){
+    this._tab=tab;
+    ['ui','battle','duel','adventure','keywords'].forEach(t=>{
+      const btn=document.getElementById('tg-tab-'+t);
+      if(btn)btn.classList.toggle('primary',t===tab);
+    });
+    const el=document.getElementById('tg-content');
+    if(!el)return;
+    el.innerHTML=this['_render_'+tab]();
+  },
+  init(){this.showTab('ui')},
+
+  _render_ui(){return `
+<div class="tg-section">
+  <div class="tg-section-title">📱 主界面总览</div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🏠</span>主菜单</div>
+    <div class="tg-card-body">主菜单是游戏的起点，包含以下入口：<br>
+    <b>⚔ 开始对决</b> — 选择难度进行快速对战<br>
+    <b>🗺 开始冒险</b> — 进入冒险模式，挑战层层关卡<br>
+    <b>📘 新手教程</b> — 就是你现在所在的页面<br>
+    <b>📖 百科</b> — 查看卡牌、遗物、Boss、事件等图鉴<br>
+    <b>📜 剧情</b> — 阅读锈蚀世界的背景故事</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">📊</span>左侧功能栏</div>
+    <div class="tg-card-body">每个界面左侧的彩色竖条包含快捷按钮：<br>
+    <b>⚙</b> — 打开设置（音乐、音效、背景等）<br>
+    <b>↩</b> — 返回上一个界面<br>
+    部分界面还有 <b>📖 百科</b> 和 <b>🃏 构筑</b> 快捷入口</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">💰</span>资源系统</div>
+    <div class="tg-card-body"><b>金币</b> — 通过对战和冒险获取，用于购买卡包解锁新卡牌<br>
+    <b>卡牌</b> — 在商店购买卡包获得，用于构筑你的牌组<br>
+    <b>牌组</b> — 在「构筑牌组」中编辑，正好 <b>20张</b> 卡牌</div></div>
+</div>
+<div class="tg-section">
+  <div class="tg-section-title">🎮 战斗界面</div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">❤️</span>血量区域</div>
+    <div class="tg-card-body">屏幕上方显示 <b>AI对手</b> 的血量，下方显示 <b>你的血量</b>。<br>
+    血量旁边有：<span class="tg-key">🃏 牌库数</span> <span class="tg-key">♻ 弃牌堆</span> <span class="tg-key">手牌数</span><br>
+    血量下方是 <b>状态栏</b>，显示当前生效的技能、增益、减益效果，悬停可查看详情。</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🎲</span>骰子面板</div>
+    <div class="tg-card-body">右侧/底部显示你的骰子。<br>
+    <b>点击骰子</b> 可选中（高亮），再点击已部署的卡牌分配骰子。<br>
+    骰子的值会加到卡牌的总战力上。</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🃏</span>手牌区域</div>
+    <div class="tg-card-body">底部显示你的手牌。<b>长按/点击</b> 卡牌可查看详细效果说明。<br>
+    在部署阶段点击手牌可将卡牌部署到战场。</div></div>
+</div>`;
+  },
+
+  _render_battle(){return `
+<div class="tg-section">
+  <div class="tg-section-title">⚔ 战斗流程</div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🔄</span>回合流程</div>
+    <div class="tg-card-body">每回合按以下顺序进行：
+    <div class="tg-flow">
+      <div class="tg-flow-step">🃏 抽牌</div><span class="tg-flow-arrow">→</span>
+      <div class="tg-flow-step">🎲 掷骰</div><span class="tg-flow-arrow">→</span>
+      <div class="tg-flow-step">📋 部署</div><span class="tg-flow-arrow">→</span>
+      <div class="tg-flow-step">⚔ 对拼</div><span class="tg-flow-arrow">→</span>
+      <div class="tg-flow-step">📊 结算</div>
+    </div></div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🃏</span>抽牌阶段</div>
+    <div class="tg-card-body"><b>第一回合</b>抽 4 张，之后每回合抽 <b>1 张</b>。手牌上限 <b>9 张</b>。<br>
+    牌库抽完后，弃牌堆会自动洗入牌库。</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🎲</span>掷骰阶段</div>
+    <div class="tg-card-body">自动掷出 <b>4 个 D6 骰子</b>（1-6点）。<br>
+    每回合可以 <b>重掷一次</b>（全部重掷）。<br>
+    对骰子满意后点击「进入部署」。</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">📋</span>部署阶段</div>
+    <div class="tg-card-body">部署 <b>1 个生物</b> + 任意数量 <b>法术</b>。<br>
+    <b>选骰子 → 点击卡牌</b> 将骰子分配到卡牌的槽位中。<br>
+    卡牌总值 = 基础值 + 已分配骰子之和 + 效果加成<br>
+    部署完毕点击「完成部署」。</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">⚔</span>对拼阶段</div>
+    <div class="tg-card-body">双方同时揭示部署的生物，比较 <b>总值</b>：<br>
+    <b>高者获胜</b>，伤害 = 双方总值之差（最少 1 点）<br>
+    胜者触发生物的 <b>胜出效果</b>。平局则双方都不受伤害。</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🏆</span>胜利条件</div>
+    <div class="tg-card-body">将对方血量削减到 <b>0</b> 即可获胜。<br>
+    合理分配骰子和利用卡牌效果是取胜的关键！</div></div>
+</div>
+<div class="tg-start-btn"><button class="menu-btn primary" onclick="Tutorial.startFromMenu()">▶ 开始实战教程</button></div>`;
+  },
+
+  _render_duel(){return `
+<div class="tg-section">
+  <div class="tg-section-title">⚔ 对决模式</div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">📊</span>难度关卡</div>
+    <div class="tg-card-body">对决模式有 <b>6 个难度</b>，逐步解锁：<br><br>
+    <span class="tg-key">关卡1</span> <b>简单</b> — AI较弱，适合新手练习<br>
+    <span class="tg-key">关卡2</span> <b>普通</b> — AI随机选牌<br>
+    <span class="tg-key">关卡3</span> <b>困难</b> — AI优先出最强生物<br>
+    <span class="tg-key">关卡4</span> <b>困难+少抽</b> — 首回合只抽2张<br>
+    <span class="tg-key">关卡5</span> <b>困难+少抽+20HP</b> — 你只有20血<br>
+    <span class="tg-key">关卡6</span> <b>困难+少抽+10HP</b> — 你只有10血</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🃏</span>牌组构筑</div>
+    <div class="tg-card-body">在对决模式中，你使用自己 <b>构筑的牌组</b>（20张）。<br>
+    可以在主菜单进入「构筑牌组」来编辑卡组。<br>
+    未拥有的卡牌需要在 <b>商店</b> 用金币购买卡包解锁。</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🤖</span>Boss 挑战</div>
+    <div class="tg-card-body">解锁后可在关卡界面挑战两位 Boss：<br><br>
+    <b>🤖 铁面·机械领主</b> — 40HP，每回合校准你的一个骰子为4<br>
+    <b>🎲 骰魔·维克多</b> — 45HP，积攒筹码释放强力技能<br><br>
+    Boss有专属对话和独特机制，首次击败有额外金币奖励！</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🧮</span>AI 被动能力</div>
+    <div class="tg-card-body">所有 AI 对手都拥有 <b>精确计算</b> 被动：<br>
+    智能评估骰子质量并决定是否重掷，优先分配高骰子给生物。<br>
+    战斗界面的状态栏会显示对手当前的被动和技能。</div></div>
+</div>`;
+  },
+
+  _render_adventure(){return `
+<div class="tg-section">
+  <div class="tg-section-title">🗺 冒险模式</div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🌍</span>冒险总览</div>
+    <div class="tg-card-body">冒险模式是 <b>Roguelike</b> 体验：带着初始牌组出发，一路战斗、升级、收集遗物。<br>
+    死亡后从头开始，每次冒险都是独特的旅程。</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🗺</span>地图节点</div>
+    <div class="tg-card-body">地图上有多种节点类型：<br><br>
+    <span class="tg-key">⚔ 战斗</span> 普通怪物，胜利后可选择奖励卡牌<br>
+    <span class="tg-key">💀 精英</span> 更强的敌人，更好的奖励<br>
+    <span class="tg-key">🔥 篝火</span> 恢复生命或强化卡牌<br>
+    <span class="tg-key">🛒 商店</span> 用金币购买卡牌、移除卡牌、购买遗物<br>
+    <span class="tg-key">📦 宝箱</span> 获得遗物<br>
+    <span class="tg-key">❓ 事件</span> 随机事件，有风险也有回报<br>
+    <span class="tg-key">👑 Boss</span> 每层的最终关卡</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🏺</span>遗物系统</div>
+    <div class="tg-card-body">遗物是冒险中获得的 <b>永久增益</b>，整局有效：<br><br>
+    例如：<b>双刃剑</b> — 生物战力+3 | <b>生命护符</b> — 血量低于15时每回合恢复2HP<br>
+    <b>诅咒宝珠</b> — 对手每3层诅咒多抽1张牌 | <b>血之契约</b> — HP低于10时生物+2<br><br>
+    遗物可通过宝箱、商店、事件获得。合理搭配遗物是通关的关键！</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">📈</span>冒险流程</div>
+    <div class="tg-card-body">
+    <div class="tg-flow">
+      <div class="tg-flow-step">选择起始牌组</div><span class="tg-flow-arrow">→</span>
+      <div class="tg-flow-step">探索地图节点</div><span class="tg-flow-arrow">→</span>
+      <div class="tg-flow-step">战斗/事件/休整</div><span class="tg-flow-arrow">→</span>
+      <div class="tg-flow-step">收集卡牌和遗物</div><span class="tg-flow-arrow">→</span>
+      <div class="tg-flow-step">击败Boss</div>
+    </div>
+    每层结束后进入下一层，难度递增（怪物+5HP）。<br>
+    冒险中的血量会 <b>跨战斗保留</b>，请注意保持血量！</div></div>
+</div>`;
+  },
+
+  _render_keywords(){return `
+<div class="tg-section">
+  <div class="tg-section-title">📖 卡牌关键词</div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🎯</span>触发时机</div>
+    <div class="tg-card-body">每张卡牌的效果在特定时机触发：<br><br>
+    <span class="tg-key">部署时</span> 卡牌放上战场时立即触发<br>
+    <span class="tg-key">对拼开始</span> 双方揭示后、比较数值前触发<br>
+    <span class="tg-key">胜出</span> 对拼获胜时触发<br>
+    <span class="tg-key">回合结束</span> 当前回合结算完毕后触发<br>
+    <span class="tg-key">回应</span> 对手部署后可打出的反应法术<br>
+    <span class="tg-key">被动</span> 始终生效的持续效果<br>
+    <span class="tg-key">手牌中</span> 在手牌中即可触发（不需要部署）</div></div>
+</div>
+<div class="tg-section">
+  <div class="tg-section-title">⚔ 战斗关键词</div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🛡</span>护盾 (Shield)</div>
+    <div class="tg-card-body">减免受到的伤害。<b>护盾值</b> 会在受击时扣减，抵消等量伤害。不会跨回合保留。</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">☠</span>诅咒 (Curse)</div>
+    <div class="tg-card-body">每回合结束时受到等于 <b>诅咒层数</b> 的伤害。可被特定卡牌叠加或移除。<br>
+    部分卡牌的效果与诅咒层数挂钩（如诅咒寄生体、诅咒爆发）。</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🔇</span>封印 (Silence)</div>
+    <div class="tg-card-body">被封印后，<b>本回合生物效果全部无效</b>。由缄默之龙等卡牌触发。下回合自动解除。</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">❄</span>冻结 (Freeze)</div>
+    <div class="tg-card-body">被冻结的骰子 <b>本回合无效</b>，不计入总值。由霜鳞龙永冬等卡牌触发。</div></div>
+</div>
+<div class="tg-section">
+  <div class="tg-section-title">🎲 骰子关键词</div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🎲</span>基础值 / 槽位 / 总值</div>
+    <div class="tg-card-body"><b>基础值</b> — 卡牌自带的固定战力数值<br>
+    <b>槽位</b> — 卡牌可放置的骰子数量（0-4个）<br>
+    <b>总值</b> = 基础值 + 所有骰子值之和 + 成长值 + 临时加成</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🔄</span>重掷 / 存骰 / 偷骰</div>
+    <div class="tg-card-body"><b>重掷</b> — 每回合可重掷一次所有骰子<br>
+    <b>存骰</b> — 骰子银行效果，将骰子保留到下一回合使用<br>
+    <b>偷骰</b> — 部分卡牌可偷取对手已分配的骰子</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">📋</span>校准 (Calibrate)</div>
+    <div class="tg-card-body">机械领主的专属机制：每回合将你的 <b>一个随机骰子改为4</b>。<br>
+    高骰子被降低、低骰子被提升——破坏你的骰子分配策略。</div></div>
+</div>
+<div class="tg-section">
+  <div class="tg-section-title">🎰 Boss 关键词</div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🎰</span>筹码 (Chips) — 维克多</div>
+    <div class="tg-card-body">维克多的核心机制。每回合获得等于你 <b>最大骰子值</b> 的筹码。<br>
+    筹码消耗技能：<br>
+    <span class="tg-key">6筹码</span> <b>轮盘</b> — 回复5HP 或 对你造成5伤害<br>
+    <span class="tg-key">5筹码</span> <b>双倍赌注</b> — 下次对拼伤害翻倍或归零<br>
+    <span class="tg-key">3筹码</span> <b>换牌</b> — 弃掉手牌重新抽取等量</div></div>
+  <div class="tg-card"><div class="tg-card-title"><span class="tg-emoji">🧮</span>精确计算 (Precise Calc)</div>
+    <div class="tg-card-body">所有 AI 对手的被动能力。<br>
+    AI 会智能评估骰子质量（均值低于3.5时重掷），优先将高骰子分配给生物，<br>
+    并为特殊法术预留最优骰子组合。</div></div>
+</div>`;
+  }
+};
 
 // ============================================================
 // TUTORIAL SYSTEM — Interactive step-by-step guide
