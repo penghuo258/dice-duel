@@ -1272,7 +1272,7 @@ body{animation:chromaticFlicker 15s steps(1) infinite}
   .status-icon{padding:1px 4px;font-size:10px;gap:1px}
   .status-icon .status-emoji{font-size:11px}
   .status-icon .status-label{font-size:8px}
-  .status-tooltip{left:0;transform:none;font-size:10px;padding:5px 8px;max-width:65vw}
+  .status-tooltip{font-size:10px;padding:5px 8px;max-width:65vw;left:0;transform:none}
   /* Mobile: tutorial guide screen */
   #screen-tutorial .menu-wrap{max-height:calc(100vh - 80px);padding-bottom:60px}
   .tg-card{padding:8px 10px}
@@ -1711,7 +1711,9 @@ body{animation:chromaticFlicker 15s steps(1) infinite}
 .status-icon:hover{background:rgba(255,255,255,0.18)}
 .status-icon .status-emoji{font-size:13px}
 .status-icon .status-label{font-size:10px;opacity:0.85}
-.status-tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(20,20,30,0.95);border:1px solid rgba(130,100,255,0.4);border-radius:6px;padding:6px 10px;font-size:11px;color:#e0e0e0;white-space:nowrap;z-index:100;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.5);max-width:70vw;white-space:normal;word-break:break-word}
+.status-tooltip{display:none;position:absolute;left:50%;transform:translateX(-50%);background:rgba(20,20,30,0.95);border:1px solid rgba(130,100,255,0.4);border-radius:6px;padding:6px 10px;font-size:11px;color:#e0e0e0;white-space:normal;word-break:break-word;z-index:100;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.5);max-width:70vw}
+#ai-status-bar .status-tooltip{top:calc(100% + 6px);bottom:auto}
+#player-status-bar .status-tooltip{bottom:calc(100% + 6px);top:auto}
 .status-icon:hover .status-tooltip,.status-icon.active .status-tooltip{display:block}
 .status-icon.buff{border-color:rgba(80,200,120,0.4);color:#6ee7b7}
 .status-icon.debuff{border-color:rgba(255,80,80,0.4);color:#fca5a5}
