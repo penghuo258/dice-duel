@@ -3219,7 +3219,7 @@ const ALL_CARDS=[
   effectDesc:'胜出:下回合可出2个生物',timing:'win',
   effect(ctx){ctx.owner.extraCreatureNext=true;log('裂隙行者:下回合可出2个生物!','effect')}},
 {id:'clock_prophet',type:'creature',name:'钟表先知',emoji:'🔮',base:5,slots:2,
-  effectDesc:'部署时:窥视所有对手手牌',timing:'deploy',
+  effectDesc:'部署时:窥视所有对手手牌(每回合限1次)',timing:'deploy',
   effect(ctx){if(ctx.enemy.hand.length>0){const names=ctx.enemy.hand.map(c=>`${c.name}(${c.type==='creature'?'基础'+c.base:'法术'})`).join(', ');log(`先知窥视对手手牌: ${names}`,'effect')}else{log('先知窥视:对手无手牌','effect')}}},
 {id:'iron_giant',type:'creature',name:'铁甲巨人',emoji:'🦾',base:9,slots:0,
   effectDesc:'无特殊效果',timing:'none',
@@ -3242,7 +3242,7 @@ const ALL_CARDS=[
   effectDesc:'胜出:若骰子之和<10,恢复3HP',timing:'win',
   effect(ctx){const sum=(ctx.myDice||[]).reduce((a,b)=>a+b,0);if(sum<10){ctx.owner.hp=Math.min(ctx.owner.maxHp||30,ctx.owner.hp+3);log(`史莱姆:骰子和${sum}<10,恢复3HP!`,'effect')}else{log(`史莱姆:骰子和${sum}≥10,未恢复`,'effect')}}},
 {id:'glutton_grum',type:'creature',name:'暴食者格鲁姆',emoji:'🐗',base:7,slots:0,
-  effectDesc:'部署时:弃掉1张手牌,若成功,槽位变为4',timing:'deploy',
+  effectDesc:'部署时:弃掉1张手牌,若成功,槽位变为4(每回合限1次)',timing:'deploy',
   effect(ctx){const c=ctx.myCreature;if(ctx.owner.hand.length===0){log('暴食者格鲁姆:无手牌可弃,槽位不变','effect');return}
     c.slots=4;
     if(ctx.owner.isPlayer){const opts=ctx.owner.hand.map((h,i)=>({label:`${h.emoji}${h.name}`}));
@@ -3259,7 +3259,7 @@ const ALL_CARDS=[
   effect(ctx){const odds=(ctx.myDice||[]).filter(d=>d%2===1).length;if(odds>0){ctx.bonusDmg+=odds*2;log(`裂风者西尔芙:${odds}个奇数骰子,额外${odds*2}伤害!`,'effect')}
     else{log('裂风者西尔芙:无奇数骰子','effect')}}},
 {id:'dream_morpheus',type:'creature',name:'织梦者莫菲斯',emoji:'💤',base:1,slots:3,
-  effectDesc:'部署时:查看牌库顶3张,选1张加入手牌',timing:'deploy',
+  effectDesc:'部署时:查看牌库顶3张,选1张加入手牌(每回合限1次)',timing:'deploy',
   effect(ctx){const n=Math.min(3,ctx.owner.deck.length);if(n===0){log('织梦者莫菲斯:牌库为空','effect');return}
     const cards=ctx.owner.deck.slice(-n);
     if(ctx.owner.isPlayer){showOverlay('织梦者莫菲斯:选择1张牌加入手牌',cards.map((c,i)=>({label:`${c.emoji}${c.name}(${c.type==='creature'?'基础'+c.base:'法术'})`})),
@@ -3269,7 +3269,7 @@ const ALL_CARDS=[
   effectDesc:'手牌中:每当友方生物参与对拼,此卡+1基础值',timing:'hand_duel',
   effect(ctx){ctx.card.growth=(ctx.card.growth||0)+1;log(`铁歌者杜拉汉(手牌):友方生物对拼,基础值+1! (当前${ctx.card.base+(ctx.card.growth||0)})`,'effect')}},
 {id:'mirror_aranea',type:'creature',name:'镜瞳阿拉涅',emoji:'🕸️',base:4,slots:2,
-  effectDesc:'部署时:分配骰子与场上已有骰子相同时,每匹配+1基础值',timing:'deploy',
+  effectDesc:'部署时:分配骰子与场上已有骰子相同时,每匹配+1基础值(每回合限1次)',timing:'deploy',
   effect(ctx){const myDice=ctx.myCreature.assignedDice||[];if(myDice.length===0){log('镜瞳阿拉涅:无分配骰子','effect');return}
     const allDice=[];[ctx.owner,ctx.enemy].forEach(p=>{if(p.deployedCreature&&p.deployedCreature!==ctx.myCreature)(p.deployedCreature.assignedDice||[]).forEach(d=>allDice.push(d));
       (p.deployedSpells||[]).forEach(s=>{(s.assignedDice||[]).forEach(d=>allDice.push(d))})});
@@ -3280,7 +3280,7 @@ const ALL_CARDS=[
   effectDesc:'胜出:对手下回合生物效果全部无效',timing:'win',
   effect(ctx){ctx.enemy.effectsSilenced=true;log('缄默之龙:对手下回合生物效果被封印!','effect')}},
 {id:'time_traveler',type:'creature',name:'时空旅者',emoji:'⏰',base:2,slots:2,
-  effectDesc:'部署阶段:可将1个已分配骰子改为任意值(1-6),每回合1次',timing:'deploy',
+  effectDesc:'部署阶段:可将1个已分配骰子改为任意值(1-6)(每回合限1次)',timing:'deploy',
   effect(ctx){if(!ctx.owner.isPlayer){const dice=ctx.myCreature.assignedDice;if(dice.length>0){const i=Math.floor(Math.random()*dice.length);dice[i]=Math.ceil(Math.random()*6);log(`时空旅者:AI改变骰子为${dice[i]}`,'effect')};return}
     if(ctx.myCreature.assignedDice.length===0){log('时空旅者:无骰子可修改','effect');return}
     const opts=ctx.myCreature.assignedDice.map((d,i)=>({label:`骰子${i+1}: ${d}`}));
@@ -3317,18 +3317,18 @@ const ALL_CARDS=[
     else if(maxCount>=3){ctx.myCreature.tempBonus=(ctx.myCreature.tempBonus||0)+7;Achievements.unlock('leopard_trigger');log(`豹子之王:3个相同! 基础值+7!`,'effect')}
     else{log('豹子之王:未达成3个相同','effect')}}},
 {id:'doom_prophet',type:'creature',name:'末日预言者',emoji:'🔮',base:1,slots:1,
-  effectDesc:'部署时预言下张牌类型,抽一张牌;预言正确则总值翻倍',timing:'deploy',
+  effectDesc:'部署时预言下张牌类型,抽一张牌;预言正确则基础值+3(每回合限1次)',timing:'deploy',
   effect(ctx){if(!ctx.owner.isPlayer){
     const guess=Math.random()<0.5?'creature':'spell';drawCards(ctx.owner,1);
     const drawn=ctx.owner.hand[ctx.owner.hand.length-1];
-    if(drawn&&drawn.type===guess){ctx.myCreature._prophetDouble=true;log(`末日预言者:AI预言${guess==='creature'?'生物':'法术'},正确! 总值翻倍!`,'effect')}
+    if(drawn&&drawn.type===guess){ctx.myCreature.tempBonus=(ctx.myCreature.tempBonus||0)+3;log(`末日预言者:AI预言${guess==='creature'?'生物':'法术'},正确! 基础值+3!`,'effect')}
     else{log(`末日预言者:AI预言失败`,'effect')};return}
     showOverlay('末日预言者:预言下一张牌的类型',
       [{label:'🦎 生物牌'},{label:'✨ 法术牌'}],i=>{
         const guess=i===0?'creature':'spell';drawCards(ctx.owner,1);
         const drawn=ctx.owner.hand[ctx.owner.hand.length-1];
-        if(drawn&&drawn.type===guess){ctx.myCreature._prophetDouble=true;
-          log(`末日预言者:预言${guess==='creature'?'生物':'法术'},正确! 总值翻倍!`,'effect')}
+        if(drawn&&drawn.type===guess){ctx.myCreature.tempBonus=(ctx.myCreature.tempBonus||0)+3;
+          log(`末日预言者:预言${guess==='creature'?'生物':'法术'},正确! 基础值+3!`,'effect')}
         else{log(`末日预言者:预言${guess==='creature'?'生物':'法术'},错误!`,'effect')}
         render()})}},
 {id:'soul_thief',type:'creature',name:'灵魂窃贼',emoji:'👻',base:2,slots:2,
@@ -3354,7 +3354,7 @@ const ALL_CARDS=[
     const v=mc.assignedDice[Math.floor(Math.random()*mc.assignedDice.length)];mc.assignedDice.push(v);log(`骰子复制:复制${v}点骰子到空槽`,'effect')}
     else{log('骰子复制:无空槽位','effect')}}},
 {id:'foresight',type:'spell',name:'预知未来',emoji:'👁️',base:0,slots:1,
-  effectDesc:'看牌库顶N张(N=槽内骰子值),选1张',timing:'deploy',
+  effectDesc:'看牌库顶N张(N=槽内骰子值),选1张(每回合限1次)',timing:'deploy',
   effect(ctx){const dv=(ctx.mySpellDice&&ctx.mySpellDice[0])||1;const n=Math.min(dv,ctx.owner.deck.length);
     if(n>0&&ctx.owner.isPlayer){const cards=ctx.owner.deck.slice(-n);
       showOverlay('预知未来:选择1张牌',cards.map((c,i)=>({label:`${c.name}(${c.type==='creature'?'基础'+c.base:'法术'})`})),i=>{
@@ -3380,14 +3380,14 @@ const ALL_CARDS=[
   effectDesc:'对拼开始:削减对手生物总值',timing:'duel_start',
   effect(ctx){const s=(ctx.mySpellDice||[]).reduce((a,b)=>a+b,0);ctx.enemyValueReduce=(ctx.enemyValueReduce||0)+s;log(`能量虹吸:削减对手${s}点总值`,'effect')}},
 {id:'fate_wheel',type:'spell',name:'命运轮盘',emoji:'🎰',base:0,slots:3,
-  effectDesc:'槽内骰子全部一样:抽3张牌',timing:'deploy',
+  effectDesc:'槽内骰子全部一样:抽3张牌(每回合限1次)',timing:'deploy',
   effect(ctx){const d=ctx.mySpellDice||[];if(d.length>=2&&d.every(v=>v===d[0])){drawCards(ctx.owner,3);log('命运轮盘:骰子全同,抽3牌!','effect')}
     else{log('命运轮盘:骰子不同,无效果','effect')}}},
 {id:'overload_pulse',type:'spell',name:'过载脉冲',emoji:'⚡',base:0,slots:0,
   effectDesc:'胜出:下回合多骰两个骰子',timing:'win',
   effect(ctx){ctx.owner.bonusDiceNext=(ctx.owner.bonusDiceNext||0)+2;log('过载脉冲:下回合+2骰子!','effect')}},
 {id:'gear_boost',type:'spell',name:'齿轮加速',emoji:'⚙',base:0,slots:1,
-  effectDesc:'下回合可重掷槽内骰子数值次',timing:'deploy',
+  effectDesc:'下回合可重掷槽内骰子数值次(每回合限1次)',timing:'deploy',
   effect(ctx){const v=(ctx.mySpellDice&&ctx.mySpellDice[0])||1;ctx.owner.extraRerolls=(ctx.owner.extraRerolls||0)+v;log(`齿轮加速:下回合可重掷${v}次!`,'effect')}},
 {id:'emergency_repair',type:'spell',name:'紧急维修',emoji:'🔧',base:0,slots:1,
   effectDesc:'回复槽内骰子值×1.5的HP,但弃1张手牌',timing:'response',
@@ -3454,7 +3454,7 @@ const ALL_CARDS=[
   effectDesc:'胜出:给对手施加2层诅咒',timing:'win',
   effect(ctx){applyCurse(ctx.enemy,2,ctx.owner);log('诅咒毒虫:对手获得2层诅咒!','effect')}},
 {id:'blood_beast',type:'creature',name:'血潮魔兽',emoji:'🐃',base:7,slots:2,
-  effectDesc:'部署结束时失去3生命',timing:'deploy_end',
+  effectDesc:'部署结束时失去3生命(每回合限1次)',timing:'deploy_end',
   effect(ctx){ctx.owner.hp-=3;log('血潮魔兽:部署代价,失去3生命!','effect')}},
 {id:'life_reaper',type:'creature',name:'生命收割者',emoji:'💀',base:2,slots:2,
   effectDesc:'胜出:给对手1层诅咒,恢复等于对手诅咒层数的生命',timing:'win',
@@ -3465,7 +3465,7 @@ const ALL_CARDS=[
   effect(ctx){ctx.card.growth=(ctx.card.growth||0)+1;log(`畏怖合成兽(手牌):使用法术,基础值+1! (当前${ctx.card.base+(ctx.card.growth||0)})`,'effect')}},
 // --- CURSE CREATURES (rare) ---
 {id:'blood_curse_vulture',type:'creature',name:'血咒鷲',emoji:'🦅',base:2,slots:3,
-  effectDesc:'部署结束时失去3生命,给对手施加3层诅咒',timing:'deploy_end',
+  effectDesc:'部署结束时失去3生命,给对手施加3层诅咒(每回合限1次)',timing:'deploy_end',
   effect(ctx){ctx.owner.hp-=3;applyCurse(ctx.enemy,3,ctx.owner);log('血咒鷲:失去3HP,对手获得3层诅咒!','effect')}},
 {id:'curse_parasite',type:'creature',name:'诅咒寄生体',emoji:'🦠',base:1,slots:3,
   effectDesc:'对拼时:对手每有1层诅咒,本回合基础值+1',timing:'duel_start',
@@ -3564,7 +3564,7 @@ function getCommonSpells(){return ALL_CARDS.filter(c=>c.type==='spell'&&COMMON_C
 function getRareSpells(){return ALL_CARDS.filter(c=>c.type==='spell'&&!COMMON_CARDS.includes(c.id))}
 function getCardDef(id){return ALL_CARDS.find(c=>c.id===id)}
 function makeCardInstance(def){return{...def,assignedDice:[],growth:0,tempBonus:0}}
-function getCreatureValue(c){if(!c)return 0;const frozen=new Set(c.frozenDice||[]);let val=c.base+(c.growth||0)+(c.tempBonus||0)+(c.assignedDice||[]).reduce((a,b,i)=>a+(frozen.has(i)?0:b),0);if(c.id==='greedy_mimic')val+=(c.assignedDice||[]).filter(d=>d===5).length;if(c._prophetDouble)val*=2;if(typeof G!=='undefined'&&G.adventureMode&&Adventure.hasRelic('double_blade')&&c.type==='creature')val+=3;return val}
+function getCreatureValue(c){if(!c)return 0;const frozen=new Set(c.frozenDice||[]);let val=c.base+(c.growth||0)+(c.tempBonus||0)+(c.assignedDice||[]).reduce((a,b,i)=>a+(frozen.has(i)?0:b),0);if(c.id==='greedy_mimic')val+=(c.assignedDice||[]).filter(d=>d===5).length;if(typeof G!=='undefined'&&G.adventureMode&&Adventure.hasRelic('double_blade')&&c.type==='creature')val+=3;return val}
 function discardCard(p,card){if(card&&card.id)p.discard.push(card.id)}
 function reshuffleDeck(p){if(!p.discard.length)return;const d=p.discard.map(id=>{const def=getCardDef(id);return makeCardInstance(def)});shuffle(d);p.deck=d;p.discard=[];log((p.isPlayer?'铸炉师':(G.aiName||'对手'))+'的弃牌堆已洗入牌库! ('+d.length+'张)','phase')}
 function drawCards(p,n){for(let i=0;i<n;i++){if(p.hand.length>=9)break;if(!p.deck.length){reshuffleDeck(p);if(!p.deck.length)break}const card=p.deck.pop();p.hand.push(card);if(card.id==='magnet_puppet'){card._magnetPending=true}}}
