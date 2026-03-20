@@ -1602,10 +1602,12 @@ body{animation:chromaticFlicker 15s steps(1) infinite}
   background-color:#1a1a2e;
   animation:bgBreathe 10s ease-in-out infinite alternate;will-change:transform}
 @keyframes bgBreathe{0%{transform:scale(1)}100%{transform:scale(1.05)}}
-@keyframes bgBreatheRotated{0%{transform:translate(-50%,-50%) rotate(-90deg) scale(1)}100%{transform:translate(-50%,-50%) rotate(-90deg) scale(1.05)}}
+@keyframes bgBreatheRotated{0%{transform:rotate(-90deg) scale(1)}100%{transform:rotate(-90deg) scale(1.05)}}
 .screen-bg.bg-rotated{animation-name:bgBreatheRotated;
-  inset:auto;width:100vh;height:100vw;
-  top:50%;left:50%;
+  position:fixed;top:0;left:0;right:auto;bottom:auto;
+  width:100vh;height:100vw;
+  margin-left:calc((100vw - 100vh) / 2);
+  margin-top:calc((100vh - 100vw) / 2);
   transform-origin:center center}
 /* Desktop: contain to show full image */
 @media (min-width:769px){.screen-bg{background-size:contain;background-position:center center}}
