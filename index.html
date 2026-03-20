@@ -304,6 +304,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 /* In small containers, position tooltip below */
 .pcf-effect .kw .kw-tip,.c-effect .kw .kw-tip{bottom:auto;top:calc(100% + 6px)}
 .pcf-effect .kw .kw-tip::after,.c-effect .kw .kw-tip::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:rgba(255,107,157,0.35)}
+.rcd-effect .kw .kw-tip{bottom:auto;top:calc(100% + 6px)}
+.rcd-effect .kw .kw-tip::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:rgba(255,107,157,0.35)}
 /* Boss intro overlay */
 #boss-intro{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.4s}
 #boss-intro.show{opacity:1}
@@ -1318,17 +1320,23 @@ body{animation:chromaticFlicker 15s steps(1) infinite}
   .tg-flow{gap:4px}
   .tg-flow-step{padding:3px 6px;font-size:10px}
   .tg-flow-arrow{font-size:12px}
-  /* Mobile: reward card picks — compact vertical layout */
-  .adv-panel{max-width:95vw;padding:18px 14px;max-height:90vh}
-  .zzz-reward-picks{grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
-  .reward-card-detail{padding:10px 8px}
-  .rcd-emoji{font-size:28px;margin-bottom:4px}
-  .rcd-name{font-size:11px;letter-spacing:0}
-  .rcd-type{font-size:7px;letter-spacing:1px;margin:1px 0}
-  .rcd-stats{gap:4px;margin:2px 0}
-  .rcd-stat{font-size:9px}
+  /* Mobile: reward card picks — single column vertical layout for full visibility */
+  .adv-panel{max-width:95vw;padding:18px 14px;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .zzz-reward-picks{grid-template-columns:1fr;gap:8px;margin:10px 0}
+  .reward-card-detail{padding:10px 12px;flex-direction:row;gap:10px;overflow:visible}
+  .rcd-emoji{font-size:28px;margin-bottom:0;flex-shrink:0}
+  .rcd-body{text-align:left}
+  .rcd-name{font-size:13px;letter-spacing:0}
+  .rcd-type{font-size:8px;letter-spacing:1px;margin:1px 0}
+  .rcd-stats{gap:4px;margin:2px 0;justify-content:flex-start}
+  .rcd-stat{font-size:10px}
+  .rcd-slots{justify-content:flex-start}
   .rcd-slots span{width:6px;height:6px}
-  .rcd-effect{font-size:8px;padding:3px 5px;margin-top:4px;line-height:1.4}
+  .rcd-effect{font-size:10px;padding:4px 6px;margin-top:4px;line-height:1.5;max-height:none;overflow:visible;
+    -webkit-line-clamp:unset;display:block}
+  /* Mobile: keyword tooltip inside reward cards — position below and don't clip */
+  .rcd-effect .kw .kw-tip{bottom:auto;top:calc(100% + 4px);left:0;transform:none;max-width:70vw;z-index:1000}
+  .rcd-effect .kw .kw-tip::after{top:auto;bottom:100%;left:12px;transform:none;border-top-color:transparent;border-bottom-color:rgba(255,107,157,0.35)}
 }
 /* ============ ADVENTURE MAP ============ */
 .adventure-map-card{background:linear-gradient(135deg,#18162e,#1e1d32);border:1.5px solid rgba(122,90,205,0.35);border-radius:4px;
@@ -1486,7 +1494,7 @@ body{animation:chromaticFlicker 15s steps(1) infinite}
 /* Reward card detail style — ZZZ vertical card layout */
 .reward-card-detail{display:flex;flex-direction:column;align-items:center;padding:16px 14px;margin:0;
   background:linear-gradient(135deg,#1a1a2e,#14122a);border:1px solid rgba(255,62,122,0.15);border-radius:4px;
-  position:relative;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.4);
+  position:relative;overflow:visible;box-shadow:0 4px 16px rgba(0,0,0,0.4);
   cursor:pointer;transition:all 0.25s cubic-bezier(0.22,1,0.36,1);text-align:center;min-width:0}
 .reward-card-detail>*{position:relative;z-index:1}
 .reward-card-detail::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
