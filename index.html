@@ -1604,8 +1604,8 @@ body{animation:chromaticFlicker 15s steps(1) infinite}
 @keyframes bgBreathe{0%{transform:scale(1)}100%{transform:scale(1.05)}}
 @keyframes bgBreatheRotated{0%{transform:rotate(-90deg) scale(1)}100%{transform:rotate(-90deg) scale(1.05)}}
 .screen-bg.bg-rotated{animation-name:bgBreatheRotated;
-  position:fixed;top:0;left:0;right:auto;bottom:auto;
-  width:100vh;height:100vw;
+  position:fixed !important;top:0 !important;left:0 !important;right:auto !important;bottom:auto !important;
+  width:100vh !important;height:100vw !important;
   margin-left:calc((100vw - 100vh) / 2);
   margin-top:calc((100vh - 100vw) / 2);
   transform-origin:center center}
