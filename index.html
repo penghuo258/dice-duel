@@ -3287,9 +3287,9 @@ const ALL_CARDS=[
     showOverlay('时空旅者:选择要修改的骰子',opts,i=>{
       const valOpts=[1,2,3,4,5,6].map(v=>({label:`改为 ${v}`}));
       showOverlay('时空旅者:选择新点数',valOpts,vi=>{ctx.myCreature.assignedDice[i]=vi+1;log(`时空旅者:将骰子改为${vi+1}!`,'effect');render()})})}},
-{id:'greedy_mimic',type:'creature',name:'贪婪宝箱怪',emoji:'📦',base:1,slots:3,
-  effectDesc:'每有1个分配的骰子,基础值+1',timing:'passive',
-  effect(ctx){/* handled in getCreatureValue or duel resolve */}},
+{id:'greedy_mimic',type:'creature',name:'贪婪宝箱怪',emoji:'📦',base:0,slots:4,
+  effectDesc:'每有1个槽内骰子数字为5,基础值+1',timing:'passive',
+  effect(ctx){/* handled in getCreatureValue */}},
 {id:'crystal_guard',type:'creature',name:'水晶守卫',emoji:'🔷',base:3,slots:2,
   effectDesc:'受到>3伤害时:免疫该伤害并失去此牌(每回合限1次)',timing:'passive',
   effect(ctx){/* handled in damage resolution */}},
@@ -3454,7 +3454,7 @@ const ALL_CARDS=[
   effectDesc:'胜出:给对手施加2层诅咒',timing:'win',
   effect(ctx){applyCurse(ctx.enemy,2,ctx.owner);log('诅咒毒虫:对手获得2层诅咒!','effect')}},
 {id:'blood_beast',type:'creature',name:'血潮魔兽',emoji:'🐃',base:7,slots:2,
-  effectDesc:'部署时失去3生命',timing:'deploy',
+  effectDesc:'部署结束时失去3生命',timing:'deploy_end',
   effect(ctx){ctx.owner.hp-=3;log('血潮魔兽:部署代价,失去3生命!','effect')}},
 {id:'life_reaper',type:'creature',name:'生命收割者',emoji:'💀',base:2,slots:2,
   effectDesc:'胜出:给对手1层诅咒,恢复等于对手诅咒层数的生命',timing:'win',
@@ -3465,7 +3465,7 @@ const ALL_CARDS=[
   effect(ctx){ctx.card.growth=(ctx.card.growth||0)+1;log(`畏怖合成兽(手牌):使用法术,基础值+1! (当前${ctx.card.base+(ctx.card.growth||0)})`,'effect')}},
 // --- CURSE CREATURES (rare) ---
 {id:'blood_curse_vulture',type:'creature',name:'血咒鷲',emoji:'🦅',base:2,slots:3,
-  effectDesc:'部署时失去3生命,给对手施加3层诅咒',timing:'deploy',
+  effectDesc:'部署结束时失去3生命,给对手施加3层诅咒',timing:'deploy_end',
   effect(ctx){ctx.owner.hp-=3;applyCurse(ctx.enemy,3,ctx.owner);log('血咒鷲:失去3HP,对手获得3层诅咒!','effect')}},
 {id:'curse_parasite',type:'creature',name:'诅咒寄生体',emoji:'🦠',base:1,slots:3,
   effectDesc:'对拼时:对手每有1层诅咒,本回合基础值+1',timing:'duel_start',
@@ -3564,7 +3564,7 @@ function getCommonSpells(){return ALL_CARDS.filter(c=>c.type==='spell'&&COMMON_C
 function getRareSpells(){return ALL_CARDS.filter(c=>c.type==='spell'&&!COMMON_CARDS.includes(c.id))}
 function getCardDef(id){return ALL_CARDS.find(c=>c.id===id)}
 function makeCardInstance(def){return{...def,assignedDice:[],growth:0,tempBonus:0}}
-function getCreatureValue(c){if(!c)return 0;const frozen=new Set(c.frozenDice||[]);let val=c.base+(c.growth||0)+(c.tempBonus||0)+(c.assignedDice||[]).reduce((a,b,i)=>a+(frozen.has(i)?0:b),0);if(c.id==='greedy_mimic')val+=(c.assignedDice||[]).length;if(c._prophetDouble)val*=2;if(typeof G!=='undefined'&&G.adventureMode&&Adventure.hasRelic('double_blade')&&c.type==='creature')val+=3;return val}
+function getCreatureValue(c){if(!c)return 0;const frozen=new Set(c.frozenDice||[]);let val=c.base+(c.growth||0)+(c.tempBonus||0)+(c.assignedDice||[]).reduce((a,b,i)=>a+(frozen.has(i)?0:b),0);if(c.id==='greedy_mimic')val+=(c.assignedDice||[]).filter(d=>d===5).length;if(c._prophetDouble)val*=2;if(typeof G!=='undefined'&&G.adventureMode&&Adventure.hasRelic('double_blade')&&c.type==='creature')val+=3;return val}
 function discardCard(p,card){if(card&&card.id)p.discard.push(card.id)}
 function reshuffleDeck(p){if(!p.discard.length)return;const d=p.discard.map(id=>{const def=getCardDef(id);return makeCardInstance(def)});shuffle(d);p.deck=d;p.discard=[];log((p.isPlayer?'铸炉师':(G.aiName||'对手'))+'的弃牌堆已洗入牌库! ('+d.length+'张)','phase')}
 function drawCards(p,n){for(let i=0;i<n;i++){if(p.hand.length>=9)break;if(!p.deck.length){reshuffleDeck(p);if(!p.deck.length)break}const card=p.deck.pop();p.hand.push(card);if(card.id==='magnet_puppet'){card._magnetPending=true}}}
@@ -5607,7 +5607,7 @@ const G={
       // Deploy effects now trigger in doRevealAndDuel after dice are assigned
       // Exception: glutton_grum and other non-dice-dependent deploy effects trigger early
       if(card.timing==='deploy'&&card.effect&&!card._deployTriggered){
-        if(card.id==='glutton_grum'||card.id==='doom_prophet'||card.id==='clock_prophet'||card.id==='dream_morpheus'||card.id==='blood_beast'||card.id==='blood_curse_vulture'){
+        if(card.id==='glutton_grum'||card.id==='doom_prophet'||card.id==='clock_prophet'||card.id==='dream_morpheus'){
           card._deployTriggered=true;
           card.effect({owner:this.p,enemy:this.ai,myCreature:card,myDice:card.assignedDice,mySpellDice:[]});
         }
@@ -5875,6 +5875,20 @@ const G={
     // Trigger deploy effects
     this.triggerEffects('deploy',this.p);
     this.triggerEffects('deploy',this.ai);
+    // Deploy-end effects (blood_beast, blood_curse_vulture etc.)
+    this.triggerEffects('deploy_end',this.p);
+    this.triggerEffects('deploy_end',this.ai);
+    render();
+    // Check if self-damage from deploy killed anyone
+    if(this.p.hp<=0){
+      setPhase('战斗失败!');SFX.play('clash_lose');StatsTracker.recordGame(false);
+      if(this.adventureMode){Adventure.hasRelic('rebirth_rune')&&this.p.hp<=0?(this.p.hp=1,Adventure.removeRelic('rebirth_rune'),log('♻️ 重生符文:免于死亡,HP恢复到1!','effect')):(this.onBattleLose());return}
+      else{this.onBattleLose();return}
+    }
+    if(this.ai.hp<=0){
+      setPhase('战斗胜利!');SFX.play('clash_win');StatsTracker.recordGame(true);spawnVictoryParticles();
+      if(this.adventureMode){this.onBattleWin()}else{this.onBattleWin()}return;
+    }
     // Boss dialogue: card reactions
     if(this.isBossFight()){
       // Boss turn taunt
