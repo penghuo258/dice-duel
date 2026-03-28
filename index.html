@@ -2378,6 +2378,142 @@ body{animation:chromaticFlicker 15s steps(1) infinite}
   .task-row{padding:10px 12px 10px 16px}
   .task-progress{width:60px}
 }
+/* ========== DATA NEST (数据巢穴) ========== */
+#screen-nest{flex-direction:column;overflow:hidden}
+#screen-nest .screen-bg{opacity:0.35}
+.nest-wrap{position:relative;width:100%;height:100%;display:flex;flex-direction:column;z-index:2}
+/* Left strip */
+.nest-strip{position:absolute;top:0;left:0;bottom:0;width:48px;z-index:6;
+  background:linear-gradient(180deg,#7a5acd 0%,#6040b0 50%,#7a5acd 100%);
+  display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:10px;
+  box-shadow:2px 0 16px rgba(122,90,205,0.3)}
+.nest-strip::after{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 18px,rgba(0,0,0,0.08) 18px,rgba(0,0,0,0.08) 20px);pointer-events:none}
+.nest-strip .ns-icon{font-size:16px}
+.nest-strip .ns-text{writing-mode:vertical-lr;text-orientation:mixed;font-family:'Share Tech Mono',monospace;
+  font-size:9px;letter-spacing:3px;color:rgba(255,255,255,0.85);font-weight:700}
+.nest-strip .ns-text.big{font-size:12px;letter-spacing:4px}
+.nest-strip .ns-dots{display:flex;flex-direction:column;gap:3px;align-items:center}
+.nest-strip .ns-dots span{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.4)}
+.nest-strip .ns-dots span.active{background:#fff;box-shadow:0 0 6px rgba(255,255,255,0.8)}
+/* Top label */
+.nest-label{position:absolute;top:12px;right:12px;z-index:6;text-align:right}
+.nest-label .nl-en{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:4px;color:rgba(255,255,255,0.4);text-transform:uppercase}
+.nest-label .nl-num{font-family:'Baloo 2','Fredoka',sans-serif;font-size:48px;font-weight:900;line-height:1;color:rgba(255,255,255,0.04);letter-spacing:-2px}
+/* Main content */
+.nest-main{flex:1;margin-left:48px;display:flex;overflow:hidden}
+/* Left panel: dungeon grid */
+.nest-dungeon{flex:1;display:flex;flex-direction:column;padding:12px;overflow:auto}
+.nest-day-bar{display:flex;align-items:center;gap:12px;padding:8px 14px;margin-bottom:10px;
+  background:rgba(10,10,26,0.7);border:1px solid rgba(122,90,205,0.2);border-radius:8px;backdrop-filter:blur(8px)}
+.nest-day-bar .ndb-day{font-family:'Baloo 2','Fredoka',sans-serif;font-size:20px;font-weight:900;color:#c4b5fd}
+.nest-day-bar .ndb-phase{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.5);text-transform:uppercase}
+.nest-day-bar .ndb-sep{width:1px;height:20px;background:rgba(122,90,205,0.2)}
+.nest-res{display:flex;gap:8px;margin-left:auto}
+.nest-res .nr-item{display:flex;align-items:center;gap:4px;font-family:'Share Tech Mono',monospace;font-size:11px;
+  padding:3px 8px;border-radius:12px;background:rgba(122,90,205,0.1);border:1px solid rgba(122,90,205,0.15)}
+.nest-res .nr-icon{font-size:13px}
+.nest-res .nr-val{color:#c4b5fd;font-weight:700}
+/* Grid */
+.nest-grid{display:grid;gap:6px;flex:1;align-content:start}
+.nest-cell{position:relative;border-radius:10px;border:2px solid rgba(122,90,205,0.15);
+  background:rgba(10,10,26,0.6);backdrop-filter:blur(6px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:80px;cursor:pointer;transition:all .2s;overflow:hidden}
+.nest-cell:hover{border-color:rgba(122,90,205,0.4);transform:translateY(-2px);
+  box-shadow:0 4px 16px rgba(122,90,205,0.15)}
+.nest-cell.cell-core{border-color:rgba(255,62,122,0.4);background:rgba(255,62,122,0.08)}
+.nest-cell.cell-empty{border-style:dashed;opacity:0.5;cursor:default}
+.nest-cell.cell-empty:hover{transform:none;box-shadow:none}
+.nest-cell .nc-icon{font-size:24px;margin-bottom:2px}
+.nest-cell .nc-name{font-size:9px;font-family:'Share Tech Mono',monospace;color:rgba(255,255,255,0.6);
+  letter-spacing:1px;text-align:center}
+.nest-cell .nc-level{position:absolute;top:4px;right:6px;font-size:7px;font-family:'Share Tech Mono',monospace;
+  color:rgba(122,90,205,0.6);letter-spacing:1px}
+.nest-cell .nc-dice{position:absolute;bottom:4px;display:flex;gap:2px}
+.nest-cell .nc-dice .nd-die{width:14px;height:14px;border-radius:3px;font-size:8px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(122,90,205,0.2);border:1px solid rgba(122,90,205,0.3);color:#c4b5fd}
+/* Right panel: event / action */
+.nest-side{width:280px;display:flex;flex-direction:column;border-left:1px solid rgba(122,90,205,0.12);
+  background:rgba(10,10,26,0.7);backdrop-filter:blur(12px);overflow-y:auto;padding:12px}
+.nest-side .ns-title{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;
+  color:rgba(122,90,205,0.6);text-transform:uppercase;border-bottom:1px solid rgba(122,90,205,0.12);
+  padding-bottom:6px;margin-bottom:10px}
+/* Event cards */
+.nest-event{border:1px solid rgba(122,90,205,0.2);border-radius:8px;padding:10px;margin-bottom:8px;
+  background:rgba(10,10,26,0.5);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.nest-event:hover{border-color:rgba(122,90,205,0.45);background:rgba(122,90,205,0.08)}
+.nest-event.ne-selected{border-color:#c4b5fd;box-shadow:0 0 12px rgba(122,90,205,0.3)}
+.nest-event .ne-tag{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:2px;
+  color:#c4b5fd;text-transform:uppercase;margin-bottom:4px}
+.nest-event .ne-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.nest-event .ne-body{font-size:10px;color:rgba(255,255,255,0.5);line-height:1.5}
+.nest-event .ne-reward{font-size:9px;color:rgba(196,181,253,0.7);margin-top:4px}
+/* Dice allocation area */
+.nest-dice-pool{display:flex;gap:6px;flex-wrap:wrap;padding:8px;margin-bottom:8px;
+  background:rgba(10,10,26,0.5);border:1px solid rgba(122,90,205,0.15);border-radius:8px}
+.nest-dice-pool .ndp-die{width:36px;height:36px;border-radius:6px;font-size:18px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;cursor:grab;
+  background:rgba(122,90,205,0.15);border:2px solid rgba(122,90,205,0.3);color:#c4b5fd;
+  transition:all .15s;user-select:none}
+.nest-dice-pool .ndp-die:hover{border-color:#c4b5fd;transform:scale(1.1)}
+.nest-dice-pool .ndp-die.ndp-used{opacity:0.3;cursor:default}
+/* Action buttons */
+.nest-btn{width:100%;padding:10px;border:1px solid rgba(122,90,205,0.3);
+  background:rgba(10,10,26,0.7);color:var(--text);font-family:'ZCOOL KuaiLe','Fredoka',sans-serif;
+  font-size:12px;font-weight:700;cursor:pointer;border-radius:6px;transition:all .15s;
+  backdrop-filter:blur(4px);margin-bottom:6px}
+.nest-btn:hover{border-color:#c4b5fd;color:#fff;background:rgba(122,90,205,0.15)}
+.nest-btn.nb-primary{border-color:#7a5acd;background:linear-gradient(180deg,rgba(122,90,205,0.2),rgba(96,64,176,0.1));color:#c4b5fd}
+.nest-btn.nb-primary:hover{background:linear-gradient(180deg,rgba(122,90,205,0.35),rgba(96,64,176,0.2));
+  box-shadow:0 0 12px rgba(122,90,205,0.3)}
+.nest-btn:disabled{opacity:0.3;pointer-events:none}
+/* Haruko assistant */
+.nest-haruko{display:flex;gap:8px;padding:10px;margin-top:auto;
+  background:rgba(10,10,26,0.6);border:1px solid rgba(122,90,205,0.15);border-radius:8px}
+.nest-haruko .nh-avatar{width:36px;height:36px;border-radius:50%;background:rgba(122,90,205,0.2);
+  display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;
+  border:2px solid rgba(122,90,205,0.3)}
+.nest-haruko .nh-text{font-size:10px;color:rgba(255,255,255,0.6);line-height:1.6}
+.nest-haruko .nh-name{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:2px;color:#c4b5fd;margin-bottom:2px}
+/* Bottom bar */
+.nest-bottom{position:absolute;bottom:0;left:48px;right:0;height:36px;z-index:6;
+  background:rgba(10,10,26,0.85);backdrop-filter:blur(10px);border-top:1px solid rgba(122,90,205,0.2);
+  display:flex;align-items:center;padding:0 12px;gap:16px}
+.nest-bottom .nbb-item{display:flex;align-items:center;gap:4px;font-family:'Share Tech Mono',monospace;font-size:10px}
+.nest-bottom .nbb-label{color:rgba(255,255,255,0.35);letter-spacing:2px;font-size:8px;text-transform:uppercase}
+.nest-bottom .nbb-val{color:#c4b5fd;font-weight:700;font-size:12px}
+.nest-bottom .nbb-sep{width:1px;height:16px;background:rgba(255,255,255,0.1)}
+/* Creatures in rooms */
+.nest-creatures{display:flex;gap:3px;margin-top:2px}
+.nest-creatures .ncr{width:18px;height:18px;border-radius:4px;font-size:10px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(122,90,205,0.1);border:1px solid rgba(122,90,205,0.2)}
+/* Defense battle log */
+.nest-defense-log{max-height:200px;overflow-y:auto;font-size:10px;line-height:1.7;
+  color:rgba(255,255,255,0.5);padding:8px;background:rgba(10,10,26,0.4);border-radius:6px;margin-bottom:8px}
+.nest-defense-log .ndl-dmg{color:#f87171}
+.nest-defense-log .ndl-win{color:#4ade80}
+.nest-defense-log .ndl-event{color:#c4b5fd}
+/* Mobile */
+@media(max-width:768px){
+  .nest-strip{width:32px!important;padding:8px 0!important;gap:6px!important}
+  .nest-strip .ns-icon{font-size:11px!important}
+  .nest-strip .ns-text{font-size:7px!important;letter-spacing:1px!important}
+  .nest-strip .ns-text.big{font-size:10px!important}
+  .nest-label{display:none!important}
+  .nest-main{margin-left:32px!important;flex-direction:column!important}
+  .nest-side{width:100%!important;max-height:240px!important;border-left:none!important;border-top:1px solid rgba(122,90,205,0.12)!important}
+  .nest-bottom{left:32px!important;height:28px!important}
+  .nest-bottom .nbb-label{font-size:6px!important}
+  .nest-bottom .nbb-val{font-size:10px!important}
+  .nest-day-bar{padding:6px 10px!important}
+  .nest-day-bar .ndb-day{font-size:16px!important}
+  .nest-res .nr-item{font-size:9px!important;padding:2px 6px!important}
+  .nest-cell{min-height:60px!important}
+  .nest-cell .nc-icon{font-size:18px!important}
+}
 </style>
 </head>
 <body>
@@ -2435,6 +2571,7 @@ body{animation:chromaticFlicker 15s steps(1) infinite}
         <div class="zzz-menu-btns">
           <div class="zbtn-row"><button class="menu-btn" onclick="showScreen('screen-levels')">⚔ 开始对决</button></div>
           <div class="zbtn-row"><button class="menu-btn" onclick="showScreen('screen-adventure')">🗺 开始冒险</button></div>
+          <div class="zbtn-row"><button class="menu-btn" onclick="showScreen('screen-nest')">🏰 数据巢穴</button></div>
           <div class="zbtn-row"><button class="menu-btn" id="menu-task-btn" onclick="showScreen('screen-task')">📋 任务</button></div>
           <div class="zbtn-row"><button class="menu-btn" onclick="showScreen('screen-wiki')">📖 百科</button></div>
         </div>
@@ -3071,6 +3208,70 @@ body{animation:chromaticFlicker 15s steps(1) infinite}
   </div>
 </div>
 
+<!-- DATA NEST SCREEN (数据巢穴) -->
+<div id="screen-nest" class="screen">
+  <div class="screen-bg" style="background-image:url('assets/bg-terra-grid.jpg')"></div>
+  <div class="screen-particles" data-colors="#7a5acd,#c4b5fd,#6040b0,#ffffff" data-count="20"></div>
+  <div class="zzz-geo-bg"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><defs><pattern id="zzztriNest" width="60" height="52" patternUnits="userSpaceOnUse"><polygon points="30,0 60,52 0,52" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#zzztriNest)"/></svg></div>
+  <div class="nest-wrap">
+    <!-- Left strip -->
+    <div class="nest-strip">
+      <div class="ns-icon">🏰</div>
+      <div class="ns-text big">DATA</div>
+      <div class="ns-dots"><span class="active"></span><span></span><span class="active"></span></div>
+      <div class="ns-text big">NEST</div>
+      <div class="ns-icon">⚔</div>
+      <div class="ns-text">TERRA</div>
+      <div class="zzz-strip-divider"></div>
+      <div class="zzz-strip-settings" onclick="event.stopPropagation();showScreen('screen-settings')">⚙</div>
+      <div class="zzz-strip-settings" onclick="event.stopPropagation();goBackScreen()">↩</div>
+    </div>
+    <!-- Top-right label -->
+    <div class="nest-label"><div class="nl-en">DATA NEST</div><div class="nl-num">06</div></div>
+    <!-- Main content -->
+    <div class="nest-main">
+      <!-- Left: Dungeon grid -->
+      <div class="nest-dungeon">
+        <div class="nest-day-bar">
+          <div class="ndb-day" id="nest-day">第 1 天</div>
+          <div class="ndb-sep"></div>
+          <div class="ndb-phase" id="nest-phase">☀ 早晨</div>
+          <div class="nest-res">
+            <div class="nr-item"><span class="nr-icon">💎</span><span class="nr-val" id="nest-shards">100</span></div>
+            <div class="nr-item"><span class="nr-icon">🪙</span><span class="nr-val" id="nest-gold">50</span></div>
+            <div class="nr-item"><span class="nr-icon">⚡</span><span class="nr-val" id="nest-energy">4</span></div>
+            <div class="nr-item"><span class="nr-icon">🔥</span><span class="nr-val" id="nest-infamy">0</span></div>
+          </div>
+        </div>
+        <div class="nest-grid" id="nest-grid" style="grid-template-columns:repeat(3,1fr)"></div>
+      </div>
+      <!-- Right: Events / Actions -->
+      <div class="nest-side" id="nest-side">
+        <div class="ns-title" id="nest-side-title">事件</div>
+        <div id="nest-side-content"></div>
+        <!-- Haruko assistant -->
+        <div class="nest-haruko">
+          <div class="nh-avatar">👩‍💼</div>
+          <div>
+            <div class="nh-name">晴子 // HARUKO</div>
+            <div class="nh-text" id="nest-haruko-text">欢迎来到你的数据巢穴！今天有新的事件等着你。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Bottom bar -->
+    <div class="nest-bottom">
+      <div class="nbb-item"><span class="nbb-label">DAY</span><span class="nbb-val" id="nbb-day">1</span></div>
+      <div class="nbb-sep"></div>
+      <div class="nbb-item"><span class="nbb-label">PHASE</span><span class="nbb-val" id="nbb-phase">早晨</span></div>
+      <div class="nbb-sep"></div>
+      <div class="nbb-item"><span class="nbb-label">INFAMY</span><span class="nbb-val" id="nbb-infamy">0</span></div>
+      <div style="flex:1"></div>
+      <div class="nbb-item"><span class="nbb-label">DATA NEST</span><span style="color:rgba(122,90,205,0.5);font-size:9px;font-family:'Share Tech Mono'">// 数据巢穴</span></div>
+    </div>
+  </div>
+</div>
+
 <!-- GAME SCREEN -->
 <div id="screen-game" class="screen">
   <div class="screen-bg" style="background-image:url('assets/bg-game.png')"></div>
@@ -3286,7 +3487,7 @@ const AudioMgr={
     'screen-game':'battle','screen-levels':'menu',
     'screen-shop':'shop','screen-wiki':'shop',
     'screen-adventure':'event','screen-map':'event',
-    'screen-story':'story'
+    'screen-story':'story','screen-nest':'event'
   },
   async _openDB(){
     if(this._db)return this._db;
@@ -3471,7 +3672,8 @@ const _screenHistory=[];
 const _screenParent={
   'screen-levels':'screen-menu','screen-adventure':'screen-menu','screen-deck':'screen-menu',
   'screen-settings':'screen-menu','screen-wiki':'screen-menu','screen-story':'screen-menu',
-  'screen-shop':'screen-levels','screen-game':'screen-levels','screen-map':'screen-adventure'
+  'screen-shop':'screen-levels','screen-game':'screen-levels','screen-map':'screen-adventure',
+  'screen-nest':'screen-menu'
 };
 function goBackScreen(){
   if(_zzzBusy)return;
@@ -3509,6 +3711,7 @@ function showScreen(id,isBack){
     if(id==='screen-story')Story.init();
     if(id==='screen-tutorial')TutorialGuide.init();
     if(id==='screen-task')TaskSystem.render();
+    if(id==='screen-nest'&&typeof DataNest!=='undefined')DataNest.render();
     if(id==='screen-menu'){NewsMatrix.resume();if(typeof TaskSystem!=='undefined')TaskSystem.updateRedDot()}else{NewsMatrix.stop()}
     ZZZGreeting.tryShow(id);
     slide.classList.remove(inCls);
@@ -8589,7 +8792,8 @@ const BgMgr={
     levels:{screen:'screen-levels',url:'assets/bg-levels.png'},
     adventure:{screen:'screen-adventure',url:'assets/bg-adventure.png'},
     map:{screen:'screen-map',url:'assets/bg-adventure.png'},
-    game:{screen:'screen-game',url:'assets/bg-game.png'}
+    game:{screen:'screen-game',url:'assets/bg-game.png'},
+    nest:{screen:'screen-nest',url:'assets/bg-terra-grid.jpg'}
   },
   async _openDB(){
     if(this._db)return this._db;
@@ -9690,6 +9894,428 @@ const TaskSystem={
 TaskSystem.init();
 /* Update red dot on menu after page load */
 document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>TaskSystem.updateRedDot(),500)});
+
+/* ========== DATA NEST ENGINE (数据巢穴) ========== */
+const DataNest=(()=>{
+/* --- CONSTANTS --- */
+const PHASES=['morning','day','night','settle'];
+const PHASE_NAMES={morning:'☀ 早晨',day:'☀ 白天',night:'🌙 夜晚',settle:'📊 结算'};
+const ROOM_TYPES={
+  core:{name:'魔王室',icon:'🏰',desc:'炉心坐镇，核心房间',maxDice:0},
+  lair:{name:'生物巢穴',icon:'🐉',desc:'安置生物，每骰子+1%经验',maxDice:3},
+  trap:{name:'陷阱房',icon:'⚙',desc:'对勇者造成伤害，每骰子+2%伤害',maxDice:3},
+  vault:{name:'宝库',icon:'💰',desc:'存储金币，每骰子+0.5%利息',maxDice:3},
+  hatch:{name:'孵化室',icon:'🥚',desc:'孵化/升级生物，每骰子-5%时间',maxDice:3},
+  lab:{name:'研究室',icon:'🔬',desc:'研发新技术，每骰子+3%概率',maxDice:3},
+  synth:{name:'合成室',icon:'⚗',desc:'合成与融合生物',maxDice:2},
+  embassy:{name:'外交使馆',icon:'🏛',desc:'派系互动与投资',maxDice:2},
+  empty:{name:'空地',icon:'➕',desc:'可建造新房间',maxDice:0}
+};
+const CREATURES=[
+  {id:'gear_hound',name:'齿轮猎犬',emoji:'🐺',base:3,skill:'胜出:额外造成2伤害',tier:1},
+  {id:'shadow_rat',name:'阴影老鼠',emoji:'🐭',base:2,skill:'偷取敌方1个骰子',tier:1},
+  {id:'frost_dragon',name:'霜鳞龙永冬',emoji:'🐲',base:5,skill:'冻结随机骰子',tier:2},
+  {id:'steel_puppet',name:'钢铁傀儡',emoji:'🤖',base:4,skill:'受击时反弹1伤害',tier:1},
+  {id:'magnet_golem',name:'磁力傀儡',emoji:'🧲',base:6,skill:'抽到时弃置1骰子',tier:2},
+  {id:'phoenix',name:'熔炉凤凰',emoji:'🔥',base:5,skill:'死亡时复活(50%血)',tier:3},
+  {id:'ice_rat',name:'冰鼠',emoji:'🐀',base:1,skill:'自爆冻结周围生物',tier:1},
+  {id:'vine_beast',name:'数据藤蔓兽',emoji:'🌿',base:3,skill:'每回合回复1血',tier:1}
+];
+const EVENT_POOL=[
+  /* BATTLE */
+  {type:'battle',tag:'BATTLE',title:'数据勇者入侵预警',body:'一名Lv.%lv%勇者正朝你的巢穴前进！',reward:'💎+20 🔥+5',fn:'doBattle'},
+  {type:'battle',tag:'BATTLE',title:'精英节点异常',body:'精英勇者"%name%"出现在附近！',reward:'💎+50 ⚡+2',fn:'doEliteBattle'},
+  /* DIPLOMACY */
+  {type:'diplomacy',tag:'DIPLOMACY',title:'数据猎人使者来访',body:'数据猎人派系希望与你进行交易。',reward:'🪙+30',fn:'doDiplomacy'},
+  {type:'diplomacy',tag:'DIPLOMACY',title:'机械教团传教',body:'机械教团的传教士前来宣讲铁面教义。',reward:'💎+15',fn:'doDiplomacy'},
+  /* ECONOMY */
+  {type:'economy',tag:'ECONOMY',title:'黑市商人到访',body:'神秘商人带来了罕见的生物蛋和陷阱图纸。',reward:'🛒商店',fn:'doShop'},
+  {type:'economy',tag:'ECONOMY',title:'数据碎片矿脉',body:'巢穴附近发现一处数据碎片矿脉！',reward:'💎+40',fn:'doMine'},
+  /* HUMOR */
+  {type:'humor',tag:'ANOMALY',title:'数据烤鸟',body:'路边突然出现一家烤鸟店，老板是只数据鸡。',reward:'❤+2',fn:'doHumor'},
+  {type:'humor',tag:'ANOMALY',title:'味噌汁海',body:'前方出现一片味噌汁海洋，你忍不住喝了一口。',reward:'❤+2 🐉-1HP',fn:'doHumor'},
+  {type:'humor',tag:'ANOMALY',title:'鱼雷空投',body:'天上掉下一颗鱼雷，上面写着"魔王赠品"。',reward:'敌方2-6伤害',fn:'doHumor'},
+  {type:'humor',tag:'ANOMALY',title:'Mr.炉的烦恼',body:'Mr.炉表示：4是我的幸运数字，你们都得是4。',reward:'骰子全部=4',fn:'doHumor'},
+  {type:'humor',tag:'ANOMALY',title:'電気釜罢工',body:'你的电饭锅突然罢工，拒绝煮法术。',reward:'本回合无法术',fn:'doHumor'},
+  {type:'humor',tag:'ANOMALY',title:'锅奉行驾到',body:'一个自称锅奉行的家伙强行帮你调整了锅底火力。',reward:'法术槽+1',fn:'doHumor'}
+];
+const HERO_NAMES=['アキラ','ミカ','レン','ユウキ','サクラ','タケシ','ハルカ','コウ','リン','シオン'];
+const HARUKO_LINES={
+  morning:['新的一天开始了！先看看今天有什么事件吧。','早上好，炉心大人！熔炉已经准备好了4个骰子。','今天的泰拉气象显示...呃，反正就是很刺激的一天！'],
+  day:['选得好！让我们处理这个事件吧。','有意思的选择呢，炉心大人。','这个事件...晴子觉得会很有趣。'],
+  night:['勇者来了！巢穴防御系统启动！','注意！检测到勇者入侵信号！','防御战开始！各生物准备迎战！'],
+  settle:['今天的收获还不错呢。','结算完毕！明天继续加油吧。','数据碎片到手！晴子帮你记好账了。'],
+  idle:['无聊的话...要不要看看生物巢穴的情况？','炉心大人，宝库的利息好像到账了。','晴子觉得应该投资一下千代田町...']
+};
+/* --- STATE --- */
+let S={
+  day:1,phase:'morning',gridSize:3,
+  shards:100,gold:50,energy:4,infamy:0,
+  rooms:[], /* [{type,level,creatures:[],dice:[],hp}] */
+  pool:[], /* today's dice [1-6,1-6,1-6,1-6] */
+  events:[], /* today's events */
+  selectedEvent:-1,
+  creatures:[], /* owned creatures [{...def, exp, lvl}] */
+  factions:{hunters:0,church:0,chaos:0}, /* -100 to 100 */
+  log:[],
+  started:false
+};
+/* --- HELPERS --- */
+function rand(n){return Math.floor(Math.random()*n)}
+function pick(arr){return arr[rand(arr.length)]}
+function rollDice(){return rand(6)+1}
+function $(id){return document.getElementById(id)}
+
+/* --- INIT --- */
+function newGame(){
+  S={day:1,phase:'morning',gridSize:3,shards:100,gold:50,energy:4,infamy:0,
+    rooms:[],pool:[],events:[],selectedEvent:-1,
+    creatures:[],factions:{hunters:0,church:0,chaos:0},log:[],started:true};
+  /* Build initial 3x3 grid */
+  for(let i=0;i<9;i++){
+    if(i===4)S.rooms.push({type:'core',level:1,creatures:[],dice:[],hp:30});
+    else if(i===1)S.rooms.push({type:'lair',level:1,creatures:[{...CREATURES[0],exp:0,lvl:1}],dice:[],hp:0});
+    else if(i===3)S.rooms.push({type:'trap',level:1,creatures:[],dice:[],hp:0});
+    else if(i===5)S.rooms.push({type:'vault',level:1,creatures:[],dice:[],hp:0});
+    else if(i===7)S.rooms.push({type:'hatch',level:1,creatures:[],dice:[],hp:0});
+    else S.rooms.push({type:'empty',level:0,creatures:[],dice:[],hp:0});
+  }
+  /* Starting creatures */
+  S.creatures.push({...CREATURES[0],exp:0,lvl:1});
+  S.creatures.push({...CREATURES[3],exp:0,lvl:1});
+  startMorning();
+}
+/* --- PHASE LOGIC --- */
+function startMorning(){
+  S.phase='morning';
+  S.pool=[rollDice(),rollDice(),rollDice(),rollDice()];
+  S.rooms.forEach(r=>r.dice=[]);
+  /* Generate 1-3 events */
+  const count=1+rand(Math.min(3,Math.ceil(S.day/5)));
+  S.events=[];S.selectedEvent=-1;
+  const available=[...EVENT_POOL];
+  for(let i=0;i<count&&available.length;i++){
+    const idx=rand(available.length);
+    const ev={...available.splice(idx,1)[0]};
+    ev.body=ev.body.replace('%lv%',Math.ceil(S.day/3)).replace('%name%',pick(HERO_NAMES));
+    S.events.push(ev);
+  }
+  say('morning');
+  render();
+}
+function startDay(){
+  if(S.selectedEvent<0)return;
+  S.phase='day';
+  say('day');
+  render();
+  /* Auto-resolve unselected events with consequences */
+  S.events.forEach((ev,i)=>{
+    if(i!==S.selectedEvent){
+      addLog(`<span class="ndl-event">⚠ "${ev.title}" 未处理，产生了后果...</span>`);
+      if(ev.type==='battle')S.infamy+=3;
+      else if(ev.type==='economy')S.shards=Math.max(0,S.shards-10);
+    }
+  });
+  /* Process selected event */
+  const ev=S.events[S.selectedEvent];
+  processEvent(ev);
+}
+function processEvent(ev){
+  switch(ev.type){
+    case'battle':doBattle();break;
+    case'diplomacy':doDiplomacy();break;
+    case'economy':doEconomy(ev);break;
+    case'humor':doHumor(ev);break;
+    default:addLog('事件处理完毕。');startNight();
+  }
+}
+function doBattle(){
+  const heroLv=Math.ceil(S.day/3);
+  const heroHp=8+heroLv*4;
+  const heroAtk=2+heroLv*2;
+  let hp=heroHp;
+  addLog(`<span class="ndl-event">⚔ Lv.${heroLv} 勇者"${pick(HERO_NAMES)}"入侵！HP:${heroHp}</span>`);
+  /* Creatures fight */
+  S.rooms.filter(r=>r.type==='lair').forEach(room=>{
+    room.creatures.forEach(c=>{
+      if(hp<=0)return;
+      const dmg=c.base+c.lvl+sumDice(room.dice);
+      hp-=dmg;
+      addLog(`🐉 ${c.emoji}${c.name} 造成 <span class="ndl-dmg">${dmg}</span> 伤害 (勇者剩余HP:${Math.max(0,hp)})`);
+    });
+  });
+  /* Traps */
+  S.rooms.filter(r=>r.type==='trap').forEach(room=>{
+    if(hp<=0)return;
+    const dmg=3+room.level*2+sumDice(room.dice);
+    hp-=dmg;
+    addLog(`⚙ 陷阱造成 <span class="ndl-dmg">${dmg}</span> 伤害 (勇者剩余HP:${Math.max(0,hp)})`);
+  });
+  if(hp<=0){
+    addLog('<span class="ndl-win">✅ 勇者被击败！获得奖励</span>');
+    S.shards+=20+heroLv*5;S.infamy+=5;S.gold+=10+heroLv*3;
+  }else{
+    addLog(`<span class="ndl-dmg">❌ 勇者突破防线！核心受到 ${Math.min(hp,10)} 伤害</span>`);
+    const core=S.rooms.find(r=>r.type==='core');
+    if(core)core.hp=Math.max(0,core.hp-Math.min(hp,10));
+  }
+  render();
+  setTimeout(()=>startNight(),800);
+}
+function doEliteBattle(){
+  addLog('<span class="ndl-event">💀 精英战斗！强度翻倍！</span>');
+  doBattle();/* Simplified: same as battle for now */
+}
+function doDiplomacy(){
+  const faction=pick(['hunters','church','chaos']);
+  const names={hunters:'数据猎人',church:'机械教团',chaos:'混沌信徒'};
+  S.factions[faction]+=10;S.gold+=30;
+  addLog(`<span class="ndl-event">🏛 与${names[faction]}外交成功！好感+10，金币+30</span>`);
+  render();
+  setTimeout(()=>startNight(),600);
+}
+function doEconomy(ev){
+  if(ev.title.includes('黑市')){
+    addLog('<span class="ndl-event">🛒 黑市商人展示了商品...</span>');
+    /* Give a random creature */
+    const c={...pick(CREATURES),exp:0,lvl:1};
+    S.creatures.push(c);
+    addLog(`获得生物: ${c.emoji} ${c.name}！`);
+  }else{
+    S.shards+=40;
+    addLog('<span class="ndl-event">💎 挖掘碎片矿脉！碎片+40</span>');
+  }
+  render();
+  setTimeout(()=>startNight(),600);
+}
+function doHumor(ev){
+  addLog(`<span class="ndl-event">🎭 ${ev.title}: ${ev.body}</span>`);
+  if(ev.title.includes('烤鸟')){const core=S.rooms.find(r=>r.type==='core');if(core)core.hp=Math.min(30,core.hp+2)}
+  else if(ev.title.includes('味噌')){const core=S.rooms.find(r=>r.type==='core');if(core)core.hp=Math.min(30,core.hp+2)}
+  else if(ev.title.includes('鱼雷'))S.shards+=rand(5)+2;
+  else if(ev.title.includes('Mr.炉'))S.pool=S.pool.map(()=>4);
+  else S.gold+=10;
+  render();
+  setTimeout(()=>startNight(),600);
+}
+function startNight(){
+  S.phase='night';
+  say('night');
+  render();
+  /* Auto defense based on infamy */
+  if(S.infamy>=10&&S.day%2===0){
+    setTimeout(()=>{
+      addLog('<span class="ndl-event">🌙 夜间防御战触发！</span>');
+      doBattle();
+      setTimeout(()=>startSettle(),800);
+    },500);
+  }else{
+    addLog('🌙 今夜平安无事。');
+    setTimeout(()=>startSettle(),500);
+  }
+}
+function startSettle(){
+  S.phase='settle';
+  say('settle');
+  /* Vault interest */
+  S.rooms.filter(r=>r.type==='vault').forEach(room=>{
+    const interest=Math.floor(S.gold*(0.02+0.005*sumDice(room.dice)));
+    S.gold+=interest;
+    if(interest>0)addLog(`💰 宝库利息: +${interest}金币`);
+  });
+  /* Creature exp */
+  S.rooms.filter(r=>r.type==='lair').forEach(room=>{
+    room.creatures.forEach(c=>{
+      const expGain=5+sumDice(room.dice);
+      c.exp+=expGain;
+      if(c.exp>=c.lvl*20){c.lvl++;c.base++;c.exp=0;addLog(`⬆ ${c.emoji}${c.name} 升级到Lv.${c.lvl}！`)}
+    });
+  });
+  /* Energy regen */
+  S.energy=4;
+  /* Boss check */
+  if(S.day%10===0&&S.day<=40){
+    addLog(`<span class="ndl-event">⚠ 第${S.day}天BOSS战即将来临！</span>`);
+  }
+  render();
+}
+function nextDay(){
+  S.day++;S.log=[];
+  if(S.day>40){
+    addLog('<span class="ndl-win">🎉 第40天！最终抉择时刻到来...</span>');
+    S.phase='morning';render();return;
+  }
+  startMorning();
+}
+/* --- UTILITY --- */
+function sumDice(arr){return(arr||[]).reduce((a,b)=>a+b,0)}
+function addLog(msg){S.log.push(msg);render()}
+function say(phase){/* Haruko dialogue */}
+function assignDie(roomIdx){
+  if(S.phase!=='morning')return;
+  const room=S.rooms[roomIdx];
+  if(!room||room.type==='empty'||room.type==='core')return;
+  const rt=ROOM_TYPES[room.type];
+  if(room.dice.length>=rt.maxDice)return;
+  /* Find first unused die in pool */
+  const used=S.rooms.reduce((a,r)=>a+r.dice.length,0);
+  if(used>=S.pool.length)return;
+  room.dice.push(S.pool[used]);
+  render();
+}
+function removeDie(roomIdx){
+  if(S.phase!=='morning')return;
+  const room=S.rooms[roomIdx];
+  if(!room||!room.dice.length)return;
+  room.dice.pop();
+  render();
+}
+function selectEvent(idx){
+  if(S.phase!=='morning')return;
+  S.selectedEvent=idx;
+  render();
+}
+function buildRoom(idx,type){
+  if(S.rooms[idx].type!=='empty')return;
+  const cost={lair:30,trap:25,vault:40,hatch:35,lab:50,synth:60,embassy:70};
+  const c=cost[type]||30;
+  if(S.shards<c)return;
+  S.shards-=c;
+  S.rooms[idx]={type,level:1,creatures:[],dice:[],hp:0};
+  addLog(`🏗 建造了 ${ROOM_TYPES[type].icon} ${ROOM_TYPES[type].name}！`);
+  render();
+}
+/* --- RENDER --- */
+function render(){
+  const grid=$('nest-grid');
+  const side=$('nest-side-content');
+  if(!grid||!side)return;
+  /* Update resource bar */
+  const setT=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+  setT('nest-day',`第 ${S.day} 天`);
+  setT('nest-phase',PHASE_NAMES[S.phase]||S.phase);
+  setT('nest-shards',S.shards);
+  setT('nest-gold',S.gold);
+  setT('nest-energy',S.energy);
+  setT('nest-infamy',S.infamy);
+  setT('nbb-day',S.day);
+  setT('nbb-phase',PHASE_NAMES[S.phase]||'');
+  setT('nbb-infamy',S.infamy);
+  /* Core HP */
+  const core=S.rooms.find(r=>r.type==='core');
+  /* Render grid */
+  grid.style.gridTemplateColumns=`repeat(${S.gridSize},1fr)`;
+  let gh='';
+  S.rooms.forEach((room,i)=>{
+    const rt=ROOM_TYPES[room.type]||ROOM_TYPES.empty;
+    const isCore=room.type==='core';
+    const isEmpty=room.type==='empty';
+    gh+=`<div class="nest-cell ${isCore?'cell-core':''} ${isEmpty?'cell-empty':''}" onclick="DataNest.onCellClick(${i})">`;
+    gh+=`<div class="nc-icon">${rt.icon}</div>`;
+    gh+=`<div class="nc-name">${rt.name}${isCore?' HP:'+room.hp:''}</div>`;
+    if(room.level>0&&!isEmpty)gh+=`<div class="nc-level">LV.${room.level}</div>`;
+    if(room.creatures.length){
+      gh+=`<div class="nest-creatures">`;
+      room.creatures.forEach(c=>gh+=`<span class="ncr" title="${c.name} Lv.${c.lvl}">${c.emoji}</span>`);
+      gh+=`</div>`;
+    }
+    if(room.dice.length){
+      gh+=`<div class="nc-dice">`;
+      room.dice.forEach(d=>gh+=`<span class="nd-die">${d}</span>`);
+      gh+=`</div>`;
+    }
+    gh+=`</div>`;
+  });
+  grid.innerHTML=gh;
+  /* Render side panel */
+  let sh='';
+  if(S.phase==='morning'){
+    /* Dice pool */
+    sh+=`<div class="ns-title">骰子分配</div>`;
+    sh+=`<div class="nest-dice-pool">`;
+    const used=S.rooms.reduce((a,r)=>a+r.dice.length,0);
+    S.pool.forEach((d,i)=>{
+      sh+=`<div class="ndp-die ${i<used?'ndp-used':''}">${d}</div>`;
+    });
+    sh+=`</div>`;
+    sh+=`<p style="font-size:9px;color:rgba(255,255,255,0.4);margin:0 0 8px">点击房间分配骰子，再次点击收回</p>`;
+    /* Events */
+    sh+=`<div class="ns-title">今日事件 (选择1个处理)</div>`;
+    S.events.forEach((ev,i)=>{
+      sh+=`<div class="nest-event ${S.selectedEvent===i?'ne-selected':''}" onclick="DataNest.selectEvent(${i})">`;
+      sh+=`<div class="ne-tag">${ev.tag}</div>`;
+      sh+=`<div class="ne-title">${ev.title}</div>`;
+      sh+=`<div class="ne-body">${ev.body}</div>`;
+      sh+=`<div class="ne-reward">${ev.reward}</div>`;
+      sh+=`</div>`;
+    });
+    sh+=`<button class="nest-btn nb-primary" ${S.selectedEvent<0?'disabled':''} onclick="DataNest.startDay()">▶ 开始今天</button>`;
+  }else if(S.phase==='day'){
+    sh+=`<div class="ns-title">事件处理中</div>`;
+    sh+=renderLog();
+  }else if(S.phase==='night'){
+    sh+=`<div class="ns-title">夜间防御</div>`;
+    sh+=renderLog();
+  }else if(S.phase==='settle'){
+    sh+=`<div class="ns-title">每日结算</div>`;
+    sh+=renderLog();
+    sh+=`<button class="nest-btn nb-primary" onclick="DataNest.nextDay()">▶ 进入第 ${S.day+1} 天</button>`;
+  }
+  if(!S.started){
+    sh=`<div class="ns-title">数据巢穴</div>`;
+    sh+=`<div style="text-align:center;padding:20px 0">`;
+    sh+=`<div style="font-size:40px;margin-bottom:12px">🏰</div>`;
+    sh+=`<div style="font-size:14px;color:var(--text);margin-bottom:6px;font-weight:700">数据巢穴 · DATA NEST</div>`;
+    sh+=`<div style="font-size:10px;color:rgba(255,255,255,0.5);line-height:1.8;margin-bottom:16px">公元2042年，泰拉中经营你的数据巢穴<br>抵御勇者入侵，揭开地球终端的秘密<br>40天，8大系统，无尽策略</div>`;
+    sh+=`<button class="nest-btn nb-primary" onclick="DataNest.newGame()">▶ 开始新游戏</button>`;
+    sh+=`</div>`;
+  }
+  side.innerHTML=sh;
+  /* Haruko */
+  const ht=$('nest-haruko-text');
+  if(ht){
+    const lines=HARUKO_LINES[S.phase]||HARUKO_LINES.idle;
+    ht.textContent=pick(lines);
+  }
+}
+function renderLog(){
+  let h='<div class="nest-defense-log">';
+  S.log.forEach(l=>h+=`<div>${l}</div>`);
+  if(!S.log.length)h+='<div style="color:rgba(255,255,255,0.3)">暂无记录</div>';
+  h+='</div>';
+  return h;
+}
+function onCellClick(idx){
+  const room=S.rooms[idx];
+  if(!room)return;
+  if(S.phase==='morning'&&room.type!=='empty'&&room.type!=='core'){
+    /* Toggle dice: if has dice, remove; else assign */
+    if(room.dice.length>0)removeDie(idx);
+    else assignDie(idx);
+    return;
+  }
+  if(room.type==='empty'&&S.phase==='morning'){
+    /* Show build menu */
+    const types=['lair','trap','vault','hatch','lab','synth','embassy'];
+    const costs={lair:30,trap:25,vault:40,hatch:35,lab:50,synth:60,embassy:70};
+    let menu='<div class="ns-title">建造房间</div>';
+    types.forEach(t=>{
+      const rt=ROOM_TYPES[t];
+      const c=costs[t];
+      menu+=`<div class="nest-event" onclick="DataNest.buildRoom(${idx},'${t}')">`;
+      menu+=`<div class="ne-tag">${rt.icon} ${rt.name}</div>`;
+      menu+=`<div class="ne-body">${rt.desc}</div>`;
+      menu+=`<div class="ne-reward">💎 ${c} 碎片${S.shards<c?' <span style="color:#f87171">(不足)</span>':''}</div>`;
+      menu+=`</div>`;
+    });
+    menu+=`<button class="nest-btn" onclick="DataNest.render()">取消</button>`;
+    $('nest-side-content').innerHTML=menu;
+    return;
+  }
+}
+/* Public API */
+return{render,newGame,startDay,nextDay,selectEvent,onCellClick,buildRoom,assignDie,removeDie};
+})();
 
 </script>
 </body>
