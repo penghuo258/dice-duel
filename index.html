@@ -3777,6 +3777,7 @@ body{animation:chromaticFlicker 15s steps(1) infinite}
             <div class="nr-item"><span class="nr-icon">🪙</span><span class="nr-val" id="nest-gold">50</span></div>
             <div class="nr-item"><span class="nr-icon">⚡</span><span class="nr-val" id="nest-energy">4</span></div>
             <div class="nr-item"><span class="nr-icon">🔥</span><span class="nr-val" id="nest-infamy">0</span></div>
+            <div class="nr-item"><span class="nr-icon">🧬</span><span class="nr-val" id="nest-bio">0</span></div>
           </div>
         </div>
         <div class="nest-grid" id="nest-grid" style="grid-template-columns:repeat(3,1fr)"></div>
@@ -10450,13 +10451,13 @@ const ROOM_TYPES={
 };
 const CREATURES=[
   {id:'gear_hound',name:'齿轮猎犬',emoji:'🐺',base:3,skill:'胜出:额外造成2伤害',tier:1},
-  {id:'shadow_rat',name:'阴影老鼠',emoji:'🐭',base:2,skill:'偷取敌方1个骰子',tier:1},
-  {id:'frost_dragon',name:'霜鳞龙永冬',emoji:'🐲',base:5,skill:'冻结随机骰子',tier:2},
-  {id:'steel_puppet',name:'钢铁傀儡',emoji:'🤖',base:4,skill:'受击时反弹1伤害',tier:1},
-  {id:'magnet_golem',name:'磁力傀儡',emoji:'🧲',base:6,skill:'抽到时弃置1骰子',tier:2},
-  {id:'phoenix',name:'熔炉凤凰',emoji:'🔥',base:5,skill:'死亡时复活(50%血)',tier:3},
-  {id:'ice_rat',name:'冰鼠',emoji:'🐀',base:1,skill:'自爆冻结周围生物',tier:1},
-  {id:'vine_beast',name:'数据藤蔓兽',emoji:'🌿',base:3,skill:'每回合回复1血',tier:1}
+  {id:'shadow_rat',name:'阴影老鼠',emoji:'🐭',base:2,skill:'偷取敌方1点攻击力',tier:1},
+  {id:'frost_dragon',name:'霜鳞龙永冬',emoji:'🐲',base:5,skill:'30%几率冻结勇者跳过反击',tier:2},
+  {id:'steel_puppet',name:'钢铁傀儡',emoji:'🤖',base:4,skill:'首次受击伤害减半',tier:1},
+  {id:'magnet_golem',name:'磁力傀儡',emoji:'🧲',base:6,skill:'磁力吸引：优先拉勇者进入此巢穴',tier:2},
+  {id:'phoenix',name:'熔炉凤凰',emoji:'🔥',base:5,skill:'死亡时复活(50%血)继续战斗',tier:3},
+  {id:'ice_rat',name:'冰鼠',emoji:'🐀',base:1,skill:'冰冻减速：降低勇者1点攻击力',tier:1},
+  {id:'vine_beast',name:'数据藤蔓兽',emoji:'🌿',base:3,skill:'藤蔓缠绕：勇者此后受陷阱伤害+1',tier:1}
 ];
 const BONDS=[
   {id:'shadow_frost',name:'影与霜',req:['shadow_rat','frost_dragon'],desc:'老鼠偷骰子时额外冻结目标一个骰子',bonus:2},
@@ -10473,12 +10474,12 @@ const EVENT_POOL=[
   {type:'economy',tag:'ECONOMY',title:'数据碎片矿脉',body:'巢穴附近发现一处数据碎片矿脉！',reward:'💎+40',fn:'doMine'},
   {type:'humor',tag:'ANOMALY',title:'数据烤鸟',body:'路边突然出现一家烤鸟店，老板是只数据鸡。',reward:'❤+2',fn:'doHumor'},
   {type:'humor',tag:'ANOMALY',title:'味噌汁海',body:'前方出现一片味噌汁海洋，你忍不住喝了一口。',reward:'❤+2 🐉-1HP',fn:'doHumor'},
-  {type:'humor',tag:'ANOMALY',title:'鱼雷空投',body:'天上掉下一颗鱼雷，上面写着"魔王赠品"。',reward:'敌方2-6伤害',fn:'doHumor'},
+  {type:'humor',tag:'ANOMALY',title:'鱼雷空投',body:'天上掉下一颗鱼雷，上面写着"魔王赠品"。',reward:'💎2-6碎片',fn:'doHumor'},
   {type:'humor',tag:'ANOMALY',title:'Mr.炉的烦恼',body:'Mr.炉表示：4是我的幸运数字，你们都得是4。',reward:'骰子全部=4',fn:'doHumor'},
-  {type:'humor',tag:'ANOMALY',title:'電気釜罢工',body:'你的电饭锅突然罢工，拒绝煮法术。',reward:'本回合无法术',fn:'doHumor'},
-  {type:'humor',tag:'ANOMALY',title:'锅奉行驾到',body:'一个自称锅奉行的家伙强行帮你调整了锅底火力。',reward:'法术槽+1',fn:'doHumor'},
+  {type:'humor',tag:'ANOMALY',title:'電気釜罢工',body:'你的电饭锅突然罢工，但产生了额外能量。',reward:'⚡+2能量',fn:'doHumor'},
+  {type:'humor',tag:'ANOMALY',title:'锅奉行驾到',body:'一个自称锅奉行的家伙强行帮你调整了锅底火力。',reward:'⚡+2能量',fn:'doHumor'},
   {type:'humor',tag:'ANOMALY',title:'今夜烤肉决定',body:'你的ID"今夜烤肉"触发了被动：真的该烤肉了！',reward:'额外掷骰',fn:'doHumor'},
-  {type:'humor',tag:'ANOMALY',title:'漬物石压顶',body:'一块巨大的腌菜石从天而降，压住了你的生物。',reward:'生物槽位-1',fn:'doHumor'}
+  {type:'humor',tag:'ANOMALY',title:'漬物石压顶',body:'一块巨大的腌菜石从天而降，你把它卖了个好价钱！',reward:'🪙+15金币',fn:'doHumor'}
 ];
 const BOSS_DATA=[
   {day:10,name:'骰魔·维克多',emoji:'🎲',hp:40,atk:8,skill:'每回合改变一个骰子点数',reward:{shards:100,gold:200,lordEssence:5}},
@@ -10625,9 +10626,18 @@ function processEvent(ev){
       }
     );return;
   }
+  /* Dispatch by fn field */
+  if(ev.fn==='doBattle'){doBattle();return}
+  if(ev.fn==='doEliteBattle'){doEliteBattle();return}
+  if(ev.fn==='doShop'){doEconomy(ev);return}
+  if(ev.fn==='doMine'){doEconomy(ev);return}
+  if(ev.fn==='doDiplomacy'){doDiplomacy();return}
+  if(ev.fn==='doHumor'){doHumor(ev);return}
   switch(ev.type){
     case'economy':doEconomy(ev);break;
     case'humor':doHumor(ev);break;
+    case'battle':doBattle();break;
+    case'diplomacy':doDiplomacy();break;
     default:addLog('事件处理完毕。');startNight();
   }
 }
@@ -10758,7 +10768,7 @@ function doBossBattle(){
     /* Boss skill effect per round */
     if(r>0&&r%2===0){
       addLog('<span style="color:#f59e0b">'+boss.emoji+' '+boss.name+' 使用技能: '+boss.skill+'!</span>');
-      if(boss.day===10)S.pool=S.pool.map(()=>rollDice());
+      if(boss.day===10){addLog('<span style="color:#f59e0b">骰魔扭曲了数据场！</span>')}
       else if(boss.day===20&&r===2){addLog('<span style="color:#f59e0b">🛡 护盾激活！本回合伤害减半</span>')}
     }
     /* Player creatures attack */
@@ -10853,13 +10863,13 @@ function doHumor(ev){
   if(ev.title.includes('烤鸟')){if(core)core.hp=Math.min(30,core.hp+2);addLog('获得烤鸟串! ❤+2')}
   else if(ev.title.includes('味噌')){if(core)core.hp=Math.min(30,core.hp+2);addLog('喝了味噌汁! ❤+2')}
   else if(ev.title.includes('鱼雷')){const dmg=2+rand(5);S.shards+=dmg;addLog('鱼雷命中！获得💎'+dmg)}
-  else if(ev.title.includes('Mr.炉')){S.pool=S.pool.map(()=>4);addLog('所有骰子变成了4！')}
+  else if(ev.title.includes('Mr.炉')){S.gold+=20;addLog('Mr.炉的幸运数字4！获得🪙20金币')}
   else if(ev.title.includes('電気釜')){
   S.energy+=2;
   addLog('电饭锅罢工了...获得额外能量⚡+2');
 }
   else if(ev.title.includes('锅奉行')){S.energy+=2;addLog('锅奉行帮你调整了火力！⚡+2')}
-  else if(ev.title.includes('烤肉')){S.pool.push(rollDice());addLog('额外获得一个骰子！')}
+  else if(ev.title.includes('烤肉')){S.shards+=15;addLog('烤肉的力量！获得💎15碎片')}
   else if(ev.title.includes('漬物')){
   S.gold+=15;
   addLog('🥒 腌菜拍卖！获得🪙+15金币');
@@ -10920,10 +10930,13 @@ function startSettle(){
       });
       addLog('🥚 孵化室Lv.'+hatchRoom.level+': 所有巢穴生物获得 +'+bonusExp+' 额外EXP');
     }
-    if(Math.random()<hatchRoom.level*0.1&&S.creatures.length<12){
+    var hatchChance=hatchRoom.level*0.1;
+    if(S.bioEssence>=5){hatchChance+=0.3;S.bioEssence-=5;addLog('🧬 消耗5生物精华加速孵化！')}
+    if(Math.random()<hatchChance&&S.creatures.length<12){
       const nc={...CREATURES[rand(CREATURES.length)],exp:0,lvl:1};
+      nc.lvl+=Math.floor(S.bioEssence/10);nc.base+=Math.floor(S.bioEssence/10);
       S.creatures.push(nc);
-      addLog('🥚 孵化室孵化了新生物: '+nc.emoji+' '+nc.name+'!');
+      addLog('🥚 孵化室孵化了新生物: '+nc.emoji+' '+nc.name+' Lv.'+nc.lvl+'!');
     }
   });
 
@@ -10972,7 +10985,6 @@ function startSettle(){
           else addLog('🔬 研究突破！生物基础值+1(无生物，效果存储)');
         }else if(roll===1){
           /* trap damage +2 */
-          S.rooms.filter(r=>r.type==='trap').forEach(r=>{r.level+=0;});
           S.trapDmgBonus=(S.trapDmgBonus||0)+2;
           addLog('🔬 研究突破！陷阱伤害永久+2');
         }else{
@@ -11020,7 +11032,6 @@ function startSettle(){
   const invUogashi=S.investments.uogashi||0;
   if(invUogashi>0){
     /* trap damage +1 per level */
-    S.rooms.filter(r=>r.type==='trap').forEach(r=>{r.level+=0;});
     S.trapDmgBonus=(S.trapDmgBonus||0)+invUogashi;
     addLog('🐟 字鱼河岸投资Lv.'+invUogashi+': 陷阱伤害+'+invUogashi);
   }
@@ -11285,8 +11296,8 @@ function renderBattleScene(){
   if(creatures.length){
     h+='<div class="ns-creatures-row">';
     creatures.forEach(function(c){
-      var skillTip=c.skill?' \u2014 '+c.skill.name:'';
-      h+='<div class="ns-creature-chip" title="'+(c.skill?c.skill.name+': '+c.skill.desc:'')+'"><span>'+c.emoji+'</span><span>'+c.name+' Lv.'+c.lvl+skillTip+'</span></div>';
+      var skillTip=c.skill?' \u2014 '+c.skill:'';
+      h+='<div class="ns-creature-chip" title="'+(c.skill||'')+'"><span>'+c.emoji+'</span><span>'+c.name+' Lv.'+c.lvl+skillTip+'</span></div>';
     });
     h+='</div>';
   }
@@ -11401,6 +11412,7 @@ function render(){
   setT('nest-gold',S.gold);
   setT('nest-energy',S.energy);
   setT('nest-infamy',S.infamy);
+  setT('nest-bio',S.bioEssence||0);
   setT('nbb-day',S.day);
   setT('nbb-phase',PHASE_NAMES[S.phase]||'');
   setT('nbb-infamy',S.infamy);
@@ -11473,6 +11485,10 @@ function render(){
   }
   if(S.viewMode==='roomDetail'&&S.selectedRoom>=0){
     sh+=renderRoomDetail(S.selectedRoom);
+    side.innerHTML=sh;return;
+  }
+  if(S.viewMode==='build'&&S.selectedRoom>=0){
+    sh+=renderBuildPanel(S.selectedRoom);
     side.innerHTML=sh;return;
   }
   if(S.phase==='morning'){
@@ -11631,6 +11647,26 @@ function renderSynthesis(){
   h+='<button class="nest-btn" onclick="DataNest.setView(null)">← 返回</button>';
   return h;
 }
+function renderBuildPanel(idx){
+  let h='<div class="ns-title">🏗 建造新房间 <span style="cursor:pointer;float:right" onclick="DataNest.setView(null)">✕</span></div>';
+  h+='<div style="font-size:10px;color:rgba(255,255,255,0.5);margin-bottom:8px">选择要建造的房间类型 (当前碎片: 💎'+S.shards+')</div>';
+  var buildable=['lair','trap','vault','hatch','lab','synth','embassy'];
+  var costs={lair:30,trap:25,vault:40,hatch:35,lab:50,synth:60,embassy:70};
+  buildable.forEach(function(type){
+    var rt=ROOM_TYPES[type];
+    var c=costs[type];
+    var canBuild=S.shards>=c;
+    h+='<div class="nest-event" style="cursor:'+(canBuild?'pointer':'not-allowed')+';opacity:'+(canBuild?'1':'0.5')+';margin-bottom:6px" '+(canBuild?'onclick="DataNest.buildRoom('+idx+',\''+type+'\')"':'')+'>';
+    h+='<div style="display:flex;justify-content:space-between;align-items:center">';
+    h+='<div><span style="font-size:14px">'+rt.icon+'</span> <span style="color:'+rt.color+';font-weight:700">'+rt.name+'</span></div>';
+    h+='<span style="font-size:10px;color:'+(canBuild?'#22c55e':'#ef4444')+'">💎'+c+'</span>';
+    h+='</div>';
+    h+='<div style="font-size:9px;color:rgba(255,255,255,0.5);margin-top:3px">'+rt.desc+'</div>';
+    h+='</div>';
+  });
+  h+='<button class="nest-btn" onclick="DataNest.setView(null)">← 返回</button>';
+  return h;
+}
 function renderRoomDetail(idx){
   const room=S.rooms[idx];
   if(!room)return'';
@@ -11649,7 +11685,7 @@ function renderRoomDetail(idx){
     room.creatures.forEach((c,ci)=>{
       h+='<div class="nest-event" style="cursor:default;padding:6px">';
       h+='<div style="display:flex;align-items:center;gap:6px;justify-content:space-between">';
-      h+='<span>'+c.emoji+' '+c.name+' Lv.'+c.lvl+'</span>';
+      h+='<span>'+c.emoji+' '+c.name+' Lv.'+c.lvl+(c.skill?' <span style="font-size:8px;color:rgba(255,255,255,0.5)">'+c.skill+'</span>':'')+'</span>';
       h+='<button class="nest-btn" style="width:auto;padding:2px 6px;font-size:8px;margin:0" onclick="DataNest.removeCreatureFromRoom('+ci+','+idx+')">移除</button>';
       h+='</div></div>';
     });
