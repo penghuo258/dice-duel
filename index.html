@@ -10438,15 +10438,15 @@ const DataNest=(()=>{
 const PHASES=['morning','day','night','settle'];
 const PHASE_NAMES={morning:'☀ 早晨',day:'☀ 白天',night:'🌙 夜晚',settle:'📊 结算'};
 const ROOM_TYPES={
-  core:{name:'魔王室',icon:'🏰',desc:'铸炉师坐镇，核心房间',maxDice:0},
-  lair:{name:'生物巢穴',icon:'🐉',desc:'安置生物，每骰子+1%经验',maxDice:3},
-  trap:{name:'陷阱房',icon:'⚙',desc:'对勇者造成伤害，每骰子+2%伤害',maxDice:3},
-  vault:{name:'宝库',icon:'💰',desc:'存储金币，每骰子+0.5%利息',maxDice:3},
-  hatch:{name:'孵化室',icon:'🥚',desc:'孵化/升级生物，每骰子-5%时间',maxDice:3},
-  lab:{name:'研究室',icon:'🔬',desc:'研发新技术，每骰子+3%概率',maxDice:3},
-  synth:{name:'合成室',icon:'⚗',desc:'合成与融合生物',maxDice:2},
-  embassy:{name:'外交使馆',icon:'🏛',desc:'派系互动与投资',maxDice:2},
-  empty:{name:'空地',icon:'➕',desc:'可建造新房间',maxDice:0}
+  core:{name:'魔王室',icon:'🏰',desc:'铸炉师坐镇，核心房间'},
+  lair:{name:'生物巢穴',icon:'🐉',desc:'安置生物，每骰子+1%经验'},
+  trap:{name:'陷阱房',icon:'⚙',desc:'对勇者造成伤害，每骰子+2%伤害'},
+  vault:{name:'宝库',icon:'💰',desc:'存储金币，每骰子+0.5%利息'},
+  hatch:{name:'孵化室',icon:'🥚',desc:'孵化/升级生物，每骰子-5%时间'},
+  lab:{name:'研究室',icon:'🔬',desc:'研发新技术，每骰子+3%概率'},
+  synth:{name:'合成室',icon:'⚗',desc:'合成与融合生物'},
+  embassy:{name:'外交使馆',icon:'🏛',desc:'派系互动与投资'},
+  empty:{name:'空地',icon:'➕',desc:'可建造新房间'}
 };
 const CREATURES=[
   {id:'gear_hound',name:'齿轮猎犬',emoji:'🐺',base:3,skill:'胜出:额外造成2伤害',tier:1},
@@ -10533,6 +10533,7 @@ function pick(arr){return arr[rand(arr.length)]}
 function rollDice(){return rand(6)+1}
 function $(id){return document.getElementById(id)}
 function sumDice(arr){return(arr||[]).reduce((a,b)=>a+b,0)}
+function roomBonus(room){return (room.level||0)*3;}
 function say(phase){
   const ht=$('nest-haruko-text');
   if(!ht)return;
@@ -10574,8 +10575,6 @@ function newGame(){
 /* --- PHASE LOGIC --- */
 function startMorning(){
   S.phase='morning';S.viewMode=null;S.selectedRoom=-1;
-  S.pool=[rollDice(),rollDice(),rollDice(),rollDice()];
-  S.rooms.forEach(r=>r.dice=[]);
   const count=1+rand(Math.min(3,Math.ceil(S.day/5)));
   S.events=[];S.selectedEvent=-1;
   const available=[...EVENT_POOL];
@@ -10686,7 +10685,7 @@ function doBattle(multiplier){
   S.rooms.filter(r=>r.type==='trap').forEach(room=>{
     if(hp<=0)return;
     const baseDmg=3+room.level*2;
-    const bonus=Math.floor(baseDmg*sumDice(room.dice)*0.02);
+    const bonus=Math.floor(baseDmg*roomBonus(room)*0.02);
     let dmg=baseDmg+bonus;
     if(S.trapDmgBonus>0){dmg+=S.trapDmgBonus;addLog('🌿 藤蔓缠绕效果: 陷阱额外+'+S.trapDmgBonus+'伤害')}
     hp-=dmg;
@@ -10697,7 +10696,7 @@ function doBattle(multiplier){
     room.creatures.forEach(c=>{
       if(hp<=0)return;
       const bonusBase=S.activeBonds.reduce((a,b)=>a+b.bonus,0);
-      let dmg=c.base+c.lvl+bonusBase+sumDice(room.dice);
+      let dmg=c.base+c.lvl+bonusBase+roomBonus(room);
       /* shadow_rat skill: steal 1 ATK from hero */
       if(c.id==='shadow_rat'){heroAtk=Math.max(1,heroAtk-1);dmg+=1;addLog('🐭 '+c.name+'偷取了勇者1点攻击力！勇者ATK→'+heroAtk)}
       hp-=dmg;
@@ -10766,7 +10765,7 @@ function doBossBattle(){
     S.rooms.filter(r=>r.type==='lair').forEach(room=>{
       room.creatures.forEach(c=>{
         if(bossHp<=0)return;
-        const dmg=c.base+c.lvl+sumDice(room.dice)+rand(3);
+        const dmg=c.base+c.lvl+roomBonus(room)+rand(3);
         const actualDmg=(boss.day===20&&r===2)?Math.ceil(dmg/2):dmg;
         bossHp-=actualDmg;
         addLog(c.emoji+' '+c.name+' → <span style="color:#ef4444;font-weight:700">'+actualDmg+'</span> 伤害 (BOSS HP:'+Math.max(0,bossHp)+')');
@@ -10775,7 +10774,7 @@ function doBossBattle(){
     /* Traps */
     S.rooms.filter(r=>r.type==='trap').forEach(room=>{
       if(bossHp<=0)return;
-      const dmg=3+room.level*2+sumDice(room.dice);
+      const dmg=3+room.level*2+roomBonus(room);
       bossHp-=dmg;
       addLog('⚙ 陷阱 → <span style="color:#ef4444;font-weight:700">'+dmg+'</span> (BOSS HP:'+Math.max(0,bossHp)+')');
     });
@@ -10855,10 +10854,16 @@ function doHumor(ev){
   else if(ev.title.includes('味噌')){if(core)core.hp=Math.min(30,core.hp+2);addLog('喝了味噌汁! ❤+2')}
   else if(ev.title.includes('鱼雷')){const dmg=2+rand(5);S.shards+=dmg;addLog('鱼雷命中！获得💎'+dmg)}
   else if(ev.title.includes('Mr.炉')){S.pool=S.pool.map(()=>4);addLog('所有骰子变成了4！')}
-  else if(ev.title.includes('電気釜')){addLog('电饭锅罢工了...本回合无法使用法术')}
+  else if(ev.title.includes('電気釜')){
+  S.energy+=2;
+  addLog('电饭锅罢工了...获得额外能量⚡+2');
+}
   else if(ev.title.includes('锅奉行')){S.energy+=2;addLog('锅奉行帮你调整了火力！⚡+2')}
   else if(ev.title.includes('烤肉')){S.pool.push(rollDice());addLog('额外获得一个骰子！')}
-  else if(ev.title.includes('漬物')){addLog('腌菜石压住了...还好不太严重')}
+  else if(ev.title.includes('漬物')){
+  S.gold+=15;
+  addLog('🥒 腌菜拍卖！获得🪙+15金币');
+}
   else{S.gold+=10;addLog('获得🪙10金币')}
   render();
   setTimeout(()=>startNight(),600);
@@ -10889,7 +10894,7 @@ function startSettle(){
   say('settle');
   /* Vault interest */
   S.rooms.filter(r=>r.type==='vault').forEach(room=>{
-    let rate=0.02+0.005*sumDice(room.dice);
+    let rate=0.02+0.005*roomBonus(room);
     if(S.unlockedSkills.includes('vaultInterest'))rate*=2;
     const interest=Math.floor(S.gold*rate);
     S.gold+=interest;
@@ -10898,14 +10903,14 @@ function startSettle(){
   /* Creature exp */
   S.rooms.filter(r=>r.type==='lair').forEach(room=>{
     room.creatures.forEach(c=>{
-      const expGain=5+sumDice(room.dice);
+      const expGain=5+roomBonus(room);
       c.exp+=expGain;
       if(c.exp>=c.lvl*20){c.lvl++;c.base++;c.exp=0;addLog('⬆ '+c.emoji+c.name+' 升级到Lv.'+c.lvl+'！')}
     });
   });
   /* Hatch room bonus: creatures in connected lairs gain bonus EXP */
   S.rooms.filter(r=>r.type==='hatch').forEach(hatchRoom=>{
-    const bonusExp=hatchRoom.level*2;
+    const bonusExp=hatchRoom.level*3+roomBonus(hatchRoom);
     if(bonusExp>0){
       S.rooms.filter(r=>r.type==='lair').forEach(lairRoom=>{
         lairRoom.creatures.forEach(c=>{
@@ -10915,10 +10920,40 @@ function startSettle(){
       });
       addLog('🥚 孵化室Lv.'+hatchRoom.level+': 所有巢穴生物获得 +'+bonusExp+' 额外EXP');
     }
+    if(Math.random()<hatchRoom.level*0.1&&S.creatures.length<12){
+      const nc={...CREATURES[rand(CREATURES.length)],exp:0,lvl:1};
+      S.creatures.push(nc);
+      addLog('🥚 孵化室孵化了新生物: '+nc.emoji+' '+nc.name+'!');
+    }
+  });
+
+  /* Synth room: boost all creature base values */
+  S.rooms.filter(r=>r.type==='synth').forEach(synthRoom=>{
+    if(synthRoom.level>0&&S.creatures.length>=3){
+      const bonus=synthRoom.level;
+      S.creatures.forEach(c=>{c.base+=Math.floor(bonus*0.5)});
+      if(bonus>0)addLog('⚗ 合成室Lv.'+synthRoom.level+': 所有生物基础值+'+Math.floor(bonus*0.5));
+    }
+  });
+
+  /* Embassy room: faction rep and intel */
+  S.rooms.filter(r=>r.type==='embassy').forEach(embRoom=>{
+    if(embRoom.level>0){
+      const repGain=embRoom.level*2;
+      ['hunters','church','chaos'].forEach(f=>{
+        S.factions[f]=Math.min(100,S.factions[f]+repGain);
+      });
+      addLog('🏛 使馆Lv.'+embRoom.level+': 所有阵营好感度+'+repGain);
+      if(embRoom.level>=3&&Math.random()<0.3){
+        const intel=10+embRoom.level*5;
+        S.gold+=intel;
+        addLog('🕵 使馆情报收入: +'+intel+'金币');
+      }
+    }
   });
   /* Lab room: gain research points from allocated dice */
   S.rooms.filter(r=>r.type==='lab').forEach(labRoom=>{
-    const diceSum=sumDice(labRoom.dice);
+    const diceSum=roomBonus(labRoom);
     if(diceSum>0){
       let rpGain=diceSum;
       /* tech_lab investment bonus */
@@ -11136,25 +11171,7 @@ function removeCreatureFromRoom(creatureIdx,roomIdx){
   checkBonds();
   render();
 }
-/* --- DICE --- */
-function assignDie(roomIdx){
-  if(S.phase!=='morning')return;
-  const room=S.rooms[roomIdx];
-  if(!room||room.type==='empty'||room.type==='core')return;
-  const rt=ROOM_TYPES[room.type];
-  if(room.dice.length>=rt.maxDice)return;
-  const used=S.rooms.reduce((a,r)=>a+r.dice.length,0);
-  if(used>=S.pool.length)return;
-  room.dice.push(S.pool[used]);
-  render();
-}
-function removeDie(roomIdx){
-  if(S.phase!=='morning')return;
-  const room=S.rooms[roomIdx];
-  if(!room||!room.dice.length)return;
-  room.dice.pop();
-  render();
-}
+/* --- DICE (removed) --- */
 function selectEvent(idx){
   if(S.phase!=='morning')return;
   S.selectedEvent=idx;
@@ -11407,11 +11424,7 @@ function render(){
       room.creatures.forEach(c=>gh+='<span class="ncr" title="'+c.name+' Lv.'+c.lvl+'">'+c.emoji+'</span>');
       gh+='</div>';
     }
-    if(room.dice&&room.dice.length){
-      gh+='<div class="nc-dice">';
-      room.dice.forEach(d=>gh+='<span class="nd-die">'+d+'</span>');
-      gh+='</div>';
-    }
+    
     gh+='</div>';
   });
   grid.innerHTML=gh;
@@ -11463,14 +11476,8 @@ function render(){
     side.innerHTML=sh;return;
   }
   if(S.phase==='morning'){
-    sh+='<div class="ns-title">骰子分配</div>';
-    sh+='<div class="nest-dice-pool">';
-    const used=S.rooms.reduce((a,r)=>a+r.dice.length,0);
-    S.pool.forEach((d,i)=>{
-      sh+='<div class="ndp-die '+(i<used?'ndp-used':'')+'">'+d+'</div>';
-    });
-    sh+='</div>';
-    sh+='<p style="font-size:9px;color:rgba(255,255,255,0.4);margin:0 0 8px">点击房间分配/收回骰子</p>';
+    sh+='<div class="ns-title">房间管理</div>';
+    sh+='<p style="font-size:9px;color:rgba(255,255,255,0.5);margin:0 0 8px">点击房间查看详情·升级·分配生物</p>';
     /* Active bonds */
     if(S.activeBonds.length){
       sh+='<div class="ns-title">活跃羁绊</div>';
@@ -11700,40 +11707,21 @@ function renderFinalChoice(){
   return h;
 }
 function onCellClick(idx){
-  const room=S.rooms[idx];
-  if(!room)return;
-  if(S.phase==='morning'&&room.type!=='empty'&&room.type!=='core'){
-    if(room.dice.length>0)removeDie(idx);
-    else assignDie(idx);
+  if(S.rooms[idx].type==='empty'){
+    if(S.phase==='morning'){
+      S.selectedRoom=idx;
+      S.viewMode='build';
+      render();
+    }
     return;
   }
-  if(room.type==='empty'&&S.phase==='morning'){
-    const types=['lair','trap','vault','hatch','lab','synth','embassy'];
-    const costs={lair:30,trap:25,vault:40,hatch:35,lab:50,synth:60,embassy:70};
-    let menu='<div class="ns-title">建造房间 <span style="cursor:pointer;float:right" onclick="DataNest.render()">✕</span></div>';
-    types.forEach(t=>{
-      const rt=ROOM_TYPES[t];
-      const c=costs[t];
-      menu+='<div class="nest-event" style="cursor:pointer" onclick="DataNest.buildRoom('+idx+',\''+t+'\')">';
-      menu+='<div class="ne-tag">'+rt.icon+' '+rt.name+'</div>';
-      menu+='<div class="ne-body">'+rt.desc+'</div>';
-      menu+='<div class="ne-reward">💎 '+c+'碎片'+(S.shards<c?' <span style="color:#f87171">(不足)</span>':'')+'</div>';
-      menu+='</div>';
-    });
-    menu+='<button class="nest-btn" onclick="DataNest.render()">取消</button>';
-    $('nest-side-content').innerHTML=menu;
-    return;
-  }
-  /* Room detail view for non-morning or non-empty rooms */
-  if(room.type!=='empty'){
-    S.selectedRoom=idx;
-    S.viewMode='roomDetail';
-    render();
-  }
+  S.selectedRoom=idx;
+  S.viewMode='roomDetail';
+  render();
 }
 function setView(v){S.viewMode=v;if(!v)S.selectedRoom=-1;render()}
 /* Public API */
-return{render,newGame,startDay,nextDay,selectEvent,onCellClick,buildRoom,assignDie,removeDie,
+return{render,newGame,startDay,nextDay,selectEvent,onCellClick,buildRoom,
   assignCreature,removeCreatureFromRoom,setView,invest,unlockSkill,useActiveSkill,synthCreatures,
   upgradeRoom,makeFinalChoice,resolveChoice};
 })();
