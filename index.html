@@ -2814,6 +2814,7 @@ body{animation:chromaticFlicker 15s steps(1) infinite}
   .nest-bottom .nbb-stat-sub { font-size:7px; }
   .nest-label .nl-num { font-size:32px; }
   .nest-defense-log div { font-size:10px; }
+}
 
 
 /* ======= ENHANCED VISUALS PATCH ======= */
@@ -3050,6 +3051,139 @@ body{animation:chromaticFlicker 15s steps(1) infinite}
 }
 
 /* ======= END ENHANCED VISUALS PATCH ======= */
+/* ========== ZZZ POMODORO SCREEN ========== */
+/* === ZZZ POMODORO SCREEN — v2 === */
+#screen-pomodoro{position:fixed;inset:0;overflow:hidden;background:linear-gradient(135deg,#0a0a18,#12102a,#0a0a18)}
+#screen-pomodoro.active{display:block}
+#screen-pomodoro .screen-bg{position:absolute;inset:0;width:100%;height:100%;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;opacity:0.35;pointer-events:none}
+.pomo-bg-grid{position:absolute;inset:0;z-index:0;
+  background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px);
+  background-size:70px 70px;mask-image:radial-gradient(ellipse 80% 90% at 70% 40%,black 15%,transparent 80%);pointer-events:none}
+/* Bottom bar offset for 64px left strip */
+#screen-pomodoro .zzz-screen-bottom{left:64px}
+/* Full-screen flex layout */
+.pomo-full{position:absolute;inset:0;padding-left:64px;padding-bottom:72px;display:flex;flex-direction:column;z-index:2}
+/* ── Top area: title + pipeline ── */
+.pomo-top{flex-shrink:0;padding:10px 20px 4px}
+.pomo-title-block{margin-bottom:5px}
+.pomo-title-tag{font-size:7px;font-weight:700;letter-spacing:4px;color:#ff3e7a;text-transform:uppercase;margin-bottom:2px;font-family:'Share Tech Mono',monospace}
+.pomo-title-main{font-family:'Baloo 2','Fredoka',sans-serif;font-size:clamp(16px,2.5vw,28px);font-weight:900;color:#fff;letter-spacing:-1px;line-height:1;text-transform:uppercase;position:relative;display:inline-block}
+.pomo-title-main::before{content:attr(data-text);position:absolute;left:2px;top:0;width:100%;height:100%;color:#ff3e7a;clip:rect(3px,999px,18px,0);opacity:0.55;animation:chromaticGlitch 4.5s linear infinite alternate-reverse;pointer-events:none}
+.pomo-title-main::after{content:attr(data-text);position:absolute;left:-2px;top:0;width:100%;height:100%;color:#00e5ff;clip:rect(25px,999px,48px,0);opacity:0.38;animation:chromaticGlitch 3.3s linear infinite alternate;pointer-events:none}
+.pomo-title-sub{font-size:7px;color:rgba(255,255,255,0.18);letter-spacing:4px;margin-top:1px;font-family:'Share Tech Mono',monospace}
+/* Pipeline bar */
+.pomo-pipe-strip{transform:skewX(-10deg)}
+.pomo-pipe-track{display:flex;align-items:stretch;gap:3px;height:40px}
+.pomo-pipe-seg{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:#0d0c18;border:1px solid #181728;position:relative;transition:all .3s;min-width:0;overflow:hidden}
+.pomo-pipe-seg::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:transparent;transition:all .3s}
+.pomo-pipe-seg .ps-code{font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:900;color:#252238;letter-spacing:1px;line-height:1;transition:color .3s}
+.pomo-pipe-seg .ps-type{font-size:6px;color:#1a1a2e;letter-spacing:2px;font-weight:700;margin-top:1px;transition:color .3s}
+.pomo-pipe-seg.completed{background:rgba(255,62,122,0.1);border-color:rgba(255,62,122,0.35)}
+.pomo-pipe-seg.completed::after{background:#ff3e7a}
+.pomo-pipe-seg.completed .ps-code{color:#ff6b9d}
+.pomo-pipe-seg.completed .ps-type{color:rgba(255,107,157,0.4)}
+.pomo-pipe-seg.active{border-color:#ff3e7a;background:rgba(255,62,122,0.14);animation:pomo-seg-breathe 2s ease-in-out infinite}
+.pomo-pipe-seg.active::after{background:#ff3e7a;box-shadow:0 0 6px rgba(255,62,122,0.7)}
+.pomo-pipe-seg.active .ps-code{color:#ff6b9d}
+.pomo-pipe-seg.active .ps-type{color:rgba(255,107,157,0.6)}
+.pomo-pipe-seg.active.break-seg{border-color:rgba(0,229,255,0.6);background:rgba(0,229,255,0.08);animation:pomo-seg-breathe-teal 2s ease-in-out infinite}
+.pomo-pipe-seg.active.break-seg::after{background:#00e5ff;box-shadow:0 0 6px rgba(0,229,255,0.7)}
+.pomo-pipe-seg.active.break-seg .ps-code{color:#00e5ff}
+.pomo-pipe-seg.active.long-seg{border-color:rgba(167,139,250,0.6);background:rgba(167,139,250,0.08)}
+.pomo-pipe-seg.active.long-seg::after{background:#a78bfa;box-shadow:0 0 6px rgba(167,139,250,0.7)}
+.pomo-pipe-seg.active.long-seg .ps-code{color:#a78bfa}
+/* ── Center: dominant TIMER + ruler ── */
+.pomo-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;padding:0 16px;overflow:hidden}
+/* Giant time — reference-style: fills most of the vertical space */
+.pomo-time-display{
+  font-family:'Share Tech Mono','Courier New',monospace;
+  font-size:clamp(80px, min(26vw, 42vh), 520px);
+  font-weight:700;
+  letter-spacing:-0.03em;
+  color:#fff;
+  line-height:1;
+  user-select:none;
+  white-space:nowrap;
+  text-shadow:5px 0 rgba(255,62,122,0.45),-5px 0 rgba(0,229,255,0.35);
+  transition:color .4s,text-shadow .4s;
+  text-align:center;
+  width:100%;
+}
+.pomo-time-display.break-time{color:#b0f0ff;text-shadow:5px 0 rgba(0,229,255,0.6),-5px 0 rgba(167,139,250,0.35)}
+.pomo-time-display.long-time{color:#d4bbff;text-shadow:5px 0 rgba(167,139,250,0.6),-5px 0 rgba(255,62,122,0.3)}
+/* Status row — tight below number */
+.pomo-status-row{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:6px;padding:0 4px}
+.pomo-phase-tag{background:#0c0c1a;border:1px solid #ff3e7a;padding:4px 12px;font-size:8px;font-weight:900;letter-spacing:3px;color:#ff3e7a;font-family:'Share Tech Mono',monospace;text-transform:uppercase;white-space:nowrap;transition:all .4s}
+.pomo-phase-tag.break-tag{border-color:#00e5ff;color:#00e5ff}
+.pomo-phase-tag.long-tag{border-color:#a78bfa;color:#a78bfa}
+.pomo-phase-tag.running-tag{animation:pomo-tag-blink 1.4s ease-in-out infinite}
+.pomo-cycle-stat{font-size:9px;color:#2a2a45;letter-spacing:2px;font-weight:700;font-family:'Share Tech Mono',monospace}
+.pomo-cycle-stat b{color:#ff3e7a;font-size:16px;margin:0 3px;font-family:'Baloo 2',sans-serif}
+/* ── Ruler — faithful to reference: ticks above baseline, pointer+arrow below ── */
+/* ── Ruler scrubber ──
+   56px tall. baseline at top:36px (ticks hang down from there UP to top;
+   pointer line spans full height; arrow sits below baseline) */
+.pomo-ruler-wrap{width:100%;margin-top:24px;padding:0 6px}
+.pomo-ruler{position:relative;height:56px;cursor:col-resize;touch-action:none;user-select:none}
+/* baseline */
+.pomo-ruler-bg{position:absolute;top:36px;left:0;right:0;height:1px;background:rgba(255,255,255,0.14)}
+/* elapsed fill */
+.pomo-ruler-elapsed{position:absolute;top:35px;left:0;width:0%;height:3px;
+  background:linear-gradient(90deg,#c0103a,#ff3e7a 60%,#ff6b9d);
+  box-shadow:0 0 8px rgba(255,62,122,0.5);transition:width 1s linear;z-index:1}
+.pomo-ruler-elapsed.no-anim{transition:none}
+/* ticks — positioned by JS via style.left; bottom of tick = baseline (top:36px → bottom from bottom = 56-36=20px) */
+.pomo-ruler-ticks{position:absolute;inset:0;pointer-events:none}
+.pomo-ruler-tick{position:absolute;bottom:20px;width:1px;transform:translateX(-50%)}
+.pomo-ruler-tick.major{height:20px;background:rgba(255,255,255,0.6)}
+.pomo-ruler-tick.semi{ height:11px;background:rgba(255,255,255,0.3)}
+.pomo-ruler-tick.minor{height:5px; background:rgba(255,255,255,0.15)}
+.pomo-ruler-tick.past{opacity:0.28}
+/* pointer — 2px wide, full height, positioned by JS via style.left */
+.pomo-ruler-ptr{position:absolute;top:0;height:100%;width:2px;left:0%;transform:translateX(-50%);cursor:grab;z-index:4;transition:left 1s linear}
+.pomo-ruler-ptr.no-anim,.pomo-ruler-ptr.dragging{transition:none}
+.pomo-ruler-ptr:active,.pomo-ruler-ptr.dragging{cursor:grabbing}
+/* time bubble above pointer */
+.pomo-ruler-ptr-bubble{position:absolute;top:-26px;left:50%;transform:translateX(-50%);
+  background:#ff3e7a;color:#fff;font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:700;
+  padding:2px 8px;letter-spacing:2px;white-space:nowrap;opacity:0;transition:opacity .15s;pointer-events:none}
+.pomo-ruler-ptr:hover .pomo-ruler-ptr-bubble,.pomo-ruler-ptr.dragging .pomo-ruler-ptr-bubble{opacity:1}
+/* vertical line */
+.pomo-ruler-ptr-line{position:absolute;top:0;left:0;width:2px;height:100%;
+  background:#fff;box-shadow:0 0 5px rgba(255,255,255,0.4),0 0 10px rgba(255,62,122,0.3)}
+/* downward arrow below baseline */
+.pomo-ruler-ptr-arrow{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);
+  width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;
+  border-top:8px solid #fff;filter:drop-shadow(0 1px 3px rgba(255,62,122,0.5))}
+/* label */
+.pomo-ruler-info{font-family:'Share Tech Mono',monospace;font-size:8px;color:#1e1e2e;letter-spacing:3px;margin-top:6px;text-transform:uppercase}
+/* ── Bottom: diagonal staggered buttons ── */
+.pomo-btns-area{flex-shrink:0;padding:4px 20px 4px}
+.pomo-btns-area .zzz-menu-btns{max-width:340px}
+/* ── Bottom info bar colors ── */
+#screen-pomodoro .zzz-screen-bottom .zzz-sb-white{border-top-color:#ff3e7a}
+#screen-pomodoro .zzz-screen-bottom .zzz-sb-white::before{background:linear-gradient(90deg,#ff3e7a,#ff6b9d,#ff3e7a)}
+#screen-pomodoro .zzz-screen-bottom .sb-label{color:#ff3e7a}
+#screen-pomodoro .zzz-screen-bottom .zzz-bottom-accent{background:#ff3e7a}
+/* Ghost label position for full layout */
+#screen-pomodoro .zzz-menu-label{top:14px;right:16px;z-index:5}
+/* ── Keyframes ── */
+@keyframes pomo-seg-breathe{0%,100%{box-shadow:0 0 0 1px #ff3e7a}50%{box-shadow:0 0 0 1px #ff3e7a,0 0 14px rgba(255,62,122,0.25)}}
+@keyframes pomo-seg-breathe-teal{0%,100%{box-shadow:0 0 0 1px rgba(0,229,255,0.6)}50%{box-shadow:0 0 0 1px rgba(0,229,255,0.8),0 0 14px rgba(0,229,255,0.18)}}
+@keyframes pomo-tag-blink{0%,100%{opacity:1}50%{opacity:0.5}}
+/* ── Mobile ── */
+@media(max-width:768px){
+  #screen-pomodoro .zzz-screen-bottom{left:36px}
+  .pomo-full{padding-left:36px;padding-bottom:60px}
+  .pomo-time-display{font-size:clamp(56px,16vw,100px)}
+  .pomo-pipe-track{height:32px}
+  .pomo-pipe-seg .ps-type{display:none}
+  .pomo-top{padding:10px 14px 4px}
+  .pomo-center{padding:0 14px 0}
+  .pomo-btns-area{padding:6px 14px 6px}
+  .pomo-ruler-wrap{max-width:100%}
+}
 </style>
 </head>
 <body>
@@ -3110,6 +3244,9 @@ body{animation:chromaticFlicker 15s steps(1) infinite}
           <div class="zbtn-row"><button class="menu-btn" onclick="showScreen('screen-nest')">🏰 数据巢穴</button></div>
           <div class="zbtn-row"><button class="menu-btn" id="menu-task-btn" onclick="showScreen('screen-task')">📋 任务</button></div>
           <div class="zbtn-row"><button class="menu-btn" onclick="showScreen('screen-wiki')">📖 百科</button></div>
+          <div class="zbtn-row" style="margin-left:130px;margin-bottom:6px;z-index:0">            
+             <button class="menu-btn" onclick="showScreen('screen-pomodoro')">🍅 专注协议</button>          
+          </div>
         </div>
       </div>
     </div>
@@ -3591,6 +3728,13 @@ body{animation:chromaticFlicker 15s steps(1) infinite}
           <button class="upload-btn reset-btn" id="bg-reset-game" onclick="BgMgr.reset('game')" style="display:none">恢复</button>
         </div>
       </div>
+      <div class="upload-row"><label>番茄钟</label>
+        <div class="upload-info">
+          <span class="upload-status" id="bg-status-pomodoro">默认</span>
+          <button class="upload-btn" onclick="BgMgr.pickFile('pomodoro')">替换</button>
+          <button class="upload-btn reset-btn" id="bg-reset-pomodoro" onclick="BgMgr.reset('pomodoro')" style="display:none">恢复</button>
+        </div>
+      </div>
       <input type="file" id="bg-file-input" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none">
       <button class="menu-btn" onclick="showScreen('screen-menu')">返回</button>
     </div>
@@ -3700,7 +3844,90 @@ body{animation:chromaticFlicker 15s steps(1) infinite}
     </div>
   </div>
 </div>
-
+<!-- POMODORO SCREEN -->
+<div id="screen-pomodoro" class="screen">
+  <div class="screen-bg" id="pomo-screen-bg"></div>
+  <div class="pomo-bg-grid"></div>
+  <div class="zzz-geo-bg"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><defs><pattern id="zzztriPomo" width="60" height="52" patternUnits="userSpaceOnUse"><polygon points="30,0 60,52 0,52" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#zzztriPomo)"/></svg></div>
+  <!-- Left strip — full zzz-left-strip identical to main menu -->
+  <div class="zzz-left-strip">
+    <div class="zzz-strip-icon">🍅</div>
+    <div class="zzz-strip-text big">FOCUS</div>
+    <div class="zzz-strip-dots"><span class="active"></span><span></span><span></span></div>
+    <div class="zzz-strip-text">PROTO</div>
+    <div class="zzz-strip-icon">⏱</div>
+    <div class="zzz-strip-text">COL</div>
+    <div class="zzz-strip-divider"></div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();showScreen('screen-settings')">⚙</div>
+    <div class="zzz-strip-settings" onclick="event.stopPropagation();goBackScreen()">↩</div>
+  </div>
+  <!-- Ghost label top-right -->
+  <div class="zzz-menu-label" style="top:14px;right:16px;z-index:5">
+    <div class="zzz-label-en">FOCUS PROTOCOL</div>
+    <div class="zzz-label-num">09</div>
+  </div>
+  <!-- Full-screen layout container -->
+  <div class="pomo-full">
+    <!-- TOP: title + pipeline bar -->
+    <div class="pomo-top">
+      <div class="pomo-title-block">
+        <div class="pomo-title-tag">// FOCUS PROTOCOL — 专注协议</div>
+        <div class="pomo-title-main" data-text="FOCUS PROTOCOL">FOCUS PROTOCOL</div>
+        <div class="pomo-title-sub">TASK PIPELINE // 任务管线</div>
+      </div>
+      <div class="pomo-pipe-strip" style="margin-top:10px">
+        <div class="pomo-pipe-track" id="pomo-pipe-track">
+          <div class="pomo-pipe-seg work-seg active" data-step="0"><span class="ps-code">P1</span><span class="ps-type">WORK</span></div>
+          <div class="pomo-pipe-seg break-seg" data-step="1"><span class="ps-code">B1</span><span class="ps-type">REST</span></div>
+          <div class="pomo-pipe-seg work-seg" data-step="2"><span class="ps-code">P2</span><span class="ps-type">WORK</span></div>
+          <div class="pomo-pipe-seg break-seg" data-step="3"><span class="ps-code">B2</span><span class="ps-type">REST</span></div>
+          <div class="pomo-pipe-seg work-seg" data-step="4"><span class="ps-code">P3</span><span class="ps-type">WORK</span></div>
+          <div class="pomo-pipe-seg break-seg" data-step="5"><span class="ps-code">B3</span><span class="ps-type">REST</span></div>
+          <div class="pomo-pipe-seg work-seg" data-step="6"><span class="ps-code">P4</span><span class="ps-type">WORK</span></div>
+          <div class="pomo-pipe-seg long-seg" data-step="7"><span class="ps-code">LB</span><span class="ps-type">LONG</span></div>
+        </div>
+      </div>
+    </div>
+    <!-- CENTER: dominant timer + status + ruler scrubber -->
+    <div class="pomo-center">
+      <div class="pomo-time-display" id="pomo-time">25:00</div>
+      <div class="pomo-status-row">
+        <div class="pomo-phase-tag" id="pomo-status">STANDBY</div>
+        <div class="pomo-cycle-stat">TODAY <b id="pomo-count">0</b> CYCLES</div>
+      </div>
+      <!-- Ruler scrubber — drag when stopped to set remaining time -->
+      <div class="pomo-ruler-wrap">
+        <div class="pomo-ruler" id="pomo-ruler">
+          <div class="pomo-ruler-bg"></div>
+          <div class="pomo-ruler-elapsed" id="pomo-ruler-elapsed"></div>
+          <div class="pomo-ruler-ticks" id="pomo-ruler-ticks"></div>
+          <div class="pomo-ruler-ptr" id="pomo-ruler-ptr">
+            <div class="pomo-ruler-ptr-bubble" id="pomo-ruler-bubble">25:00</div>
+            <div class="pomo-ruler-ptr-line"></div>
+            <div class="pomo-ruler-ptr-arrow"></div>
+          </div>
+        </div>
+        <div class="pomo-ruler-info" id="pipe-info">PHASE 01 // WORK CYCLE 01 — DRAG TO SEEK</div>
+      </div>
+    </div>
+    <!-- BUTTONS: diagonal stagger — exact same structure as main menu -->
+    <div class="pomo-btns-area">
+      <div class="zzz-menu-btns">
+        <div class="zbtn-row"><button class="menu-btn primary" id="pomo-toggle" onclick="Pomodoro.toggle()">▶ START</button></div>
+        <div class="zbtn-row"><button class="menu-btn" onclick="Pomodoro.skipPhase()">⏭ SKIP</button></div>
+        <div class="zbtn-row"><button class="menu-btn" onclick="Pomodoro.reset()">↺ RESET</button></div>
+        <div class="zbtn-row"><button class="menu-btn" onclick="goBackScreen()">↩ BACK</button></div>
+      </div>
+    </div>
+  </div>
+  <!-- Bottom info bar -->
+  <div class="zzz-screen-bottom has-left">
+    <div class="zzz-bottom-accent"><div class="ba-icon">⏱</div><div class="ba-text">FOCUS<br>PROTO</div></div>
+    <div class="zzz-sb-white" style="flex:3"><div class="sb-label">PROTOCOL</div><div class="sb-big">专注协议</div><div class="sb-sub" id="pomo-bottom-phase">WORK CYCLE 01</div></div>
+    <div class="zzz-sb-white" style="flex:2"><div class="sb-label">TIME</div><div class="sb-big" id="pomo-bottom-time">25:00</div><div class="sb-sub">⏱ 剩余时间</div></div>
+    <div class="zzz-sb-white" style="flex:1"><div class="sb-label">TODAY</div><div class="sb-big" id="pomo-bottom-count">0</div><div class="sb-sub">🍅 周期</div></div>
+  </div>
+</div>
 <!-- TUTORIAL SCREEN -->
 <div id="screen-tutorial" class="screen">
   <div class="screen-particles" data-colors="#8b5cf6,#a78bfa,#7c3aed,#ffffff" data-count="18"></div>
@@ -4250,6 +4477,7 @@ function showScreen(id,isBack){
     if(id==='screen-tutorial')TutorialGuide.init();
     if(id==='screen-task')TaskSystem.render();
     if(id==='screen-nest'&&typeof DataNest!=='undefined')DataNest.render();
+    if(id==='screen-pomodoro'){Pomodoro._initRuler();Pomodoro.render();}
     if(id==='screen-menu'){NewsMatrix.resume();if(typeof TaskSystem!=='undefined')TaskSystem.updateRedDot()}else{NewsMatrix.stop()}
     ZZZGreeting.tryShow(id);
     slide.classList.remove(inCls);
@@ -9331,7 +9559,8 @@ const BgMgr={
     adventure:{screen:'screen-adventure',url:'assets/bg-adventure.png'},
     map:{screen:'screen-map',url:'assets/bg-adventure.png'},
     game:{screen:'screen-game',url:'assets/bg-game.png'},
-    nest:{screen:'screen-nest',url:'assets/bg-terra-grid.jpg'}
+    nest:{screen:'screen-nest',url:'assets/bg-terra-grid.jpg'},
+    pomodoro:{screen:'screen-pomodoro',url:''}
   },
   async _openDB(){
     if(this._db)return this._db;
@@ -9361,8 +9590,8 @@ const BgMgr={
     const info=this._slots[slot];if(!info)return;
     const screen=document.getElementById(info.screen);if(!screen)return;
     const bg=screen.querySelector('.screen-bg');if(!bg)return;
-    bg.style.backgroundImage="url('"+url+"')";
-    this._checkRotation(bg,url);
+    if(url){bg.style.backgroundImage="url('"+url+"')";this._checkRotation(bg,url);}
+    else{bg.style.backgroundImage='none'}
   },
   /* Detect image vs screen orientation and rotate if mismatched */
   _checkRotation(bgEl,url){
@@ -11761,7 +11990,212 @@ return{render,newGame,startDay,nextDay,selectEvent,onCellClick,buildRoom,
   assignCreature,removeCreatureFromRoom,setView,invest,unlockSkill,useActiveSkill,synthCreatures,
   upgradeRoom,makeFinalChoice,resolveChoice};
 })();
-
+/* ========== ZZZ POMODORO — STEP PIPELINE ========== */
+const Pomodoro={
+  pipeline:[
+    {code:'P1', name:'WORK CYCLE 01', time:25*60, type:'work'},
+    {code:'B1', name:'BREAK 01',      time:5*60,  type:'break'},
+    {code:'P2', name:'WORK CYCLE 02', time:25*60, type:'work'},
+    {code:'B2', name:'BREAK 02',      time:5*60,  type:'break'},
+    {code:'P3', name:'WORK CYCLE 03', time:25*60, type:'work'},
+    {code:'B3', name:'BREAK 03',      time:5*60,  type:'break'},
+    {code:'P4', name:'WORK CYCLE 04', time:25*60, type:'work'},
+    {code:'LB', name:'LONG BREAK',    time:15*60, type:'long'}
+  ],
+  step:0,
+  current:25*60,
+  running:false,
+  timer:null,
+  todayKey:'',
+  init(){
+    const d=new Date();
+    this.todayKey='zz_pomo_'+d.getFullYear()+'_'+(d.getMonth()+1)+'_'+d.getDate();
+    this._updateCount();
+    // Init ruler after DOM ready
+    setTimeout(()=>{this._initRuler();this.render()},200);
+  },
+  toggle(){this.running?this.pause():this.start()},
+  start(){
+    this.running=true;
+    const btn=document.getElementById('pomo-toggle');
+    const tag=document.getElementById('pomo-status');
+    if(btn)btn.textContent='⏸ PAUSE';
+    if(tag){
+      const p=this.pipeline[this.step];
+      tag.textContent='RUNNING // '+p.code;
+      tag.className='pomo-phase-tag running-tag'+(p.type==='break'?' break-tag':p.type==='long'?' long-tag':'');
+    }
+    this.timer=setInterval(()=>{this.current--;this.render();if(this.current<=0)this._phaseComplete()},1000);
+  },
+  pause(){
+    this.running=false;clearInterval(this.timer);
+    const btn=document.getElementById('pomo-toggle');
+    const tag=document.getElementById('pomo-status');
+    if(btn)btn.textContent='▶ RESUME';
+    if(tag){tag.textContent='PAUSED';tag.className='pomo-phase-tag'}
+  },
+  reset(){
+    this.pause();this.step=0;this.current=this.pipeline[0].time;
+    const btn=document.getElementById('pomo-toggle');if(btn)btn.textContent='▶ START';
+    const tag=document.getElementById('pomo-status');
+    if(tag){tag.textContent='STANDBY';tag.className='pomo-phase-tag'}
+    this._initRuler();this.render();
+  },
+  skipPhase(){
+    this.pause();this._advance();
+    const btn=document.getElementById('pomo-toggle');if(btn)btn.textContent='▶ START';
+    const tag=document.getElementById('pomo-status');
+    if(tag){tag.textContent='STANDBY';tag.className='pomo-phase-tag'}
+    this._initRuler();this.render();
+  },
+  _phaseComplete(){
+    this.pause();this._beep();
+    const p=this.pipeline[this.step];
+    if(p.type==='work'){
+      let cnt=0;try{cnt=parseInt(localStorage.getItem(this.todayKey)||'0')}catch(e){}
+      cnt++;try{localStorage.setItem(this.todayKey,String(cnt))}catch(e){}
+      this._updateCount();
+      if(typeof showGameToast==='function')showGameToast('🍅 WORK COMPLETE',2500);
+    }else if(typeof showGameToast==='function')showGameToast('☕ BREAK OVER',2500);
+    this._advance();
+    const btn=document.getElementById('pomo-toggle');if(btn)btn.textContent='▶ START';
+    const tag=document.getElementById('pomo-status');
+    if(tag){tag.textContent='STANDBY';tag.className='pomo-phase-tag'}
+    this._initRuler();this.render();
+  },
+  _advance(){
+    this.step++;
+    if(this.step>=this.pipeline.length){this.step=0;if(typeof showGameToast==='function')showGameToast('🎯 FULL CYCLE COMPLETE',3000)}
+    this.current=this.pipeline[this.step].time;
+  },
+  _updateCount(){
+    let cnt=0;try{cnt=parseInt(localStorage.getItem(this.todayKey)||'0')}catch(e){}
+    const el=document.getElementById('pomo-count');if(el)el.textContent=cnt;
+    const bot=document.getElementById('pomo-bottom-count');if(bot)bot.textContent=cnt;
+  },
+  /* Build ruler tick marks for current phase duration */
+  _initRuler(){
+    const ticksEl=document.getElementById('pomo-ruler-ticks');if(!ticksEl)return;
+    ticksEl.innerHTML='';
+    const total=this.pipeline[this.step].time;
+    // Determine tick interval: aim for ~40-80 ticks visible
+    const intervals=[15,30,60,120,300];
+    let interval=30;
+    for(const iv of intervals){if(total/iv<=80){interval=iv;break}}
+    for(let t=0;t<=total;t+=interval){
+      const pct=(t/total)*100;
+      const tick=document.createElement('div');
+      tick.className='pomo-ruler-tick';
+      if(t%(5*60)===0)tick.classList.add('major');
+      else if(t%60===0)tick.classList.add('semi');
+      else tick.classList.add('minor');
+      tick.style.left=pct+'%';
+      ticksEl.appendChild(tick);
+    }
+    // Remove old drag listener to avoid double-binding
+    const ruler=document.getElementById('pomo-ruler');if(!ruler)return;
+    const newRuler=ruler.cloneNode(false);
+    while(ruler.firstChild)newRuler.appendChild(ruler.firstChild);
+    ruler.parentNode.replaceChild(newRuler,ruler);
+    newRuler.addEventListener('mousedown',e=>this._startRulerDrag(e,newRuler));
+    newRuler.addEventListener('touchstart',e=>this._startRulerDrag(e,newRuler),{passive:false});
+  },
+  _startRulerDrag(e,ruler){
+    if(this.running)return;
+    e.preventDefault();
+    const ptr=document.getElementById('pomo-ruler-ptr');
+    const elapsed=document.getElementById('pomo-ruler-elapsed');
+    if(ptr){ptr.classList.add('dragging','no-anim')}
+    if(elapsed)elapsed.classList.add('no-anim');
+    const total=this.pipeline[this.step].time;
+    const update=ev=>{
+      const rect=ruler.getBoundingClientRect();
+      const clientX=ev.clientX!==undefined?ev.clientX:(ev.touches&&ev.touches[0]?ev.touches[0].clientX:0);
+      const pct=Math.max(0,Math.min(1,(clientX-rect.left)/rect.width));
+      // pct=0 means full time left, pct=1 means 0 time left
+      this.current=Math.max(1,Math.round((1-pct)*total));
+      const m=Math.floor(this.current/60).toString().padStart(2,'0');
+      const s=(this.current%60).toString().padStart(2,'0');
+      const ts=m+':'+s;
+      const t=document.getElementById('pomo-time');if(t)t.textContent=ts;
+      const bubble=document.getElementById('pomo-ruler-bubble');if(bubble)bubble.textContent=ts;
+      const botTime=document.getElementById('pomo-bottom-time');if(botTime)botTime.textContent=ts;
+      const elPct=pct*100;
+      if(ptr)ptr.style.left=elPct+'%';
+      if(elapsed)elapsed.style.width=elPct+'%';
+    };
+    const up=()=>{
+      if(ptr)ptr.classList.remove('dragging','no-anim');
+      if(elapsed)elapsed.classList.remove('no-anim');
+      this.render();
+      document.removeEventListener('mousemove',update);
+      document.removeEventListener('mouseup',up);
+      document.removeEventListener('touchmove',update);
+      document.removeEventListener('touchend',up);
+    };
+    document.addEventListener('mousemove',update);
+    document.addEventListener('mouseup',up);
+    document.addEventListener('touchmove',update,{passive:false});
+    document.addEventListener('touchend',up);
+    update(e);
+  },
+  render(){
+    const m=Math.floor(this.current/60).toString().padStart(2,'0');
+    const s=(this.current%60).toString().padStart(2,'0');
+    const timeStr=m+':'+s;
+    const t=document.getElementById('pomo-time');
+    if(t){
+      t.textContent=timeStr;
+      const ph=this.pipeline[this.step].type;
+      t.className='pomo-time-display'+(ph==='break'?' break-time':ph==='long'?' long-time':'');
+    }
+    const total=this.pipeline[this.step].time;
+    const elapsedPct=(1-(this.current/total))*100;
+    /* Ruler pointer + fill (only if not currently dragging) */
+    const ptr=document.getElementById('pomo-ruler-ptr');
+    const el=document.getElementById('pomo-ruler-elapsed');
+    if(ptr&&!ptr.classList.contains('dragging')){ptr.style.left=Math.max(0,elapsedPct)+'%'}
+    if(el&&!el.classList.contains('no-anim')){el.style.width=Math.max(0,elapsedPct)+'%'}
+    const bubble=document.getElementById('pomo-ruler-bubble');
+    if(bubble&&(!ptr||!ptr.classList.contains('dragging')))bubble.textContent=timeStr;
+    /* Mark ticks as past/future based on pointer position */
+    const ticks=document.querySelectorAll('#pomo-ruler-ticks .pomo-ruler-tick');
+    ticks.forEach(tk=>{
+      const pct=parseFloat(tk.style.left);
+      tk.classList.toggle('past',pct<elapsedPct);
+    });
+    /* Phase info label */
+    const phaseInfo='PHASE 0'+(this.step+1)+' // '+this.pipeline[this.step].name+(this.running?'':' — DRAG TO SEEK');
+    const info=document.getElementById('pipe-info');if(info)info.textContent=phaseInfo;
+    /* Pipeline bar segments */
+    const segs=document.querySelectorAll('#pomo-pipe-track .pomo-pipe-seg');
+    segs.forEach((n,i)=>{
+      n.classList.remove('active','completed');
+      if(i<this.step)n.classList.add('completed');
+      else if(i===this.step)n.classList.add('active');
+    });
+    /* Bottom bar sync */
+    const botTime=document.getElementById('pomo-bottom-time');if(botTime)botTime.textContent=timeStr;
+    const botPhase=document.getElementById('pomo-bottom-phase');if(botPhase)botPhase.textContent=this.pipeline[this.step].name;
+    let cnt=0;try{cnt=parseInt(localStorage.getItem(this.todayKey)||'0')}catch(e){}
+    const botCount=document.getElementById('pomo-bottom-count');if(botCount)botCount.textContent=cnt;
+  },
+  _beep(){
+    try{
+      const AC=window.AudioContext||window.webkitAudioContext;
+      if(!AC)return;const ctx=new AC();
+      [880,1100].forEach((freq,i)=>{
+        const o=ctx.createOscillator(),g=ctx.createGain();
+        o.connect(g);g.connect(ctx.destination);
+        o.type='square';o.frequency.value=freq;
+        g.gain.setValueAtTime(0.12,ctx.currentTime+i*0.18);
+        g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+i*0.18+0.25);
+        o.start(ctx.currentTime+i*0.18);o.stop(ctx.currentTime+i*0.18+0.25);
+      });
+    }catch(e){}
+  }
+};
+Pomodoro.init();
 </script>
 </body>
 </html>
